@@ -7,7 +7,7 @@ const upload = require("../middleware/upload");
 
 const {
   createIssue,
-  getAllIssuesForManager,
+  getAllIssues, // ✅ CORRECT NAME
 } = require("../controllers/issueController");
 
 // OFFICE WORKER → CREATE ISSUE
@@ -15,18 +15,30 @@ router.post(
   "/create",
   authMiddleware,
   upload.fields([
-    { name: "issueImage", maxCount: 1 },
-    { name: "markedFloorPlan", maxCount: 1 },
-  ]),
+  // legacy single image (still supported)
+  { name: "issueImage", maxCount: 1 },
+
+  // required edited PDF
+  { name: "markedFloorPlan", maxCount: 1 },
+
+  // 🔥 dynamic multi-structure images
+  { name: "issueImages_0", maxCount: 10 },
+  { name: "issueImages_1", maxCount: 10 },
+  { name: "issueImages_2", maxCount: 10 },
+  { name: "issueImages_3", maxCount: 10 },
+  { name: "issueImages_4", maxCount: 10 },
+]),
   createIssue
 );
+
+
 
 // MANAGER → VIEW ALL ISSUES
 router.get(
   "/all",
   authMiddleware,
   managerOnly,
-  getAllIssuesForManager
+  getAllIssues // ✅ FUNCTION EXISTS
 );
 
 module.exports = router;
