@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Internship Project – FULL FINAL TEST</title>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- pdf-lib -->
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  padding: 20px;
+}
+h2 { margin-top: 30px; }
+.box {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+input, select, textarea, button {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+}
+button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+canvas {
+  border: 2px solid #000;
+  margin-top: 10px;
+}
+pre {
+  background: #222;
+  color: #0f0;
+  padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>FULL END-TO-END PROJECT TEST</h1>
+
+<!-- REGISTER -->
+<div class="box">
+<h2>1️⃣ Register</h2>
+<select id="regType">
+  <option value="office_worker">Office Worker</option>
+  <option value="manager">Manager</option>
+</select>
+<input id="regEmail" placeholder="Email" />
+<input id="regFloor" placeholder="Floor (worker)" />
+<input id="regOffice" placeholder="Office (worker)" />
+<input id="regPassword" type="password" placeholder="Password" />
+<button onclick="register()">Register</button>
+</div>
+
+<!-- LOGIN -->
+<div class="box">
+<h2>2️⃣ Login</h2>
+<select id="loginType">
+  <option value="office_worker">Office Worker</option>
+  <option value="manager">Manager</option>
+</select>
+<input id="loginEmail" placeholder="Email (manager)" />
+<input id="loginFloor" placeholder="Floor (worker)" />
+<input id="loginPassword" type="password" placeholder="Password" />
+<button onclick="login()">Login</button>
+</div>
+
+<!-- MANAGER UPLOAD BASE -->
+<div class="box">
+<h2>3️⃣ Manager – Upload Base Floor Plan</h2>
+<input id="baseFloor" placeholder="Floor Number" />
+<input id="baseOffice" placeholder="Office Number (optional)" />
+<input type="file" id="basePdf" />
+<button onclick="uploadBasePlan()">Upload Base PDF</button>
+</div>
+
+<!-- OFFICE WORKER CREATE ISSUE -->
+<div class="box">
+<h2>4️⃣ Office Worker – Create Issue (ONE FLOW)</h2>
+
+<select id="wallDirection">
+  <option value="north">North</option>
+  <option value="south">South</option>
+  <option value="east">East</option>
+  <option value="west">West</option>
+</select>
+
+<input id="wallLocation" placeholder="Wall location" />
+<textarea id="description" placeholder="Issue description"></textarea>
+<input type="file" id="issueImage" />
+
+<!-- COLOR DROPDOWN -->
+<label>Select Mark Color</label>
+<select id="colorPicker">
+  <option value="red" selected>Red</option>
+  <option value="blue">Blue</option>
+  <option value="green">Green</option>
+  <option value="orange">Orange</option>
+  <option value="black">Black</option>
+</select>
+
+<button onclick="prevPage()">⬅ Prev Page</button>
+<button onclick="nextPage()">Next Page ➡</button>
+
+<canvas id="pdfCanvas"></canvas>
+
+<button onclick="submitIssue()">Submit Issue</button>
+</div>
+
+<!-- MANAGER VIEW -->
+<div class="box">
+<h2>5️⃣ Manager – View All Issues</h2>
+<button onclick="getAllIssues()">Get All Issues</button>
+</div>
+
+<h2>Response</h2>
+<pre id="output"></pre>
+
+<script>
+const API = "http://localhost:5000";
+let token = "";
+let basePdfUrl = "";
+let pdfDocJs;
+let totalPages = 0;
+let currentPageIndex = 0;
+let renderScale = 1.5;
+
+// marks now include color
+let marks = []; 
+// { pageIndex, x, y, color }
+
+/* REGISTER */
+async function register() {
+  const body = {
+    userType: regType.value,
+    email: regEmail.value,
+    password: regPassword.value
+  };
+  if (body.userType === "office_worker") {
+    body.floorNumber = +regFloor.value;
+    body.officeNumber = +regOffice.value;
+  }
+  const r = await fetch(API+"/api/auth/register",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+  });
+  output.textContent = await r.text();
+}
+
+/* LOGIN */
+async function login() {
+  const body = { userType: loginType.value, password: loginPassword.value };
+  if (body.userType === "office_worker") body.floorNumber = +loginFloor.value;
+  else body.email = loginEmail.value;
+
+  const r = await fetch(API+"/api/auth/login",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+  });
+  const d = await r.json();
+  token = d.token;
+  output.textContent = JSON.stringify(d,null,2);
+
+  if (loginType.value === "office_worker") loadBasePdf();
+}
+
+/* UPLOAD BASE */
+async function uploadBasePlan() {
+  const fd = new FormData();
+  fd.append("floorNumber", baseFloor.value);
+  if (baseOffice.value) fd.append("officeNumber", baseOffice.value);
+  fd.append("planPdf", basePdf.files[0]);
+
+  const r = await fetch(API+"/api/floor-plans/upload",{
+    method:"POST",headers:{Authorization:"Bearer "+token},body:fd
+  });
+  output.textContent = await r.text();
+}
+
+/* LOAD BASE PDF */
+async function loadBasePdf() {
+  const r = await fetch(API+"/api/floor-plans/my",{headers:{Authorization:"Bearer "+token}});
+  const d = await r.json();
+  basePdfUrl = d.planPdf;
+  pdfDocJs = await pdfjsLib.getDocument(basePdfUrl).promise;
+  totalPages = pdfDocJs.numPages;
+  renderPage(0);
+}
+
+/* RENDER PAGE */
+async function renderPage(pageIndex) {
+  currentPageIndex = pageIndex;
+  const page = await pdfDocJs.getPage(pageIndex+1);
+  const viewport = page.getViewport({scale:renderScale});
+  const ctx = pdfCanvas.getContext("2d");
+
+  pdfCanvas.width = viewport.width;
+  pdfCanvas.height = viewport.height;
+
+  await page.render({canvasContext:ctx,viewport}).promise;
+
+  marks.filter(m=>m.pageIndex===pageIndex).forEach(m=>{
+    drawCircle(ctx, m.x, m.y, m.color);
+  });
+
+  pdfCanvas.onclick = e=>{
+    const r = pdfCanvas.getBoundingClientRect();
+    const x = e.clientX-r.left;
+    const y = e.clientY-r.top;
+    const color = colorPicker.value;
+
+    marks.push({pageIndex, x, y, color});
+    drawCircle(ctx, x, y, color);
+  };
+}
+
+/* DRAW */
+function drawCircle(ctx, x, y, color) {
+  ctx.beginPath();
+  ctx.arc(x,y,15,0,Math.PI*2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+/* PAGE NAV */
+function nextPage(){ if(currentPageIndex<totalPages-1) renderPage(currentPageIndex+1); }
+function prevPage(){ if(currentPageIndex>0) renderPage(currentPageIndex-1); }
+
+/* SUBMIT ISSUE */
+async function submitIssue() {
+  const bytes = await fetch(basePdfUrl).then(r=>r.arrayBuffer());
+  const pdfDoc = await PDFLib.PDFDocument.load(bytes);
+  const pages = pdfDoc.getPages();
+
+  marks.forEach(m=>{
+    const p = pages[m.pageIndex];
+    p.drawCircle({
+      x: m.x/renderScale,
+      y: (pdfCanvas.height-m.y)/renderScale,
+      size: 10,
+      borderColor: getPdfColor(m.color),
+      borderWidth: 2
+    });
+  });
+
+  const edited = await pdfDoc.save();
+  const fd = new FormData();
+  fd.append("wallDirection", wallDirection.value);
+  fd.append("wallLocationRef", wallLocation.value);
+  fd.append("description", description.value);
+  fd.append("issueImage", issueImage.files[0]);
+  fd.append("markedFloorPlan", new Blob([edited],{type:"application/pdf"}),"edited.pdf");
+
+  const r = await fetch(API+"/api/issues/create",{
+    method:"POST",headers:{Authorization:"Bearer "+token},body:fd
+  });
+  output.textContent = await r.text();
+}
+
+/* VIEW ISSUES */
+async function getAllIssues() {
+  const r = await fetch(API+"/api/issues/all",{headers:{Authorization:"Bearer "+token}});
+  output.textContent = await r.text();
+}
+
+/* COLOR MAP */
+function getPdfColor(color) {
+  switch(color) {
+    case "red": return PDFLib.rgb(1,0,0);
+    case "blue": return PDFLib.rgb(0,0,1);
+    case "green": return PDFLib.rgb(0,1,0);
+    case "orange": return PDFLib.rgb(1,0.5,0);
+    case "black": return PDFLib.rgb(0,0,0);
+    default: return PDFLib.rgb(1,0,0);
+  }
+}
+</script>
+
+</body>
+</html>
