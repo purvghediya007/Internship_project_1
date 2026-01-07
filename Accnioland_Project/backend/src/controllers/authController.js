@@ -96,15 +96,15 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        id: user._id,
-        userType: user.userType,
-        floorNumber: user.floorNumber,
-        officeNumber: user.officeNumber,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+  {
+    _id: user._id,   // ✅ FIXED
+    userType: user.userType,
+    floorNumber: user.floorNumber,
+    officeNumber: user.officeNumber,
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: "1d" }
+);
 
     res.json({
       message: "Login successful",

@@ -1,5 +1,94 @@
 const mongoose = require("mongoose");
 
+/* ================= SUB-SCHEMAS ================= */
+
+// PDF mark for a structure problem
+const pdfMarkSchema = new mongoose.Schema(
+  {
+    pageIndex: {
+      type: Number,
+      required: true,
+    },
+    x: {
+      type: Number,
+      required: true,
+    },
+    y: {
+      type: Number,
+      required: true,
+    },
+    color: {
+      type: String,
+      enum: ["red", "blue", "green", "black"],
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+// Each structural problem reported
+const structureProblemSchema = new mongoose.Schema(
+  {
+    structureType: {
+      type: String,
+      enum: ["wall", "beam", "column", "roof", "floor", "facade", "other"],
+      required: true,
+    },
+
+    direction: {
+      type: String,
+      enum: ["north", "south", "east", "west"],
+      required: true,
+    },
+
+    issueType: {
+      type: String,
+      enum: ["crack", "dampness", "crack_dampness", "other"],
+      required: true,
+    },
+
+    crackType: {
+      type: String,
+      enum: ["minor", "medium", "severe"],
+    },
+
+    dampnessLevel: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      required: function () {
+        return this.issueType === "dampness" || this.issueType === "crack_dampness";
+      },
+    },
+
+
+    riskLevel: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      required: true,
+    },
+
+    description: {
+      type: String,
+      required: true,
+    },
+
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+
+    pdfMarks: {
+      type: [pdfMarkSchema],
+      default: [],
+    },
+  },
+  { _id: false }
+);
+
+/* ================= MAIN ISSUE SCHEMA ================= */
+
 const issueSchema = new mongoose.Schema(
   {
     reportedBy: {
@@ -18,13 +107,13 @@ const issueSchema = new mongoose.Schema(
       required: true,
     },
 
-    // 🔒 ORIGINAL (MANAGER UPLOADED)
+    // Manager uploaded
     baseFloorPlan: {
       type: String,
       required: true,
     },
 
-    // ✏️ EDITED (OFFICE WORKER UPLOADED)
+    // Office worker uploaded
     markedFloorPlan: {
       type: String,
       required: true,
@@ -35,10 +124,15 @@ const issueSchema = new mongoose.Schema(
       default: true,
     },
 
+    /**
+     * 🔒 BACKWARD SAFETY:
+     * Old single-issue fields are NOT removed yet.
+     * They can be deprecated later safely.
+     */
+
     wallDirection: {
       type: String,
       enum: ["north", "south", "east", "west"],
-      required: true,
     },
 
     wallLocationRef: {
@@ -47,12 +141,18 @@ const issueSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: true,
     },
 
     issueImage: {
       type: String,
-      required: true,
+    },
+
+    /**
+     * 🔥 NEW STRUCTURED WAY (MULTIPLE PROBLEMS)
+     */
+    structureProblems: {
+      type: [structureProblemSchema],
+      default: [],
     },
 
     status: {
