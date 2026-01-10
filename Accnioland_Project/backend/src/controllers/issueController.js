@@ -37,13 +37,22 @@ exports.createIssue = async (req, res) => {
     const markedFloorPlan = req.files.markedFloorPlan[0].path;
 
     /* ================= BASE FLOOR PLAN (FIX) ================= */
+    // const floorPlan = await FloorPlan.findOne({
+    //   floorNumber: user.floorNumber,
+    //   $or: [
+    //     { officeNumber: user.officeNumber },
+    //     { officeNumber:null},
+    //   ],
+    // });
     const floorPlan = await FloorPlan.findOne({
-      floorNumber: user.floorNumber,
-      $or: [
-        { officeNumber: user.officeNumber },
-        { officeNumber: { $exists: false } },
-      ],
-    });
+  floorNumber: user.floorNumber,
+  $or: [
+    { officeNumber: user.officeNumber }, // office-specific
+    { officeNumber: null },              // floor-level
+    { officeNumber: { $exists: false } } // legacy / undefined
+  ],
+}).sort({ createdAt: -1 });
+
 
     if (!floorPlan) {
       return res.status(400).json({

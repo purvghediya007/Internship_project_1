@@ -2,39 +2,96 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// // REGISTER
+// exports.register = async (req, res) => {
+//   try {
+//     const {
+//       userType,
+//       email,
+//       floorNumber,
+//       officeNumber,
+//       password,
+//     } = req.body;
+
+//     // email must be unique for everyone
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "Email already registered" });
+//     }
+
+//     // role-based validation
+//     if (userType === "office_worker") {
+//       if (floorNumber == null || officeNumber == null) {
+//         return res.status(400).json({
+//           message: "Floor number and office number are required for office worker",
+//         });
+//       }
+//     }
+
+//     if (userType === "manager") {
+//       // manager should NOT send floor/office
+//       if (floorNumber || officeNumber) {
+//         return res.status(400).json({
+//           message: "Manager should not have floor or office number",
+//         });
+//       }
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     const user = await User.create({
+//       userType,
+//       email,
+//       floorNumber: userType === "office_worker" ? floorNumber : null,
+//       officeNumber: userType === "office_worker" ? officeNumber : null,
+//       password: hashedPassword,
+//     });
+
+//     res.status(201).json({
+//       message: "User registered successfully",
+//       userId: user._id,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 // REGISTER
 exports.register = async (req, res) => {
   try {
-    const {
-      userType,
-      email,
-      floorNumber,
-      officeNumber,
-      password,
-    } = req.body;
+    const { userType, email, floorNumber, officeNumber, password } = req.body;
 
-    // email must be unique for everyone
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
-
-    // role-based validation
-    if (userType === "office_worker") {
-      if (floorNumber == null || officeNumber == null) {
-        return res.status(400).json({
-          message: "Floor number and office number are required for office worker",
-        });
-      }
+    // 🔒 COMMON VALIDATION
+    if (!userType || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
     if (userType === "manager") {
-      // manager should NOT send floor/office
-      if (floorNumber || officeNumber) {
+      if (!email) {
         return res.status(400).json({
-          message: "Manager should not have floor or office number",
+          message: "Email is required for manager",
         });
       }
+    }
+
+    if (userType === "office_worker") {
+      if (floorNumber == null || officeNumber == null) {
+        return res.status(400).json({
+          message: "Floor number and office number are required",
+        });
+      }
+
+      // office worker must still have email
+      if (!email) {
+        return res.status(400).json({
+          message: "Email is required for office worker",
+        });
+      }
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -51,7 +108,9 @@ exports.register = async (req, res) => {
       message: "User registered successfully",
       userId: user._id,
     });
+
   } catch (error) {
+    console.error("REGISTER ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };

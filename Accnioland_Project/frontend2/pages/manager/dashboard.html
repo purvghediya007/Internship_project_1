@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Accnioland – Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+  body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(180deg, #f8fafc, #eef2f7);
+}
+
+/* Navbar */
+.navbar {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* Filter Card */
+.card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* Issue Cards */
+.issue-card {
+  border-radius: 14px;
+  transition: all 0.25s ease;
+  background: #ffffff;
+}
+
+.issue-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.15);
+}
+
+/* Status badge */
+.badge {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* Section title */
+h5 {
+  font-weight: 600;
+}
+
+  </style>
+</head>
+
+<body>
+
+<!-- 🔷 NAVBAR -->
+<nav class="navbar navbar-dark bg-dark px-3">
+  <span class="navbar-brand fw-semibold">
+    Accnioland – Manager Dashboard
+  </span>
+
+  <div class="d-flex gap-2">
+    <a href="upload-floor.html" class="btn btn-outline-light btn-sm">
+      <i class="bi bi-upload"></i> Upload Floor Plan
+    </a>
+    <button onclick="logout()" class="btn btn-outline-danger btn-sm">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
+</nav>
+
+<!-- 🔷 MAIN -->
+<div class="container my-4">
+
+  <!-- 🔍 FILTER CARD -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="fw-semibold mb-2">Filter Issues</h6>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <input
+          type="number"
+          id="floorInput"
+          class="form-control"
+          placeholder="Floor number"
+        />
+
+        <input
+          type="date"
+          id="dateInput"
+          class="form-control"
+        />
+
+        <button class="btn btn-primary" onclick="applyFilter()">
+          Apply Filter
+        </button>
+
+        <button class="btn btn-outline-secondary" onclick="resetFilter()">
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📋 ISSUES -->
+  <h5 class="mb-3">Reported Issues</h5>
+  <div id="issuesContainer"></div>
+
+</div>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ================= CONFIG ================= */
+const API = "http://localhost:5000";
+const token = localStorage.getItem("token");
+const userType = localStorage.getItem("userType");
+
+let ALL_ISSUES = [];
+
+/* ================= AUTH GUARD ================= */
+if (!token || userType !== "manager") {
+  localStorage.clear();
+  location.href = "../login.html";
+}
+
+/* ================= LOGOUT ================= */
+function logout() {
+  localStorage.clear();
+  location.href = "../login.html";
+}
+
+/* ================= LOAD ALL ISSUES ================= */
+async function loadIssues() {
+  const container = document.getElementById("issuesContainer");
+  container.innerHTML = `<div class="text-muted">Loading issues...</div>`;
+
+  try {
+    const res = await fetch(API + "/api/issues/all", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    ALL_ISSUES = await res.json();
+    renderIssues(ALL_ISSUES);
+
+  } catch (err) {
+    container.innerHTML = `<div class="text-danger">Failed to load issues</div>`;
+    console.error(err);
+  }
+}
+
+/* ================= APPLY FILTER ================= */
+function applyFilter() {
+  const floor = document.getElementById("floorInput").value;
+  const date = document.getElementById("dateInput").value;
+
+  let filtered = [...ALL_ISSUES];
+
+  if (floor) {
+    filtered = filtered.filter(i => i.floorNumber === Number(floor));
+  }
+
+  if (date) {
+    filtered = filtered.filter(i =>
+      i.createdAt?.startsWith(date)
+    );
+  }
+
+  renderIssues(filtered);
+}
+
+/* ================= RESET FILTER ================= */
+function resetFilter() {
+  document.getElementById("floorInput").value = "";
+  document.getElementById("dateInput").value = "";
+  renderIssues(ALL_ISSUES);
+}
+
+/* ================= RENDER ISSUES ================= */
+function renderIssues(issues) {
+  const container = document.getElementById("issuesContainer");
+  container.innerHTML = "";
+
+  if (!issues.length) {
+    container.innerHTML = `
+      <div class="alert alert-info">
+        No issues found for selected filter.
+      </div>
+    `;
+    return;
+  }
+
+  issues.forEach(issue => {
+    const card = document.createElement("div");
+    card.className = "card mb-3 issue-card";
+
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1">
+              Floor ${issue.floorNumber} | Office ${issue.officeNumber}
+            </h6>
+            <small class="text-muted">
+              Reported on: ${new Date(issue.createdAt).toLocaleDateString()}
+            </small>
+          </div>
+          <span class="badge bg-secondary text-capitalize">
+            ${issue.status || "open"}
+          </span>
+        </div>
+
+        <hr />
+
+        <a
+          href="issue-details.html?id=${issue._id}"
+          class="btn btn-sm btn-primary"
+        >
+          View Details
+        </a>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+/* ================= INIT ================= */
+loadIssues();
+</script>
+
+</body>
+</html>

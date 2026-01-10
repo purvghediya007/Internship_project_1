@@ -10,7 +10,7 @@ exports.uploadBaseFloorPlan = async (req, res) => {
     }
 
     const plan = await FloorPlan.create({
-      uploadedBy: req.user.id,
+      uploadedBy: req.user._id,
       floorNumber,
       officeNumber: officeNumber || null,
       planPdf: req.file.path,
