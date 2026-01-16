@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+// const analyticsRoutes = require("./routes/analyticsRoutes");
 
 require("dotenv").config({
   path: path.resolve(__dirname, "../.env"),
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/issues", require("./routes/issueRoutes"));
+// app.use("/api/analytics", analyticsRoutes);
 app.use("/api/floor-plans", require("./routes/floorPlanRoutes"));
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
 

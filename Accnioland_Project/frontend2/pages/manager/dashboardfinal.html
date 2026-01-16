@@ -32,7 +32,7 @@
       letter-spacing:0.2px;
     }
 
-    /* NEW LAYOUT (FULL WIDTH ANALYTICS) */
+    /* LAYOUT */
     .dashboard-wrap{
       display:grid;
       grid-template-columns: 320px 1fr;
@@ -50,7 +50,6 @@
     .sidebar{
       position: sticky;
       top: 16px;
-      height: fit-content;
     }
 
     .sidebar-card{
@@ -147,11 +146,6 @@
 
     .panel-body{
       padding: 18px;
-    }
-
-    /* Make Analytics Bigger */
-    .analytics-panel{
-      min-height: 520px; /* bigger feel */
     }
 
     /* STATS GRID */
@@ -328,53 +322,6 @@
       color:#64748b;
       text-align:center;
     }
-
-    /* MAP CARD */
-    .map-card{
-      border-radius: 18px;
-      border: 1px solid #eef2f7;
-      background: #ffffff;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
-      overflow:hidden;
-      margin-top: 14px;
-    }
-
-    .map-head{
-      padding: 14px 16px;
-      background: linear-gradient(180deg,#f8fafc,#ffffff);
-      border-bottom: 1px solid #eef2f7;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
-
-    .map-title{
-      font-weight: 900;
-      margin: 0;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size: 15px;
-    }
-
-    .map-body{
-      padding: 14px 16px;
-    }
-
-    .map-placeholder{
-      border-radius: 16px;
-      border: 1px dashed #cbd5e1;
-      background: linear-gradient(180deg,#ffffff,#f8fafc);
-      height: 300px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#64748b;
-      font-weight: 700;
-      text-align:center;
-      padding: 12px;
-    }
   </style>
 </head>
 
@@ -437,8 +384,8 @@
     <!-- MAIN CONTENT -->
     <div>
 
-      <!-- ANALYTICS PANEL (BIGGER FULL WIDTH) -->
-      <div class="panel analytics-panel mb-4">
+      <!-- ANALYTICS PANEL -->
+      <div class="panel mb-4">
         <div class="panel-head">
           <h5>
             <i class="bi bi-bar-chart-fill text-primary"></i>
@@ -509,24 +456,6 @@
 
         <div class="panel-body">
           <div id="issuesContainer"></div>
-
-          <!-- MAP VIEW CARD (AFTER ALL ISSUE CARDS) -->
-          <div class="map-card" id="mapCard">
-            <div class="map-head">
-              <p class="map-title">
-                <i class="bi bi-geo-alt-fill text-primary"></i>
-                Map View (Floor Overview)
-              </p>
-              <span class="pill">Interactive</span>
-            </div>
-            <div class="map-body">
-              <div class="map-placeholder">
-                Map will be shown here.<br/>
-                (Later we can connect real map / floor heatmap)
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
 
@@ -657,7 +586,6 @@ function renderIssues(issues) {
       if(p.riskLevel === "low") riskCount.low++;
     });
 
-    /* ✅ ONLY ONE PDF VIEW (FIRST ISSUE PDF = markedFloorPlan) */
     const issuePdf = issue.markedFloorPlan || issue.baseFloorPlan || null;
 
     card.innerHTML = `
@@ -710,7 +638,6 @@ function renderIssues(issues) {
   container.appendChild(grid);
 }
 
-/* OPEN PDF */
 function openPdf(url){
   window.open(url, "_blank");
 }
