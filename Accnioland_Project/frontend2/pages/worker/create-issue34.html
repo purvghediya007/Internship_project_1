@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Issue | Accnioland</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <!-- Your CSS -->
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/issue.css" />
+
+  <!-- PDF Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+  <style>
+    /* Keep minimal fallback styles if CSS not loaded */
+    body { background: #f1f5f9; }
+    .pdf-wrapper { width: 100%; overflow-x: auto; }
+    #pdfCanvas { max-width: 100%; height: auto; }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <nav class="navbar navbar-dark bg-primary px-3">
+    <span class="navbar-brand fw-semibold">
+      Accnioland – Create Issue
+    </span>
+    <span class="text-white">
+      <strong id="floorText"></strong> |
+      <strong id="officeText"></strong>
+    </span>
+  </nav>
+
+  <div class="container my-4">
+
+    <!-- BASE PDF WARNING -->
+    <div id="noBasePdf" class="alert alert-warning d-none">
+      ⚠ Base floor plan not uploaded for your floor.
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend mb-3">
+      <span style="color:red">Red = Crack</span>
+      <span style="color:blue">Blue = Dampness</span>
+      <span style="color:green">Green = Crack + Dampness</span>
+      <span style="color:black">Black = Other</span>
+    </div>
+
+    <button class="btn btn-outline-primary w-100 mb-3" onclick="addProblem()">
+      ➕ Add Structure Problem
+    </button>
+
+    <div id="problems"></div>
+
+    <hr />
+
+    <!-- PDF CONTROLS -->
+    <div class="d-flex gap-2 mb-2">
+      <button class="btn btn-secondary" onclick="prevPage()">⬅ Prev</button>
+      <button class="btn btn-secondary" onclick="nextPage()">Next ➡</button>
+    </div>
+
+    <!-- PDF VIEW -->
+    <div class="pdf-wrapper">
+      <canvas id="pdfCanvas"></canvas>
+    </div>
+
+    <button class="btn btn-success w-100 mt-3" onclick="submitIssue()">
+      ✅ Submit Issue
+    </button>
+
+    <pre id="output" class="bg-dark text-success p-2 mt-3"></pre>
+
+  </div>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /* ================= CONFIG ================= */
+    const API = "http://localhost:5000";
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      location.href = "../login.html";
+    }
+
+    /* ================= USER INFO ================= */
+    // Supports both old storage and new storage
+    const userInfoRaw = localStorage.getItem("userInfo");
+    let floorNumber = localStorage.getItem("floorNumber");
+    let officeNumber = localStorage.getItem("officeNumber");
+
+    if (userInfoRaw) {
+      try {
+        const userInfo = JSON.parse(userInfoRaw);
+        floorNumber = userInfo.floorNumber ?? floorNumber;
+        officeNumber = userInfo.officeNumber ?? officeNumber;
+      } catch (e) {}
+    }
+
+    document.getElementById("floorText").innerText = "Floor: " + (floorNumber ?? "N/A");
+    document.getElementById("officeText").innerText = "Office: " + (officeNumber ?? "N/A");
+
+    /* ================= STATE ================= */
+    let problems = []; // each problem has pdfMarks
+    let pdfDocJs = null;
+    let basePdfUrl = null;
+    let pageIndex = 0;
+    let scale = 1.4;
+
+    const pdfCanvas = document.getElementById("pdfCanvas");
+
+    /* ================= LOAD BASE PDF ================= */
+    async function loadBasePdf() {
+      try {
+        const res = await fetch(API + "/api/floor-plans/my", {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (!res.ok) {
+          document.getElementById("noBasePdf").classList.remove("d-none");
+          return;
+        }
+
+        const data = await res.json();
+        if (!data.planPdf) {
+          document.getElementById("noBasePdf").classList.remove("d-none");
+          return;
+        }
+
+        basePdfUrl = data.planPdf;
+        pdfDocJs = await pdfjsLib.getDocument(basePdfUrl).promise;
+        renderPage();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("noBasePdf").classList.remove("d-none");
+      }
+    }
+    loadBasePdf();
+
+    /* ================= STRUCTURE ================= */
+    window.addProblem = function () {
+      const i = problems.length;
+
+      problems.push({
+        pdfMarks: [],
+        issueType: "",
+        structureType: "",
+        direction: "",
+        crackType: "",
+        dampnessLevel: "",
+        riskLevel: "",
+        description: "",
+        images: null
+      });
+
+      const div = document.createElement("div");
+      div.className = "problem";
+      div.innerHTML = `
+        <h6>Structure ${i + 1}</h6>
+
+        <select class="form-select mb-1" onchange="problems[${i}].structureType=this.value">
+          <option value="">Structure</option>
+          <option>wall</option><option>beam</option><option>column</option>
+          <option>roof</option><option>floor</option><option>facade</option><option>other</option>
+        </select>
+
+        <select class="form-select mb-1" onchange="problems[${i}].direction=this.value">
+          <option value="">Direction</option>
+          <option>north</option><option>south</option><option>east</option><option>west</option>
+        </select>
+
+        <select class="form-select mb-1" onchange="handleIssue(${i},this.value)">
+          <option value="">Issue</option>
+          <option value="crack">Crack</option>
+          <option value="dampness">Dampness</option>
+          <option value="crack_dampness">Crack + Dampness</option>
+          <option value="other">Other</option>
+        </select>
+
+        <select id="crack_${i}" class="form-select mb-1 d-none"
+          onchange="problems[${i}].crackType=this.value">
+          <option value="">Crack Type</option>
+          <option>minor</option><option>medium</option><option>severe</option>
+        </select>
+
+        <select id="damp_${i}" class="form-select mb-1 d-none"
+          onchange="problems[${i}].dampnessLevel=this.value">
+          <option value="">Dampness Level</option>
+          <option>low</option><option>medium</option><option>high</option>
+        </select>
+
+        <select class="form-select mb-1"
+          onchange="problems[${i}].riskLevel=this.value">
+          <option value="">Risk Level</option>
+          <option>low</option><option>medium</option><option>high</option>
+        </select>
+
+        <textarea class="form-control mb-1"
+          placeholder="Description"
+          onchange="problems[${i}].description=this.value"></textarea>
+
+        <input type="file" class="form-control" multiple
+          onchange="problems[${i}].images=this.files" />
+      `;
+
+      document.getElementById("problems").appendChild(div);
+    };
+
+    function handleIssue(i, v) {
+      problems[i].issueType = v;
+
+      const crack = document.getElementById(`crack_${i}`);
+      const damp = document.getElementById(`damp_${i}`);
+
+      crack.classList.add("d-none");
+      damp.classList.add("d-none");
+
+      if (v === "crack") crack.classList.remove("d-none");
+      if (v === "dampness") damp.classList.remove("d-none");
+      if (v === "crack_dampness") {
+        crack.classList.remove("d-none");
+        damp.classList.remove("d-none");
+      }
+    }
+
+    /* ================= HELPERS ================= */
+    function getColor(type) {
+      return type === "crack" ? "red"
+        : type === "dampness" ? "blue"
+        : type === "crack_dampness" ? "green"
+        : "black";
+    }
+
+    /* ================= PDF RENDER ================= */
+    async function renderPage() {
+      if (!pdfDocJs) return;
+
+      const page = await pdfDocJs.getPage(pageIndex + 1);
+      const viewport = page.getViewport({ scale });
+
+      pdfCanvas.width = viewport.width;
+      pdfCanvas.height = viewport.height;
+
+      const ctx = pdfCanvas.getContext("2d");
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      // Draw all marks from all problems (normalized -> canvas pixel)
+      let spotCounter = 1;
+
+      problems.forEach((problem) => {
+        (problem.pdfMarks || []).forEach((m) => {
+          if (m.pageIndex !== pageIndex) return;
+
+          const px = m.x * pdfCanvas.width;
+          const py = m.y * pdfCanvas.height;
+
+          ctx.beginPath();
+          ctx.arc(px, py, 8, 0, Math.PI * 2);
+          ctx.strokeStyle = m.color;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.fillStyle = m.color;
+          ctx.font = "14px Arial";
+          ctx.fillText(String(spotCounter), px + 10, py - 10);
+
+          spotCounter++;
+        });
+      });
+
+      // Click to add mark in LAST structure
+      pdfCanvas.onclick = (e) => {
+        if (!problems.length) return alert("Add structure first");
+
+        const rect = pdfCanvas.getBoundingClientRect();
+
+        // ✅ normalized click (0..1) based on displayed canvas size
+        const xNorm = (e.clientX - rect.left) / rect.width;
+        const yNorm = (e.clientY - rect.top) / rect.height;
+
+        const lastProblem = problems[problems.length - 1];
+        const color = getColor(lastProblem.issueType);
+
+        lastProblem.pdfMarks.push({
+          pageIndex,
+          x: xNorm,
+          y: yNorm,
+          color
+        });
+
+        renderPage();
+      };
+    }
+
+    function nextPage() {
+      if (pdfDocJs && pageIndex < pdfDocJs.numPages - 1) {
+        pageIndex++;
+        renderPage();
+      }
+    }
+
+    function prevPage() {
+      if (pageIndex > 0) {
+        pageIndex--;
+        renderPage();
+      }
+    }
+
+    /* ================= SUBMIT ISSUE ================= */
+    async function submitIssue() {
+      try {
+        if (!problems.length) return alert("Add at least one structure problem");
+
+        // Basic validation (avoid backend errors)
+        for (let i = 0; i < problems.length; i++) {
+          const p = problems[i];
+          if (!p.structureType || !p.direction || !p.issueType || !p.riskLevel || !p.description) {
+            alert(`Please fill all required fields in Structure ${i + 1}`);
+            return;
+          }
+          if (!p.images || p.images.length === 0) {
+            alert(`Please upload at least 1 image in Structure ${i + 1}`);
+            return;
+          }
+          if (!p.pdfMarks || p.pdfMarks.length === 0) {
+            alert(`Please add at least 1 spot on PDF for Structure ${i + 1}`);
+            return;
+          }
+        }
+
+        // Load base PDF and draw circles using normalized coords
+        const bytes = await fetch(basePdfUrl).then(r => r.arrayBuffer());
+        const pdf = await PDFLib.PDFDocument.load(bytes);
+        const pages = pdf.getPages();
+
+        problems.forEach((problem) => {
+          problem.pdfMarks.forEach((m) => {
+            const page = pages[m.pageIndex];
+            const { width, height } = page.getSize();
+
+            const color =
+              m.color === "red" ? PDFLib.rgb(1, 0, 0) :
+              m.color === "blue" ? PDFLib.rgb(0, 0, 1) :
+              m.color === "green" ? PDFLib.rgb(0, 1, 0) :
+              PDFLib.rgb(0, 0, 0);
+
+            const pdfX = m.x * width;
+            const pdfY = height - (m.y * height);
+
+            page.drawCircle({
+              x: pdfX,
+              y: pdfY,
+              size: 8,
+              borderWidth: 2,
+              borderColor: color
+            });
+          });
+        });
+
+        const edited = await pdf.save();
+
+        const fd = new FormData();
+        fd.append("structureProblems", JSON.stringify(problems));
+        fd.append("markedFloorPlan", new Blob([edited], { type: "application/pdf" }), "marked.pdf");
+
+        // Attach images for each structure
+        problems.forEach((p, i) => {
+          if (p.images) {
+            Array.from(p.images).forEach(img => {
+              fd.append(`issueImages_${i}`, img);
+            });
+          }
+        });
+
+        const res = await fetch(API + "/api/issues/create", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+          body: fd
+        });
+
+        const text = await res.text();
+        document.getElementById("output").textContent = text;
+
+        if (!res.ok) {
+          alert("Issue submit failed. Check output.");
+          return;
+        }
+
+        alert("Issue submitted successfully ✅");
+        location.href = "../index.html";
+      } catch (err) {
+        console.error(err);
+        alert("Server error while submitting issue");
+      }
+    }
+  </script>
+
+</body>
+</html>

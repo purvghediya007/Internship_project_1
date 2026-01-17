@@ -33,5 +33,29 @@ async function renderPage() {
       ctx.lineWidth = 3;
       ctx.stroke();
     }
-  });
+  }
+
+
+);
+
+// marks.forEach((m, index) => {
+//   if (m.pageIndex === pageIndex) {
+
+//     // ✅ use normalized values if available (best)
+//     const drawX = (m.xNorm != null) ? (m.xNorm * canvas.width) : m.x;
+//     const drawY = (m.yNorm != null) ? (m.yNorm * canvas.height) : m.y;
+
+//     ctx.beginPath();
+//     ctx.arc(drawX, drawY, 10, 0, Math.PI * 2);
+//     ctx.strokeStyle = m.color;
+//     ctx.lineWidth = 3;
+//     ctx.stroke();
+
+//     // optional: number label
+//     ctx.fillStyle = m.color;
+//     ctx.font = "14px Arial";
+//     ctx.fillText(index + 1, drawX + 12, drawY - 12);
+//   }
+// });
+
 }

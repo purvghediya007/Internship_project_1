@@ -14,6 +14,9 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
+  <!-- ✅ PDF.js (ADDED ONLY FOR MAP VIEW) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <style>
     body{
       font-family:"Inter",sans-serif;
@@ -361,20 +364,6 @@
     .map-body{
       padding: 14px 16px;
     }
-
-    .map-placeholder{
-      border-radius: 16px;
-      border: 1px dashed #cbd5e1;
-      background: linear-gradient(180deg,#ffffff,#f8fafc);
-      height: 300px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#64748b;
-      font-weight: 700;
-      text-align:center;
-      padding: 12px;
-    }
   </style>
 </head>
 
@@ -497,6 +486,25 @@
         </div>
       </div>
 
+      <!-- ✅ MAP VIEW PANEL (NOW ABOVE ISSUES) -->
+      <div class="panel mb-4">
+        <div class="panel-head">
+          <h5>
+            <i class="bi bi-geo-alt-fill text-primary"></i>
+            Map View (First Survey PDF)
+          </h5>
+          <span class="pill">Floor: <span id="mapLabel">N/A</span></span>
+        </div>
+
+        <div class="panel-body">
+          <div id="mapBodyContent">
+            <div class="empty-box">
+              Loading map view...
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ISSUES PANEL -->
       <div class="panel">
         <div class="panel-head">
@@ -509,24 +517,6 @@
 
         <div class="panel-body">
           <div id="issuesContainer"></div>
-
-          <!-- MAP VIEW CARD (AFTER ALL ISSUE CARDS) -->
-          <div class="map-card" id="mapCard">
-            <div class="map-head">
-              <p class="map-title">
-                <i class="bi bi-geo-alt-fill text-primary"></i>
-                Map View (Floor Overview)
-              </p>
-              <span class="pill">Interactive</span>
-            </div>
-            <div class="map-body">
-              <div class="map-placeholder">
-                Map will be shown here.<br/>
-                (Later we can connect real map / floor heatmap)
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
 
@@ -578,6 +568,9 @@ async function loadIssues() {
 
     document.getElementById("activeFilterText").innerText = "Showing: All Issues";
 
+    // ✅ DEFAULT MAP VIEW = FIRST ISSUE PDF
+    updateMapViewFromIssues(ALL_ISSUES);
+
   } catch (err) {
     container.innerHTML = `<div class="text-danger">Failed to load issues</div>`;
     console.error(err);
@@ -602,6 +595,9 @@ function applyFilter() {
   renderIssues(filtered);
   updateDashboardUIFromFilteredIssues(filtered);
 
+  // ✅ MAP VIEW UPDATE AFTER FILTER
+  updateMapViewFromIssues(filtered);
+
   let label = "Showing: ";
   if (!floor && !date) label += "All Issues";
   else {
@@ -621,6 +617,9 @@ function resetFilter() {
   updateDashboardUIFromFilteredIssues(ALL_ISSUES);
 
   document.getElementById("activeFilterText").innerText = "Showing: All Issues";
+
+  // ✅ RESET MAP VIEW
+  updateMapViewFromIssues(ALL_ISSUES);
 }
 
 /* ================= RENDER ISSUES ================= */
@@ -657,7 +656,7 @@ function renderIssues(issues) {
       if(p.riskLevel === "low") riskCount.low++;
     });
 
-    /* ✅ ONLY ONE PDF VIEW (FIRST ISSUE PDF = markedFloorPlan) */
+    /* ONLY ONE PDF VIEW BUTTON (per issue) */
     const issuePdf = issue.markedFloorPlan || issue.baseFloorPlan || null;
 
     card.innerHTML = `
@@ -715,6 +714,172 @@ function openPdf(url){
   window.open(url, "_blank");
 }
 
+/* ================= MAP VIEW (FIRST ISSUE PDF ONLY) ================= */
+function updateMapViewFromIssues(issues) {
+  const mapWrap = document.getElementById("mapBodyContent");
+
+  if (!issues || issues.length === 0) {
+    document.getElementById("mapLabel").innerText = "N/A";
+    mapWrap.innerHTML = `
+      <div class="empty-box">
+        No map available (no issues found).
+      </div>
+    `;
+    return;
+  }
+
+  // ✅ TAKE ONLY FIRST ISSUE FROM FILTERED LIST
+  const first = issues[0];
+  const pdfUrl = first.markedFloorPlan || first.baseFloorPlan;
+
+  if (!pdfUrl) {
+    document.getElementById("mapLabel").innerText = "N/A";
+    mapWrap.innerHTML = `
+      <div class="empty-box">
+        PDF not found for first issue.
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById("mapLabel").innerText = first.floorNumber;
+
+  // canvas map container
+  mapWrap.innerHTML = `
+    <div style="position:relative; width:100%; border-radius:16px; overflow:hidden; border:1px solid #e5e7eb;">
+      <canvas id="mapCanvas" style="width:100%; display:block;"></canvas>
+      <div id="spotOverlay" style="position:absolute; inset:0;"></div>
+    </div>
+  `;
+
+  // render + overlay spots
+  showPdfInMap(pdfUrl, first.floorNumber, first.structureProblems || []);
+}
+
+/* ================= MAP CANVAS VIEW (HOVER SPOTS) ================= */
+let MAP_PDF_URL = null;
+let ACTIVE_SPOTS = [];
+
+async function showPdfInMap(url, floor, spots = []) {
+  MAP_PDF_URL = url;
+  ACTIVE_SPOTS = spots;
+
+  await renderPdfToCanvas(url);
+  drawSpotsOverlay(spots);
+}
+
+async function renderPdfToCanvas(pdfUrl) {
+  const canvas = document.getElementById("mapCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const loadingTask = pdfjsLib.getDocument(pdfUrl);
+  const pdf = await loadingTask.promise;
+
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({ scale: 1.35 });
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({ canvasContext: ctx, viewport }).promise;
+}
+
+function drawSpotsOverlay(spots) {
+  const overlay = document.getElementById("spotOverlay");
+  overlay.innerHTML = "";
+
+  if (!spots || spots.length === 0) return;
+
+  spots.forEach((spot, index) => {
+    const mark = (spot.pdfMarks && spot.pdfMarks.length) ? spot.pdfMarks[0] : null;
+    if (!mark) return;
+
+    const dot = document.createElement("div");
+
+    dot.style.position = "absolute";
+    dot.style.left = `${mark.x}px`;
+    dot.style.top = `${mark.y}px`;
+    dot.style.width = "18px";
+    dot.style.height = "18px";
+    dot.style.borderRadius = "50%";
+    dot.style.border = "2px solid #2563eb";
+    dot.style.background = "rgba(37,99,235,0.20)";
+    dot.style.transform = "translate(-50%, -50%)";
+    dot.style.cursor = "pointer";
+    dot.style.boxShadow = "0 6px 16px rgba(2,6,23,0.25)";
+    dot.style.display = "flex";
+    dot.style.alignItems = "center";
+    dot.style.justifyContent = "center";
+    dot.style.fontSize = "11px";
+    dot.style.fontWeight = "800";
+    dot.style.color = "#0f172a";
+    dot.innerText = index + 1;
+
+    dot.onmouseenter = () => {
+      showSpotTooltip(dot, spot, index);
+      dot.style.transform = "translate(-50%, -50%) scale(1.1)";
+      dot.style.background = "rgba(37,99,235,0.35)";
+    };
+
+    dot.onmouseleave = () => {
+      hideSpotTooltip();
+      dot.style.transform = "translate(-50%, -50%) scale(1)";
+      dot.style.background = "rgba(37,99,235,0.20)";
+    };
+
+    overlay.appendChild(dot);
+  });
+}
+
+function showSpotTooltip(target, spot, index) {
+  hideSpotTooltip();
+
+  const tip = document.createElement("div");
+  tip.id = "spotTooltip";
+
+  tip.style.position = "absolute";
+  tip.style.minWidth = "220px";
+  tip.style.maxWidth = "280px";
+  tip.style.padding = "12px";
+  tip.style.borderRadius = "14px";
+  tip.style.background = "white";
+  tip.style.border = "1px solid #e5e7eb";
+  tip.style.boxShadow = "0 18px 40px rgba(2,6,23,0.18)";
+  tip.style.fontSize = "12px";
+  tip.style.zIndex = "9999";
+
+  const risk = (spot.riskLevel || "unknown").toUpperCase();
+
+  tip.innerHTML = `
+    <div style="font-weight:900; font-size:13px; margin-bottom:6px;">
+      Spot #${index + 1} • ${risk}
+    </div>
+    <div><b>Structure:</b> ${spot.structureType || "N/A"}</div>
+    <div><b>Direction:</b> ${spot.direction || "N/A"}</div>
+    <div><b>Issue:</b> ${spot.issueType || "N/A"}</div>
+    <div style="margin-top:6px; color:#64748b;">
+      Hover preview only
+    </div>
+  `;
+
+  const overlay = document.getElementById("spotOverlay");
+  overlay.appendChild(tip);
+
+  const rect = target.getBoundingClientRect();
+  const parentRect = overlay.getBoundingClientRect();
+
+  const left = rect.left - parentRect.left + 20;
+  const top = rect.top - parentRect.top - 10;
+
+  tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
+}
+
+function hideSpotTooltip() {
+  const old = document.getElementById("spotTooltip");
+  if (old) old.remove();
+}
+
 /* ================= CALCULATE STATS ================= */
 function calculateStatsFromIssues(issues) {
   let totalIssues = issues.length;
@@ -731,15 +896,11 @@ function calculateStatsFromIssues(issues) {
     (issue.structureProblems || []).forEach(p => {
       totalProblems++;
 
-      // risk stats
       if (p.riskLevel === "high") highRiskProblems++;
       if (p.riskLevel === "medium") mediumRiskProblems++;
       if (p.riskLevel === "low") lowRiskProblems++;
 
-      // structure stats
       structureStats[p.structureType] = (structureStats[p.structureType] || 0) + 1;
-
-      // issue type stats
       issueTypeStats[p.issueType] = (issueTypeStats[p.issueType] || 0) + 1;
     });
   });

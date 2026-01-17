@@ -32,24 +32,22 @@
       letter-spacing:0.2px;
     }
 
-    /* LAYOUT */
+    /* GRID LAYOUT */
     .dashboard-wrap{
       display:grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 340px 1fr;
       gap: 18px;
       align-items:start;
     }
-
     @media (max-width: 992px){
-      .dashboard-wrap{
-        grid-template-columns: 1fr;
-      }
+      .dashboard-wrap{ grid-template-columns: 1fr; }
     }
 
     /* SIDEBAR */
     .sidebar{
       position: sticky;
       top: 16px;
+      height: fit-content;
     }
 
     .sidebar-card{
@@ -79,13 +77,13 @@
       padding: 16px;
     }
 
-    .form-control, .form-select{
+    .form-control{
       border-radius: 12px;
       border: 1px solid #e5e7eb;
       padding: 10px 12px;
       box-shadow: none !important;
     }
-    .form-control:focus, .form-select:focus{
+    .form-control:focus{
       border-color:#3b82f6;
     }
 
@@ -100,11 +98,6 @@
       border: none;
       box-shadow: 0 10px 22px rgba(37,99,235,0.22);
     }
-    .btn-primary:hover{
-      filter: brightness(0.98);
-      transform: translateY(-1px);
-      transition: 0.2s ease;
-    }
 
     .btn-outline-secondary{
       border: 1px solid #e5e7eb;
@@ -116,7 +109,45 @@
       margin-top: 6px;
     }
 
-    /* MAIN CARDS */
+    /* SIDEBAR ANALYTICS BOX */
+    .side-mini{
+      margin-top: 14px;
+      border-radius: 16px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
+    }
+
+    .side-mini h6{
+      font-weight: 900;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .side-list{
+      margin:0;
+      padding-left: 18px;
+      color:#334155;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .pill{
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color:#0f172a;
+      white-space: nowrap;
+    }
+
+    /* PANELS */
     .panel{
       border-radius: 18px;
       border: 1px solid #e5e7eb;
@@ -144,14 +175,17 @@
       gap:10px;
     }
 
-    .panel-body{
-      padding: 18px;
+    .panel-body{ padding: 18px; }
+
+    /* ANALYTICS */
+    .analytics-panel{
+      min-height: 420px;
+      margin-bottom: 18px;
     }
 
-    /* STATS GRID */
     .stats-grid{
       display:grid;
-      grid-template-columns: repeat(3,1fr);
+      grid-template-columns: repeat(4,1fr);
       gap: 12px;
       margin-bottom: 14px;
     }
@@ -169,10 +203,6 @@
       padding: 14px 14px;
       box-shadow: 0 10px 22px rgba(15,23,42,0.05);
       transition: 0.25s ease;
-    }
-    .stat-card:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 18px 32px rgba(15,23,42,0.08);
     }
 
     .stat-title{
@@ -216,55 +246,109 @@
       font-size: 14px;
     }
 
-    /* ISSUE LIST */
-    .issues-grid{
+    /* MAP VIEW PDF */
+    .map-card{
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
+      overflow:hidden;
+      margin-bottom: 18px;
+    }
+
+    .map-head{
+      padding: 14px 16px;
+      background: linear-gradient(180deg,#f8fafc,#ffffff);
+      border-bottom: 1px solid #eef2f7;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+
+    .map-title{
+      font-weight: 900;
+      margin: 0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size: 15px;
+    }
+
+    .map-body{ padding: 14px 16px; }
+
+    .pdf-frame{
+      width: 100%;
+      height: 520px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0b1220;
+    }
+
+    .pdf-frame iframe{
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .pdf-empty{
+      border-radius: 16px;
+      border: 1px dashed #cbd5e1;
+      background: linear-gradient(180deg,#ffffff,#f8fafc);
+      height: 520px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#64748b;
+      font-weight: 700;
+      text-align:center;
+      padding: 12px;
+    }
+
+    /* SPOTS LIST */
+    .spot-grid{
       display:grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 14px;
     }
     @media (max-width: 992px){
-      .issues-grid{ grid-template-columns: 1fr; }
+      .spot-grid{ grid-template-columns: 1fr; }
     }
 
-    .issue-card{
+    .spot-card{
       border-radius: 18px;
       border: 1px solid #eef2f7;
       background: #ffffff;
       box-shadow: 0 10px 22px rgba(15,23,42,0.05);
-      transition: 0.25s ease;
       overflow:hidden;
+      transition: 0.25s ease;
     }
-    .issue-card:hover{
-      transform: translateY(-3px);
+    .spot-card:hover{
+      transform: translateY(-2px);
       box-shadow: 0 18px 34px rgba(15,23,42,0.09);
     }
 
-    .issue-top{
+    .spot-top{
       padding: 14px 16px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 10px;
       background: linear-gradient(180deg,#f8fafc,#ffffff);
       border-bottom: 1px solid #eef2f7;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 10px;
     }
 
-    .issue-title{
+    .spot-title{
+      margin:0;
       font-weight: 900;
       font-size: 15px;
-      margin: 0;
       display:flex;
       align-items:center;
       gap:10px;
     }
 
-    .issue-sub{
-      font-size: 12px;
-      color:#64748b;
-      margin-top: 4px;
-    }
-
-    .pill{
+    .spot-pill{
       font-size: 12px;
       font-weight: 800;
       padding: 6px 10px;
@@ -275,20 +359,18 @@
       white-space: nowrap;
     }
 
-    .issue-body{
-      padding: 14px 16px;
-    }
+    .spot-body{ padding: 14px 16px; }
 
-    .issue-metrics{
+    .kv{
       display:flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
-    .metric{
+    .kv span{
       font-size: 12px;
-      padding: 8px 10px;
+      padding: 7px 10px;
       border-radius: 12px;
       background: #f8fafc;
       border: 1px solid #eef2f7;
@@ -296,22 +378,31 @@
       color:#0f172a;
     }
 
-    .issue-actions{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+    .desc{
+      font-size: 13px;
+      color:#334155;
+      margin-top: 6px;
+      line-height: 1.45;
     }
 
-    .btn-soft{
-      background: #f8fafc;
+    .photo-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    @media (max-width: 576px){
+      .photo-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .photo{
+      width: 100%;
+      height: 110px;
+      border-radius: 14px;
+      object-fit: cover;
       border: 1px solid #e5e7eb;
-      font-weight: 700;
-    }
-
-    .btn-soft:hover{
-      background:#eef2ff;
-      border-color:#c7d2fe;
+      background: #f1f5f9;
+      cursor: pointer;
     }
 
     .empty-box{
@@ -327,10 +418,10 @@
 
 <body>
 
-<!-- 🔷 NAVBAR -->
+<!-- NAVBAR -->
 <nav class="navbar navbar-dark px-3 topbar">
   <span class="navbar-brand fw-semibold">
-    Accnioland – Manager Dashboard
+    Accnioland – Survey Analytics
   </span>
 
   <div class="d-flex gap-2">
@@ -346,14 +437,11 @@
 <div class="container-fluid px-3 px-lg-4 my-4">
   <div class="dashboard-wrap">
 
-    <!-- LEFT SIDEBAR FILTER -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-card">
         <div class="sidebar-head">
-          <h6>
-            <i class="bi bi-funnel-fill text-primary"></i>
-            Filters
-          </h6>
+          <h6><i class="bi bi-funnel-fill text-primary"></i> Filters</h6>
         </div>
 
         <div class="sidebar-body">
@@ -366,7 +454,7 @@
           <div class="mb-3">
             <label class="form-label fw-semibold">Date</label>
             <input type="date" id="dateInput" class="form-control" />
-            <div class="helper-text">Filter issues reported on a specific day</div>
+            <div class="helper-text">Filter survey submitted on a specific day</div>
           </div>
 
           <div class="d-grid gap-2">
@@ -377,34 +465,41 @@
               <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
             </button>
           </div>
+
+          <!-- EXTRA CIVIL ANALYTICS -->
+          <div class="side-mini">
+            <h6><i class="bi bi-compass text-primary"></i> Direction Analysis</h6>
+            <div id="directionStatsBox" class="text-muted small">No data</div>
+          </div>
+
+          <div class="side-mini">
+            <h6><i class="bi bi-activity text-primary"></i> Issue + Direction</h6>
+            <div id="issueDirectionStatsBox" class="text-muted small">No data</div>
+          </div>
+
+          <div class="side-mini">
+            <h6><i class="bi bi-bricks text-primary"></i> Structure + Direction</h6>
+            <div id="structureDirectionStatsBox" class="text-muted small">No data</div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <div>
 
-      <!-- ANALYTICS PANEL -->
-      <div class="panel mb-4">
+      <!-- ANALYTICS -->
+      <div class="panel analytics-panel">
         <div class="panel-head">
-          <h5>
-            <i class="bi bi-bar-chart-fill text-primary"></i>
-            Overview Analytics
-          </h5>
-          <span class="pill" id="activeFilterText">Showing: All Issues</span>
+          <h5><i class="bi bi-bar-chart-fill text-primary"></i> Overview Analytics</h5>
+          <span class="pill" id="activeFilterText">Showing: All Surveys</span>
         </div>
 
         <div class="panel-body">
-
-          <!-- STATS -->
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-title"><i class="bi bi-clipboard-data"></i> Total Issues</div>
-              <div class="stat-value" id="statTotalIssues">0</div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-title"><i class="bi bi-exclamation-triangle"></i> Total Problems</div>
+              <div class="stat-title"><i class="bi bi-bullseye"></i> Total Spots</div>
               <div class="stat-value" id="statTotalProblems">0</div>
             </div>
 
@@ -424,7 +519,6 @@
             </div>
           </div>
 
-          <!-- LIST STATS -->
           <div class="row g-3">
             <div class="col-12 col-lg-6">
               <div class="mini-box">
@@ -444,18 +538,33 @@
         </div>
       </div>
 
-      <!-- ISSUES PANEL -->
+      <!-- MAP VIEW -->
+      <div class="map-card mt-4" id="mapCard">
+        <div class="map-head">
+          <p class="map-title">
+            <i class="bi bi-geo-alt-fill text-primary"></i>
+            Survey Map View (Marked PDF)
+          </p>
+          <span class="pill" id="mapLabel">No PDF Loaded</span>
+        </div>
+        <div class="map-body">
+          <div id="mapBodyContent">
+            <div class="pdf-empty">
+              No survey found for selected filter.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPOT DETAILS -->
       <div class="panel">
         <div class="panel-head">
-          <h5>
-            <i class="bi bi-list-check text-primary"></i>
-            Reported Issues
-          </h5>
-          <span class="pill" id="issueCountText">0 issues</span>
+          <h5><i class="bi bi-bullseye text-primary"></i> Spot Details</h5>
+          <span class="pill" id="spotCountText">0 spots</span>
         </div>
 
         <div class="panel-body">
-          <div id="issuesContainer"></div>
+          <div id="spotDetailsContainer"></div>
         </div>
       </div>
 
@@ -487,11 +596,8 @@ function logout() {
   location.href = "../login.html";
 }
 
-/* ================= LOAD ALL ISSUES ================= */
+/* ================= LOAD ALL SURVEYS ================= */
 async function loadIssues() {
-  const container = document.getElementById("issuesContainer");
-  container.innerHTML = `<div class="text-muted">Loading issues...</div>`;
-
   try {
     const res = await fetch(API + "/api/issues/all", {
       headers: { Authorization: "Bearer " + token }
@@ -499,17 +605,14 @@ async function loadIssues() {
 
     ALL_ISSUES = await res.json();
 
-    // default show all
-    renderIssues(ALL_ISSUES);
-
-    // default stats = all
     updateDashboardUIFromFilteredIssues(ALL_ISSUES);
+    renderSingleSurvey(ALL_ISSUES);
 
-    document.getElementById("activeFilterText").innerText = "Showing: All Issues";
-
+    document.getElementById("activeFilterText").innerText = "Showing: All Surveys";
   } catch (err) {
-    container.innerHTML = `<div class="text-danger">Failed to load issues</div>`;
     console.error(err);
+    setMapEmpty();
+    setSpotEmpty();
   }
 }
 
@@ -520,19 +623,14 @@ function applyFilter() {
 
   let filtered = [...ALL_ISSUES];
 
-  if (floor) {
-    filtered = filtered.filter(i => i.floorNumber === Number(floor));
-  }
+  if (floor) filtered = filtered.filter(i => i.floorNumber === Number(floor));
+  if (date) filtered = filtered.filter(i => i.createdAt?.startsWith(date));
 
-  if (date) {
-    filtered = filtered.filter(i => i.createdAt?.startsWith(date));
-  }
-
-  renderIssues(filtered);
   updateDashboardUIFromFilteredIssues(filtered);
+  renderSingleSurvey(filtered);
 
   let label = "Showing: ";
-  if (!floor && !date) label += "All Issues";
+  if (!floor && !date) label += "All Surveys";
   else {
     if (floor) label += `Floor ${floor}`;
     if (floor && date) label += " • ";
@@ -546,87 +644,105 @@ function resetFilter() {
   document.getElementById("floorInput").value = "";
   document.getElementById("dateInput").value = "";
 
-  renderIssues(ALL_ISSUES);
   updateDashboardUIFromFilteredIssues(ALL_ISSUES);
+  renderSingleSurvey(ALL_ISSUES);
 
-  document.getElementById("activeFilterText").innerText = "Showing: All Issues";
+  document.getElementById("activeFilterText").innerText = "Showing: All Surveys";
 }
 
-/* ================= RENDER ISSUES ================= */
-function renderIssues(issues) {
-  const container = document.getElementById("issuesContainer");
+/* ================= SHOW ONLY ONE SURVEY ================= */
+function renderSingleSurvey(list) {
+  if (!list || list.length === 0) {
+    setMapEmpty();
+    setSpotEmpty();
+    return;
+  }
+
+  // pick first survey
+  const survey = list[0];
+
+  if (survey.markedFloorPlan) {
+    showPdfInMap(survey.markedFloorPlan, survey.floorNumber);
+  } else {
+    setMapEmpty();
+  }
+
+  renderSpotDetails(survey.structureProblems || []);
+}
+
+/* ================= MAP VIEW PDF ================= */
+function showPdfInMap(url, floor){
+  document.getElementById("mapLabel").innerText = `Floor ${floor}`;
+  document.getElementById("mapBodyContent").innerHTML = `
+    <div class="pdf-frame">
+      <iframe src="${url}"></iframe>
+    </div>
+  `;
+}
+
+function setMapEmpty(){
+  document.getElementById("mapLabel").innerText = "No PDF Loaded";
+  document.getElementById("mapBodyContent").innerHTML = `
+    <div class="pdf-empty">
+      No marked PDF found for this filter.
+    </div>
+  `;
+}
+
+/* ================= SPOT DETAILS ================= */
+function renderSpotDetails(spots) {
+  const container = document.getElementById("spotDetailsContainer");
   container.innerHTML = "";
 
-  document.getElementById("issueCountText").innerText = `${issues.length} issues`;
+  document.getElementById("spotCountText").innerText = `${spots.length} spots`;
 
-  if (!issues.length) {
-    container.innerHTML = `
-      <div class="empty-box">
-        <div class="fw-bold mb-1">No issues found</div>
-        Try changing filters to see results.
-      </div>
-    `;
+  if (!spots.length) {
+    setSpotEmpty();
     return;
   }
 
   const grid = document.createElement("div");
-  grid.className = "issues-grid";
+  grid.className = "spot-grid";
 
-  issues.forEach(issue => {
+  spots.forEach((p, idx) => {
     const card = document.createElement("div");
-    card.className = "issue-card";
+    card.className = "spot-card";
 
-    const problems = issue.structureProblems || [];
-    const totalProblems = problems.length;
-
-    const riskCount = { high:0, medium:0, low:0 };
-    problems.forEach(p=>{
-      if(p.riskLevel === "high") riskCount.high++;
-      if(p.riskLevel === "medium") riskCount.medium++;
-      if(p.riskLevel === "low") riskCount.low++;
-    });
-
-    const issuePdf = issue.markedFloorPlan || issue.baseFloorPlan || null;
+    const photos = Array.isArray(p.images) ? p.images : [];
 
     card.innerHTML = `
-      <div class="issue-top">
+      <div class="spot-top">
         <div>
-          <p class="issue-title">
-            <i class="bi bi-building text-primary"></i>
-            Floor ${issue.floorNumber} • Office ${issue.officeNumber}
+          <p class="spot-title">
+            <i class="bi bi-geo-fill text-primary"></i>
+            Spot #${idx + 1}
           </p>
-          <div class="issue-sub">
-            <i class="bi bi-calendar-event"></i>
-            ${issue.createdAt ? new Date(issue.createdAt).toLocaleDateString() : "N/A"}
-          </div>
+          <div class="helper-text">One marked location in survey</div>
         </div>
 
-        <span class="pill">
-          <i class="bi bi-exclamation-circle"></i>
-          ${totalProblems} Problems
-        </span>
+        <span class="spot-pill">${(p.riskLevel || "unknown").toUpperCase()}</span>
       </div>
 
-      <div class="issue-body">
-        <div class="issue-metrics">
-          <span class="metric">High Risk: ${riskCount.high}</span>
-          <span class="metric">Medium Risk: ${riskCount.medium}</span>
-          <span class="metric">Low Risk: ${riskCount.low}</span>
+      <div class="spot-body">
+        <div class="kv">
+          <span>Structure: ${p.structureType || "N/A"}</span>
+          <span>Direction: ${p.direction || "N/A"}</span>
+          <span>Issue: ${p.issueType || "N/A"}</span>
         </div>
 
-        <div class="issue-actions">
-          <a href="issue-details.html?id=${issue._id}" class="btn btn-primary btn-sm">
-            <i class="bi bi-eye-fill me-1"></i> View Details
-          </a>
+        <div class="desc">
+          <strong>Description:</strong>
+          ${p.description ? p.description : "No description provided"}
+        </div>
 
+        <div class="mt-3">
+          <strong>Photos:</strong>
           ${
-            issuePdf
-              ? `<button class="btn btn-soft btn-sm" onclick="openPdf('${issuePdf}')">
-                   <i class="bi bi-file-earmark-pdf-fill me-1"></i> View Issue PDF
-                 </button>`
-              : `<button class="btn btn-soft btn-sm" disabled>
-                   <i class="bi bi-file-earmark-pdf me-1"></i> PDF Not Found
-                 </button>`
+            photos.length
+              ? `<div class="photo-grid">
+                  ${photos.map(img => `<img src="${img}" class="photo" onclick="openImage('${img}')" />`).join("")}
+                </div>`
+              : `<div class="helper-text mt-1">No photos uploaded</div>`
           }
         </div>
       </div>
@@ -638,65 +754,89 @@ function renderIssues(issues) {
   container.appendChild(grid);
 }
 
-function openPdf(url){
+function setSpotEmpty(){
+  document.getElementById("spotCountText").innerText = "0 spots";
+  document.getElementById("spotDetailsContainer").innerHTML = `
+    <div class="empty-box">
+      No spot details found.
+    </div>
+  `;
+}
+
+/* OPEN IMAGE FULL */
+function openImage(url){
   window.open(url, "_blank");
 }
 
-/* ================= CALCULATE STATS ================= */
-function calculateStatsFromIssues(issues) {
-  let totalIssues = issues.length;
-  let totalProblems = 0;
+/* ================= CALCULATE ENGINEER STATS ================= */
+function calculateStatsFromSurveys(surveys) {
+  let totalSpots = 0;
 
-  let highRiskProblems = 0;
-  let mediumRiskProblems = 0;
-  let lowRiskProblems = 0;
+  let highRisk = 0;
+  let mediumRisk = 0;
+  let lowRisk = 0;
 
   const structureStats = {};
   const issueTypeStats = {};
 
-  issues.forEach(issue => {
-    (issue.structureProblems || []).forEach(p => {
-      totalProblems++;
+  const directionStats = {};              // north: 5, south: 2
+  const issueDirectionStats = {};         // crack_north: 2, dampness_south: 1
+  const structureDirectionStats = {};     // wall_north: 2, beam_east: 3
 
-      // risk stats
-      if (p.riskLevel === "high") highRiskProblems++;
-      if (p.riskLevel === "medium") mediumRiskProblems++;
-      if (p.riskLevel === "low") lowRiskProblems++;
+  surveys.forEach(survey => {
+    (survey.structureProblems || []).forEach(p => {
+      totalSpots++;
 
-      // structure stats
+      // risk
+      if (p.riskLevel === "high") highRisk++;
+      if (p.riskLevel === "medium") mediumRisk++;
+      if (p.riskLevel === "low") lowRisk++;
+
+      // issueType
+      issueTypeStats[p.issueType] = (issueTypeStats[p.issueType] || 0) + 1;
+
+      // structureType
       structureStats[p.structureType] = (structureStats[p.structureType] || 0) + 1;
 
-      // issue type stats
-      issueTypeStats[p.issueType] = (issueTypeStats[p.issueType] || 0) + 1;
+      // direction
+      const dir = p.direction || "unknown";
+      directionStats[dir] = (directionStats[dir] || 0) + 1;
+
+      // issue + direction
+      const idKey = `${p.issueType || "unknown"}_${dir}`;
+      issueDirectionStats[idKey] = (issueDirectionStats[idKey] || 0) + 1;
+
+      // structure + direction
+      const sdKey = `${p.structureType || "unknown"}_${dir}`;
+      structureDirectionStats[sdKey] = (structureDirectionStats[sdKey] || 0) + 1;
     });
   });
 
   return {
-    summary: {
-      totalIssues,
-      totalProblems,
-      highRiskProblems,
-      mediumRiskProblems,
-      lowRiskProblems,
-    },
+    summary: { totalSpots, highRisk, mediumRisk, lowRisk },
     structureStats,
-    issueTypeStats
+    issueTypeStats,
+    directionStats,
+    issueDirectionStats,
+    structureDirectionStats
   };
 }
 
 /* ================= UPDATE UI STATS ================= */
-function updateDashboardUIFromFilteredIssues(filteredIssues) {
-  const stats = calculateStatsFromIssues(filteredIssues);
+function updateDashboardUIFromFilteredIssues(filteredSurveys) {
+  const stats = calculateStatsFromSurveys(filteredSurveys);
 
-  document.getElementById("statTotalIssues").innerText = stats.summary.totalIssues;
-  document.getElementById("statTotalProblems").innerText = stats.summary.totalProblems;
-
-  document.getElementById("statHighRisk").innerText = stats.summary.highRiskProblems;
-  document.getElementById("statMediumRisk").innerText = stats.summary.mediumRiskProblems;
-  document.getElementById("statLowRisk").innerText = stats.summary.lowRiskProblems;
+  document.getElementById("statTotalProblems").innerText = stats.summary.totalSpots;
+  document.getElementById("statHighRisk").innerText = stats.summary.highRisk;
+  document.getElementById("statMediumRisk").innerText = stats.summary.mediumRisk;
+  document.getElementById("statLowRisk").innerText = stats.summary.lowRisk;
 
   renderStatsBox("issueTypeStats", stats.issueTypeStats);
   renderStatsBox("structureStats", stats.structureStats);
+
+  renderSideStatsBox("directionStatsBox", stats.directionStats, "Direction");
+  renderSideStatsBox("issueDirectionStatsBox", stats.issueDirectionStats, "Issue + Direction");
+  renderSideStatsBox("structureDirectionStatsBox", stats.structureDirectionStats, "Structure + Direction");
 }
 
 /* ================= RENDER STATS LIST ================= */
@@ -723,7 +863,31 @@ function renderStatsBox(elementId, statsObj) {
   el.appendChild(list);
 }
 
-/* ================= INIT ================= */
+/* Sidebar lists */
+function renderSideStatsBox(elementId, statsObj) {
+  const el = document.getElementById(elementId);
+
+  if (!statsObj || Object.keys(statsObj).length === 0) {
+    el.innerHTML = `<div class="text-muted small">No data</div>`;
+    return;
+  }
+
+  const list = document.createElement("ul");
+  list.className = "side-list";
+
+  Object.entries(statsObj)
+    .sort((a,b) => b[1] - a[1])
+    .forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${key}</strong> : ${value}`;
+      list.appendChild(li);
+    });
+
+  el.innerHTML = "";
+  el.appendChild(list);
+}
+
+/* INIT */
 loadIssues();
 </script>
 
