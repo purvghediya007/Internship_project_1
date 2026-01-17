@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Accnioland – Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body{
+      font-family:"Inter",sans-serif;
+      background:#f5f7fb;
+      color:#0f172a;
+    }
+
+    /* NAVBAR */
+    .topbar{
+      background: linear-gradient(90deg,#0b5ed7,#2563eb);
+      box-shadow: 0 12px 30px rgba(2,6,23,0.18);
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .topbar .navbar-brand{
+      font-weight:900;
+      letter-spacing:0.3px;
+      font-size: 20px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    /* GRID LAYOUT */
+    .dashboard-wrap{
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 992px){
+      .dashboard-wrap{ grid-template-columns: 1fr; }
+    }
+
+    /* SIDEBAR */
+    .sidebar{
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+
+    .sidebar-card{
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.06);
+      overflow:hidden;
+    }
+
+    .sidebar-head{
+      padding: 16px 16px;
+      background: linear-gradient(180deg,#f8fafc,#ffffff);
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .sidebar-head h6{
+      margin:0;
+      font-weight:900;
+      font-size: 15px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .sidebar-body{
+      padding: 16px;
+    }
+
+    .form-control{
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      box-shadow: none !important;
+      font-size: 14px;
+    }
+    .form-control:focus{
+      border-color:#3b82f6;
+    }
+
+    .btn{
+      border-radius: 12px;
+      font-weight: 700;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .btn-primary{
+      background: linear-gradient(90deg,#2563eb,#0b5ed7);
+      border: none;
+      box-shadow: 0 10px 22px rgba(37,99,235,0.22);
+    }
+
+    .btn-outline-secondary{
+      border: 1px solid #e5e7eb;
+    }
+
+    .helper-text{
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    /* SIDEBAR ANALYTICS BOX */
+    .side-mini{
+      margin-top: 14px;
+      border-radius: 16px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
+    }
+
+    .side-mini h6{
+      font-weight: 900;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .side-list{
+      margin:0;
+      padding-left: 18px;
+      color:#0f172a;
+      font-size: 14px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .pill{
+      font-size: 13px;
+      font-weight: 900;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color:#0f172a;
+      white-space: nowrap;
+    }
+
+    /* PANELS */
+    .panel{
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.06);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      padding: 16px 18px;
+      border-bottom: 1px solid #eef2f7;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      background: linear-gradient(180deg,#f8fafc,#ffffff);
+    }
+
+    .panel-head h5{
+      margin:0;
+      font-weight: 900;
+      font-size: 18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .panel-body{ padding: 18px; }
+
+    /* ANALYTICS */
+    .analytics-panel{
+      margin-bottom: 18px;
+    }
+
+    /* ✅ UPDATED: 3 BOXES IN TOP */
+    .stats-grid{
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 1200px){
+      .stats-grid{ grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 576px){
+      .stats-grid{ grid-template-columns: 1fr; }
+    }
+
+    .stat-card{
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: linear-gradient(180deg,#ffffff,#f8fafc);
+      padding: 16px 16px;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+      transition: 0.25s ease;
+    }
+
+    .stat-title{
+      font-size: 13px;
+      color:#475569;
+      font-weight:900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .stat-value{
+      font-size: 34px;
+      font-weight: 900;
+      margin-top: 8px;
+      color:#0b5ed7;
+    }
+
+    /* Overall Risk Badge */
+    .risk-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      margin-top: 10px;
+    }
+    .risk-high{
+      color:#b91c1c;
+      background: #fee2e2;
+      border-color:#fecaca;
+    }
+    .risk-medium{
+      color:#92400e;
+      background:#ffedd5;
+      border-color:#fed7aa;
+    }
+    .risk-low{
+      color:#065f46;
+      background:#dcfce7;
+      border-color:#bbf7d0;
+    }
+
+    .mini-box{
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: linear-gradient(180deg,#ffffff,#f8fafc);
+      padding: 16px;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+      height: 100%;
+    }
+
+    .mini-box h6{
+      font-weight: 900;
+      font-size: 16px;
+      margin-bottom: 12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .stats-list{
+      margin:0;
+      padding-left: 18px;
+      color:#0f172a;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .stats-list li strong{
+      color:#0b5ed7;
+    }
+
+    /* MAP VIEW PDF */
+    .map-card{
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+      overflow:hidden;
+      margin-bottom: 18px;
+    }
+
+    .map-head{
+      padding: 14px 16px;
+      background: linear-gradient(180deg,#f8fafc,#ffffff);
+      border-bottom: 1px solid #eef2f7;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+
+    .map-title{
+      font-weight: 900;
+      margin: 0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size: 18px;
+    }
+
+    .map-body{ padding: 14px 16px; }
+
+    /* ✅ UPDATED: PDF PREVIEW (NO SCROLL INSIDE) */
+    .pdf-frame{
+      width: 100%;
+      height: 340px; /* glimpse view */
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0b1220;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.15);
+    }
+
+    .pdf-frame iframe{
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .pdf-empty{
+      border-radius: 18px;
+      border: 1px dashed #cbd5e1;
+      background: linear-gradient(180deg,#ffffff,#f8fafc);
+      height: 340px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#64748b;
+      font-weight: 800;
+      font-size: 16px;
+      text-align:center;
+      padding: 12px;
+    }
+
+    /* SPOTS LIST */
+    .spot-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 992px){
+      .spot-grid{ grid-template-columns: 1fr; }
+    }
+
+    .spot-card{
+      border-radius: 18px;
+      border: 1px solid #eef2f7;
+      background: #ffffff;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+      overflow:hidden;
+      transition: 0.25s ease;
+    }
+    .spot-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(15,23,42,0.10);
+    }
+
+    .spot-top{
+      padding: 14px 16px;
+      background: linear-gradient(180deg,#f8fafc,#ffffff);
+      border-bottom: 1px solid #eef2f7;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 10px;
+    }
+
+    .spot-title{
+      margin:0;
+      font-weight: 900;
+      font-size: 17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .spot-pill{
+      font-size: 13px;
+      font-weight: 900;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color:#0f172a;
+      white-space: nowrap;
+    }
+
+    .spot-body{ padding: 14px 16px; }
+
+    .kv{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .kv span{
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+      font-weight: 800;
+      color:#0f172a;
+    }
+
+    .desc{
+      font-size: 14px;
+      color:#0f172a;
+      margin-top: 6px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .photo-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    @media (max-width: 576px){
+      .photo-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .photo{
+      width: 100%;
+      height: 120px;
+      border-radius: 16px;
+      object-fit: cover;
+      border: 1px solid #e5e7eb;
+      background: #f1f5f9;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .photo:hover{
+      transform: scale(1.02);
+    }
+
+    .empty-box{
+      border-radius: 16px;
+      border: 1px dashed #cbd5e1;
+      background: #ffffff;
+      padding: 18px;
+      color:#64748b;
+      text-align:center;
+      font-weight: 700;
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark px-3 topbar">
+  <span class="navbar-brand fw-semibold">
+    <i class="bi bi-buildings-fill"></i> Accnioland – SurveyAnalytics
+  </span>
+
+  <div class="d-flex gap-2">
+    <a href="upload-floor.html" class="btn btn-light btn-sm fw-semibold">
+      <i class="bi bi-upload"></i> UploadFloorPlan
+    </a>
+    <button onclick="logout()" class="btn btn-outline-light btn-sm fw-semibold">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
+</nav>
+
+<div class="container-fluid px-3 px-lg-4 my-4">
+  <div class="dashboard-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-head">
+          <h6><i class="bi bi-funnel-fill text-primary"></i> Filters</h6>
+        </div>
+
+        <div class="sidebar-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">FloorNumber</label>
+            <input type="number" id="floorInput" class="form-control" placeholder="e.g. 2" />
+            <div class="helper-text">LeaveEmptyToViewAllFloors</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Date</label>
+            <input type="date" id="dateInput" class="form-control" />
+            <div class="helper-text">FilterSurveySubmittedOnSpecificDay</div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" onclick="applyFilter()">
+              <i class="bi bi-search me-1"></i> ApplyFilter
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilter()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+            </button>
+          </div>
+
+          <!-- EXTRA CIVIL ANALYTICS -->
+          <div class="side-mini">
+            <h6><i class="bi bi-compass text-primary"></i> DirectionAnalysis</h6>
+            <div id="directionStatsBox" class="text-muted small">NoData</div>
+          </div>
+
+          <div class="side-mini">
+            <h6><i class="bi bi-activity text-primary"></i> IssueDirectionStats</h6>
+            <div id="issueDirectionStatsBox" class="text-muted small">NoData</div>
+          </div>
+
+          <div class="side-mini">
+            <h6><i class="bi bi-bricks text-primary"></i> StructureDirectionStats</h6>
+            <div id="structureDirectionStatsBox" class="text-muted small">NoData</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div>
+
+      <!-- ANALYTICS -->
+      <div class="panel analytics-panel">
+        <div class="panel-head">
+          <h5><i class="bi bi-bar-chart-fill text-primary"></i> OverviewAnalytics</h5>
+          <span class="pill" id="activeFilterText">Showing: AllSurveys</span>
+        </div>
+
+        <div class="panel-body">
+          <div class="stats-grid">
+
+            <div class="stat-card">
+              <div class="stat-title"><i class="bi bi-bullseye"></i> TotalSpots</div>
+              <div class="stat-value" id="statTotalProblems">0</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-title"><i class="bi bi-exclamation-triangle-fill"></i> OverallRisk</div>
+              <div class="risk-badge risk-low" id="overallRiskBadge">
+                <i class="bi bi-shield-fill-check"></i> Low
+              </div>
+              <div class="helper-text mt-2">
+                BasedOnHighestRiskPresentInAnySpot
+              </div>
+            </div>
+
+            <!-- ✅ NEW: MANAGER SUGGESTION BOX -->
+            <div class="stat-card">
+              <div class="stat-title"><i class="bi bi-lightbulb-fill"></i> ManagerSuggestion</div>
+              <div class="helper-text" id="managerSuggestionText"
+                style="font-size:15px; font-weight:900; color:#0f172a; margin-top:10px;">
+                NoSuggestionYet
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <div class="mini-box">
+                <h6><i class="bi bi-droplet-half text-primary"></i> IssueTypeStats</h6>
+                <div id="issueTypeStats"></div>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <div class="mini-box">
+                <h6><i class="bi bi-bricks text-primary"></i> StructureStats</h6>
+                <div id="structureStats"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MAP VIEW -->
+      <div class="map-card mt-4" id="mapCard">
+        <div class="map-head">
+          <p class="map-title">
+            <i class="bi bi-map-fill text-primary"></i>
+            SurveyMapViewMarkedPdf
+          </p>
+          <span class="pill" id="mapLabel">NoPdfLoaded</span>
+        </div>
+        <div class="map-body">
+          <div id="mapBodyContent">
+            <div class="pdf-empty">
+              NoSurveyFoundForSelectedFilter
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPOT DETAILS -->
+      <div class="panel">
+        <div class="panel-head">
+          <h5><i class="bi bi-bullseye text-primary"></i> SpotDetails</h5>
+          <span class="pill" id="spotCountText">0 Spots</span>
+        </div>
+
+        <div class="panel-body">
+          <div id="spotDetailsContainer"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ================= CONFIG ================= */
+const API = "http://localhost:5000";
+const token = localStorage.getItem("token");
+const userType = localStorage.getItem("userType");
+
+let ALL_ISSUES = [];
+
+/* ================= AUTH GUARD ================= */
+if (!token || userType !== "manager") {
+  localStorage.clear();
+  location.href = "../login.html";
+}
+
+/* ================= LOGOUT ================= */
+function logout() {
+  localStorage.clear();
+  location.href = "../login.html";
+}
+
+/* ================= LOAD ALL SURVEYS ================= */
+async function loadIssues() {
+  try {
+    const res = await fetch(API + "/api/issues/all", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    ALL_ISSUES = await res.json();
+
+    updateDashboardUIFromFilteredIssues(ALL_ISSUES);
+    renderSingleSurvey(ALL_ISSUES);
+
+    document.getElementById("activeFilterText").innerText = "Showing: AllSurveys";
+  } catch (err) {
+    console.error(err);
+    setMapEmpty();
+    setSpotEmpty();
+  }
+}
+
+/* ================= APPLY FILTER ================= */
+function applyFilter() {
+  const floor = document.getElementById("floorInput").value;
+  const date = document.getElementById("dateInput").value;
+
+  let filtered = [...ALL_ISSUES];
+
+  if (floor) filtered = filtered.filter(i => i.floorNumber === Number(floor));
+  if (date) filtered = filtered.filter(i => i.createdAt?.startsWith(date));
+
+  updateDashboardUIFromFilteredIssues(filtered);
+  renderSingleSurvey(filtered);
+
+  let label = "Showing: ";
+  if (!floor && !date) label += "AllSurveys";
+  else {
+    if (floor) label += `Floor${floor}`;
+    if (floor && date) label += " • ";
+    if (date) label += `Date${date}`;
+  }
+  document.getElementById("activeFilterText").innerText = label;
+}
+
+/* ================= RESET FILTER ================= */
+function resetFilter() {
+  document.getElementById("floorInput").value = "";
+  document.getElementById("dateInput").value = "";
+
+  updateDashboardUIFromFilteredIssues(ALL_ISSUES);
+  renderSingleSurvey(ALL_ISSUES);
+
+  document.getElementById("activeFilterText").innerText = "Showing: AllSurveys";
+}
+
+/* ================= SHOW ONLY ONE SURVEY ================= */
+function renderSingleSurvey(list) {
+  if (!list || list.length === 0) {
+    setMapEmpty();
+    setSpotEmpty();
+    return;
+  }
+
+  const survey = list[0];
+
+  if (survey.markedFloorPlan) {
+    showPdfInMap(survey.markedFloorPlan, survey.floorNumber);
+  } else {
+    setMapEmpty();
+  }
+
+  renderSpotDetails(survey.structureProblems || []);
+}
+
+/* ================= MAP VIEW PDF ================= */
+function showPdfInMap(url, floor){
+  document.getElementById("mapLabel").innerText = `Floor${floor}`;
+  document.getElementById("mapBodyContent").innerHTML = `
+    <div class="d-flex justify-content-end mb-2">
+      <a href="${url}" target="_blank" class="btn btn-primary btn-sm">
+        <i class="bi bi-box-arrow-up-right"></i> OpenFullMap
+      </a>
+    </div>
+
+    <div class="pdf-frame">
+      <iframe src="${url}"></iframe>
+    </div>
+  `;
+}
+
+function setMapEmpty(){
+  document.getElementById("mapLabel").innerText = "NoPdfLoaded";
+  document.getElementById("mapBodyContent").innerHTML = `
+    <div class="pdf-empty">
+      NoMarkedPdfFoundForThisFilter
+    </div>
+  `;
+}
+
+/* ================= SPOT DETAILS ================= */
+function renderSpotDetails(spots) {
+  const container = document.getElementById("spotDetailsContainer");
+  container.innerHTML = "";
+
+  document.getElementById("spotCountText").innerText = `${spots.length} Spots`;
+
+  if (!spots.length) {
+    setSpotEmpty();
+    return;
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "spot-grid";
+
+  spots.forEach((p, idx) => {
+    const card = document.createElement("div");
+    card.className = "spot-card";
+
+    const photos = Array.isArray(p.images) ? p.images : [];
+
+    card.innerHTML = `
+      <div class="spot-top">
+        <div>
+          <p class="spot-title">
+            <i class="bi bi-geo-fill text-primary"></i>
+            Spot#${idx + 1}
+          </p>
+          <div class="helper-text">OneMarkedLocationInSurvey</div>
+        </div>
+
+        <span class="spot-pill">${(p.riskLevel || "unknown").toUpperCase()}</span>
+      </div>
+
+      <div class="spot-body">
+        <div class="kv">
+          <span>Structure:${p.structureType || "N/A"}</span>
+          <span>Direction:${p.direction || "N/A"}</span>
+          <span>Issue:${p.issueType || "N/A"}</span>
+        </div>
+
+        <div class="desc">
+          <strong>Description:</strong>
+          ${p.description ? p.description : "NoDescriptionProvided"}
+        </div>
+
+        <div class="mt-3">
+          <strong>Photos:</strong>
+          ${
+            photos.length
+              ? `<div class="photo-grid">
+                  ${photos.map(img => `<img src="${img}" class="photo" onclick="openImage('${img}')" />`).join("")}
+                </div>`
+              : `<div class="helper-text mt-1">NoPhotosUploaded</div>`
+          }
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  container.appendChild(grid);
+}
+
+function setSpotEmpty(){
+  document.getElementById("spotCountText").innerText = "0 Spots";
+  document.getElementById("spotDetailsContainer").innerHTML = `
+    <div class="empty-box">
+      NoSpotDetailsFound
+    </div>
+  `;
+}
+
+function openImage(url){
+  window.open(url, "_blank");
+}
+
+/* ================= CALCULATE ENGINEER STATS ================= */
+function calculateStatsFromSurveys(surveys) {
+  let totalSpots = 0;
+
+  let highRisk = 0;
+  let mediumRisk = 0;
+  let lowRisk = 0;
+
+  const structureStats = {};
+  const issueTypeStats = {};
+
+  const directionStats = {};
+  const issueDirectionStats = {};
+  const structureDirectionStats = {};
+
+  surveys.forEach(survey => {
+    (survey.structureProblems || []).forEach(p => {
+      totalSpots++;
+
+      if (p.riskLevel === "high") highRisk++;
+      if (p.riskLevel === "medium") mediumRisk++;
+      if (p.riskLevel === "low") lowRisk++;
+
+      issueTypeStats[p.issueType] = (issueTypeStats[p.issueType] || 0) + 1;
+      structureStats[p.structureType] = (structureStats[p.structureType] || 0) + 1;
+
+      const dir = p.direction || "unknown";
+      directionStats[dir] = (directionStats[dir] || 0) + 1;
+
+      const idKey = `${p.issueType || "unknown"}_${dir}`;
+      issueDirectionStats[idKey] = (issueDirectionStats[idKey] || 0) + 1;
+
+      const sdKey = `${p.structureType || "unknown"}_${dir}`;
+      structureDirectionStats[sdKey] = (structureDirectionStats[sdKey] || 0) + 1;
+    });
+  });
+
+  return {
+    summary: { totalSpots, highRisk, mediumRisk, lowRisk },
+    structureStats,
+    issueTypeStats,
+    directionStats,
+    issueDirectionStats,
+    structureDirectionStats
+  };
+}
+
+/* ================= UPDATE UI STATS ================= */
+function updateDashboardUIFromFilteredIssues(filteredSurveys) {
+  const stats = calculateStatsFromSurveys(filteredSurveys);
+
+  document.getElementById("statTotalProblems").innerText = stats.summary.totalSpots;
+
+  // OVERALL RISK
+  let overall = "low";
+  if (stats.summary.highRisk > 0) overall = "high";
+  else if (stats.summary.mediumRisk > 0) overall = "medium";
+  else overall = "low";
+
+  const badge = document.getElementById("overallRiskBadge");
+  badge.classList.remove("risk-high", "risk-medium", "risk-low");
+
+  if (overall === "high") {
+    badge.classList.add("risk-high");
+    badge.innerHTML = `<i class="bi bi-exclamation-octagon-fill"></i> High`;
+  } else if (overall === "medium") {
+    badge.classList.add("risk-medium");
+    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Medium`;
+  } else {
+    badge.classList.add("risk-low");
+    badge.innerHTML = `<i class="bi bi-shield-fill-check"></i> Low`;
+  }
+
+  // MANAGER SUGGESTION (2 LINES)
+  const suggestionEl = document.getElementById("managerSuggestionText");
+  if (overall === "high") {
+    suggestionEl.innerHTML = `ImmediateInspectionRequired<br/>PrioritizeHighRiskSpotsFirst`;
+  } else if (overall === "medium") {
+    suggestionEl.innerHTML = `ScheduleMaintenanceSoon<br/>MonitorCrackAndDampnessAreas`;
+  } else {
+    suggestionEl.innerHTML = `ConditionLooksStable<br/>ContinueRoutineChecksMonthly`;
+  }
+
+  renderStatsBox("issueTypeStats", stats.issueTypeStats);
+  renderStatsBox("structureStats", stats.structureStats);
+
+  renderSideStatsBox("directionStatsBox", stats.directionStats);
+  renderSideStatsBox("issueDirectionStatsBox", stats.issueDirectionStats);
+  renderSideStatsBox("structureDirectionStatsBox", stats.structureDirectionStats);
+}
+
+/* ================= RENDER STATS LIST ================= */
+function renderStatsBox(elementId, statsObj) {
+  const el = document.getElementById(elementId);
+
+  if (!statsObj || Object.keys(statsObj).length === 0) {
+    el.innerHTML = `<div class="text-muted fw-semibold">NoData</div>`;
+    return;
+  }
+
+  const list = document.createElement("ul");
+  list.className = "stats-list";
+
+  Object.entries(statsObj)
+    .sort((a,b) => b[1] - a[1])
+    .forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${key}</strong> : ${value}`;
+      list.appendChild(li);
+    });
+
+  el.innerHTML = "";
+  el.appendChild(list);
+}
+
+function renderSideStatsBox(elementId, statsObj) {
+  const el = document.getElementById(elementId);
+
+  if (!statsObj || Object.keys(statsObj).length === 0) {
+    el.innerHTML = `<div class="text-muted small fw-semibold">NoData</div>`;
+    return;
+  }
+
+  const list = document.createElement("ul");
+  list.className = "side-list";
+
+  Object.entries(statsObj)
+    .sort((a,b) => b[1] - a[1])
+    .forEach(([key, value]) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${key}</strong> : ${value}`;
+      list.appendChild(li);
+    });
+
+  el.innerHTML = "";
+  el.appendChild(list);
+}
+
+/* INIT */
+loadIssues();
+</script>
+
+</body>
+</html>

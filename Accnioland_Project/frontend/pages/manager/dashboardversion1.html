@@ -28,8 +28,12 @@
       border-bottom: 1px solid rgba(255,255,255,0.15);
     }
     .topbar .navbar-brand{
-      font-weight:800;
-      letter-spacing:0.2px;
+      font-weight:900;
+      letter-spacing:0.3px;
+      font-size: 20px;
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
 
     /* GRID LAYOUT */
@@ -66,8 +70,8 @@
 
     .sidebar-head h6{
       margin:0;
-      font-weight:800;
-      font-size: 14px;
+      font-weight:900;
+      font-size: 15px;
       display:flex;
       align-items:center;
       gap:10px;
@@ -82,6 +86,7 @@
       border: 1px solid #e5e7eb;
       padding: 10px 12px;
       box-shadow: none !important;
+      font-size: 14px;
     }
     .form-control:focus{
       border-color:#3b82f6;
@@ -89,8 +94,9 @@
 
     .btn{
       border-radius: 12px;
-      font-weight: 600;
+      font-weight: 700;
       padding: 10px 12px;
+      font-size: 14px;
     }
 
     .btn-primary{
@@ -104,7 +110,7 @@
     }
 
     .helper-text{
-      font-size: 12px;
+      font-size: 13px;
       color: #64748b;
       margin-top: 6px;
     }
@@ -121,7 +127,7 @@
 
     .side-mini h6{
       font-weight: 900;
-      font-size: 13px;
+      font-size: 14px;
       margin-bottom: 10px;
       display:flex;
       align-items:center;
@@ -131,15 +137,16 @@
     .side-list{
       margin:0;
       padding-left: 18px;
-      color:#334155;
-      font-size: 13px;
-      line-height: 1.5;
+      color:#0f172a;
+      font-size: 14px;
+      line-height: 1.6;
+      font-weight: 600;
     }
 
     .pill{
-      font-size: 12px;
-      font-weight: 800;
-      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 7px 12px;
       border-radius: 999px;
       border: 1px solid #e5e7eb;
       background: #fff;
@@ -169,7 +176,7 @@
     .panel-head h5{
       margin:0;
       font-weight: 900;
-      font-size: 16px;
+      font-size: 18px;
       display:flex;
       align-items:center;
       gap:10px;
@@ -179,15 +186,15 @@
 
     /* ANALYTICS */
     .analytics-panel{
-      min-height: 420px;
-      margin-bottom: 18px;
+      margin-bottom: 10px;
     }
 
+    /* TOP 3 CARDS */
     .stats-grid{
       display:grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 12px;
-      margin-bottom: 14px;
+      grid-template-columns: repeat(3,1fr);
+      gap: 14px;
+      margin-bottom: 12px;
     }
     @media (max-width: 1200px){
       .stats-grid{ grid-template-columns: repeat(2,1fr); }
@@ -197,67 +204,109 @@
     }
 
     .stat-card{
-      border-radius: 16px;
+      border-radius: 18px;
       border: 1px solid #eef2f7;
-      background: #ffffff;
+      background: linear-gradient(180deg,#ffffff,#f8fafc);
       padding: 14px 14px;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
-      transition: 0.25s ease;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
     }
 
     .stat-title{
-      font-size: 12px;
-      color:#64748b;
-      font-weight:700;
+      font-size: 13px;
+      color:#475569;
+      font-weight:900;
       text-transform: uppercase;
-      letter-spacing: 0.35px;
+      letter-spacing: 0.4px;
       display:flex;
       align-items:center;
       gap:8px;
     }
+
     .stat-value{
-      font-size: 28px;
+      font-size: 34px;
       font-weight: 900;
-      margin-top: 6px;
+      margin-top: 8px;
+      color:#0b5ed7;
     }
 
+    /* Overall Risk Badge */
+    .risk-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      margin-top: 10px;
+    }
+    .risk-high{
+      color:#b91c1c;
+      background: #fee2e2;
+      border-color:#fecaca;
+    }
+    .risk-medium{
+      color:#92400e;
+      background:#ffedd5;
+      border-color:#fed7aa;
+    }
+    .risk-low{
+      color:#065f46;
+      background:#dcfce7;
+      border-color:#bbf7d0;
+    }
+
+    /* MINI BOXES */
     .mini-box{
-      border-radius: 16px;
+      border-radius: 18px;
       border: 1px solid #eef2f7;
-      background: #ffffff;
+      background: linear-gradient(180deg,#ffffff,#f8fafc);
       padding: 14px;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
       height: 100%;
     }
 
     .mini-box h6{
       font-weight: 900;
-      font-size: 14px;
+      font-size: 16px;
       margin-bottom: 10px;
       display:flex;
       align-items:center;
       gap:8px;
     }
 
-    .stats-list{
-      margin:0;
-      padding-left: 18px;
-      color:#334155;
-      font-size: 14px;
+    /* ✅ Issue/Structure Stats in 2 columns */
+    .stats-grid-2col{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.6;
+      color:#0f172a;
+    }
+    .stats-grid-2col li strong{
+      color:#0b5ed7;
     }
 
-    /* MAP VIEW PDF */
+    /* MAP VIEW */
     .map-card{
       border-radius: 18px;
       border: 1px solid #eef2f7;
       background: #ffffff;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
       overflow:hidden;
       margin-bottom: 18px;
+      margin-top: 10px;
     }
 
     .map-head{
-      padding: 14px 16px;
+      padding: 12px 16px;
       background: linear-gradient(180deg,#f8fafc,#ffffff);
       border-bottom: 1px solid #eef2f7;
       display:flex;
@@ -272,16 +321,23 @@
       display:flex;
       align-items:center;
       gap:10px;
-      font-size: 15px;
+      font-size: 18px;
     }
 
-    .map-body{ padding: 14px 16px; }
+    .map-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .map-body{
+      padding: 0; /* ✅ remove padding = no empty space */
+    }
 
     .pdf-frame{
       width: 100%;
-      height: 520px;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
+      height: 110vh;
+      border-top: 1px solid #e5e7eb;
       overflow: hidden;
       background: #0b1220;
     }
@@ -293,15 +349,16 @@
     }
 
     .pdf-empty{
-      border-radius: 16px;
-      border: 1px dashed #cbd5e1;
+      border-radius: 0;
+      border: none;
       background: linear-gradient(180deg,#ffffff,#f8fafc);
-      height: 520px;
+      height: 420px;
       display:flex;
       align-items:center;
       justify-content:center;
       color:#64748b;
-      font-weight: 700;
+      font-weight: 800;
+      font-size: 16px;
       text-align:center;
       padding: 12px;
     }
@@ -320,13 +377,13 @@
       border-radius: 18px;
       border: 1px solid #eef2f7;
       background: #ffffff;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.05);
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
       overflow:hidden;
       transition: 0.25s ease;
     }
     .spot-card:hover{
       transform: translateY(-2px);
-      box-shadow: 0 18px 34px rgba(15,23,42,0.09);
+      box-shadow: 0 18px 34px rgba(15,23,42,0.10);
     }
 
     .spot-top{
@@ -342,16 +399,16 @@
     .spot-title{
       margin:0;
       font-weight: 900;
-      font-size: 15px;
+      font-size: 17px;
       display:flex;
       align-items:center;
       gap:10px;
     }
 
     .spot-pill{
-      font-size: 12px;
-      font-weight: 800;
-      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 7px 12px;
       border-radius: 999px;
       border: 1px solid #e5e7eb;
       background: #fff;
@@ -364,25 +421,26 @@
     .kv{
       display:flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 10px;
     }
 
     .kv span{
-      font-size: 12px;
-      padding: 7px 10px;
-      border-radius: 12px;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 14px;
       background: #f8fafc;
       border: 1px solid #eef2f7;
-      font-weight: 700;
+      font-weight: 800;
       color:#0f172a;
     }
 
     .desc{
-      font-size: 13px;
-      color:#334155;
+      font-size: 14px;
+      color:#0f172a;
       margin-top: 6px;
-      line-height: 1.45;
+      line-height: 1.55;
+      font-weight: 600;
     }
 
     .photo-grid{
@@ -397,12 +455,16 @@
 
     .photo{
       width: 100%;
-      height: 110px;
-      border-radius: 14px;
+      height: 120px;
+      border-radius: 16px;
       object-fit: cover;
       border: 1px solid #e5e7eb;
       background: #f1f5f9;
       cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .photo:hover{
+      transform: scale(1.02);
     }
 
     .empty-box{
@@ -412,6 +474,8 @@
       padding: 18px;
       color:#64748b;
       text-align:center;
+      font-weight: 700;
+      font-size: 15px;
     }
   </style>
 </head>
@@ -421,12 +485,12 @@
 <!-- NAVBAR -->
 <nav class="navbar navbar-dark px-3 topbar">
   <span class="navbar-brand fw-semibold">
-    Accnioland – Survey Analytics
+    <i class="bi bi-buildings-fill"></i> Accnioland – SurveyAnalytics
   </span>
 
   <div class="d-flex gap-2">
     <a href="upload-floor.html" class="btn btn-light btn-sm fw-semibold">
-      <i class="bi bi-upload"></i> Upload Floor Plan
+      <i class="bi bi-upload"></i> UploadFloorPlan
     </a>
     <button onclick="logout()" class="btn btn-outline-light btn-sm fw-semibold">
       <i class="bi bi-box-arrow-right"></i> Logout
@@ -446,20 +510,20 @@
 
         <div class="sidebar-body">
           <div class="mb-3">
-            <label class="form-label fw-semibold">Floor Number</label>
+            <label class="form-label fw-semibold">FloorNumber</label>
             <input type="number" id="floorInput" class="form-control" placeholder="e.g. 2" />
-            <div class="helper-text">Leave empty to view all floors</div>
+            <div class="helper-text">LeaveEmptyToViewAllFloors</div>
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Date</label>
             <input type="date" id="dateInput" class="form-control" />
-            <div class="helper-text">Filter survey submitted on a specific day</div>
+            <div class="helper-text">FilterSurveySubmittedOnSpecificDay</div>
           </div>
 
           <div class="d-grid gap-2">
             <button class="btn btn-primary" onclick="applyFilter()">
-              <i class="bi bi-search me-1"></i> Apply Filter
+              <i class="bi bi-search me-1"></i> ApplyFilter
             </button>
             <button class="btn btn-outline-secondary" onclick="resetFilter()">
               <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
@@ -468,18 +532,18 @@
 
           <!-- EXTRA CIVIL ANALYTICS -->
           <div class="side-mini">
-            <h6><i class="bi bi-compass text-primary"></i> Direction Analysis</h6>
-            <div id="directionStatsBox" class="text-muted small">No data</div>
+            <h6><i class="bi bi-compass text-primary"></i> DirectionAnalysis</h6>
+            <div id="directionStatsBox" class="text-muted small">NoData</div>
           </div>
 
           <div class="side-mini">
-            <h6><i class="bi bi-activity text-primary"></i> Issue + Direction</h6>
-            <div id="issueDirectionStatsBox" class="text-muted small">No data</div>
+            <h6><i class="bi bi-activity text-primary"></i> IssueDirectionStats</h6>
+            <div id="issueDirectionStatsBox" class="text-muted small">NoData</div>
           </div>
 
           <div class="side-mini">
-            <h6><i class="bi bi-bricks text-primary"></i> Structure + Direction</h6>
-            <div id="structureDirectionStatsBox" class="text-muted small">No data</div>
+            <h6><i class="bi bi-bricks text-primary"></i> StructureDirectionStats</h6>
+            <div id="structureDirectionStatsBox" class="text-muted small">NoData</div>
           </div>
 
         </div>
@@ -492,44 +556,49 @@
       <!-- ANALYTICS -->
       <div class="panel analytics-panel">
         <div class="panel-head">
-          <h5><i class="bi bi-bar-chart-fill text-primary"></i> Overview Analytics</h5>
-          <span class="pill" id="activeFilterText">Showing: All Surveys</span>
+          <h5><i class="bi bi-bar-chart-fill text-primary"></i> OverviewAnalytics</h5>
+          <span class="pill" id="activeFilterText">Showing: AllSurveys</span>
         </div>
 
         <div class="panel-body">
           <div class="stats-grid">
+
             <div class="stat-card">
-              <div class="stat-title"><i class="bi bi-bullseye"></i> Total Spots</div>
+              <div class="stat-title"><i class="bi bi-bullseye"></i> TotalSpots</div>
               <div class="stat-value" id="statTotalProblems">0</div>
             </div>
 
             <div class="stat-card">
-              <div class="stat-title"><i class="bi bi-shield-fill-check"></i> High Risk</div>
-              <div class="stat-value" id="statHighRisk">0</div>
+              <div class="stat-title"><i class="bi bi-exclamation-triangle-fill"></i> OverallRisk</div>
+              <div class="risk-badge risk-low" id="overallRiskBadge">
+                <i class="bi bi-shield-fill-check"></i> Low
+              </div>
+              <div class="helper-text mt-2">
+                BasedOnHighestRiskPresentInAnySpot
+              </div>
             </div>
 
             <div class="stat-card">
-              <div class="stat-title"><i class="bi bi-shield"></i> Medium Risk</div>
-              <div class="stat-value" id="statMediumRisk">0</div>
+              <div class="stat-title"><i class="bi bi-lightbulb-fill"></i> ManagerSuggestion</div>
+              <div class="helper-text" id="managerSuggestionText"
+                style="font-size:15px; font-weight:900; color:#0f172a; margin-top:10px;">
+                NoSuggestionYet
+              </div>
             </div>
 
-            <div class="stat-card">
-              <div class="stat-title"><i class="bi bi-shield"></i> Low Risk</div>
-              <div class="stat-value" id="statLowRisk">0</div>
-            </div>
           </div>
 
           <div class="row g-3">
             <div class="col-12 col-lg-6">
               <div class="mini-box">
-                <h6><i class="bi bi-droplet-half text-primary"></i> Issue Type Stats</h6>
+                <h6><i class="bi bi-droplet-half text-primary"></i> IssueTypeStats</h6>
                 <div id="issueTypeStats"></div>
               </div>
             </div>
 
             <div class="col-12 col-lg-6">
               <div class="mini-box">
-                <h6><i class="bi bi-bricks text-primary"></i> Structure Stats</h6>
+                <h6><i class="bi bi-bricks text-primary"></i> StructureStats</h6>
                 <div id="structureStats"></div>
               </div>
             </div>
@@ -539,18 +608,25 @@
       </div>
 
       <!-- MAP VIEW -->
-      <div class="map-card mt-4" id="mapCard">
+      <div class="map-card" id="mapCard">
         <div class="map-head">
           <p class="map-title">
-            <i class="bi bi-geo-alt-fill text-primary"></i>
-            Survey Map View (Marked PDF)
+            <i class="bi bi-map-fill text-primary"></i>
+            SurveyMapViewMarkedPdf
           </p>
-          <span class="pill" id="mapLabel">No PDF Loaded</span>
+
+          <div class="map-actions">
+            <span class="pill" id="mapLabel">NoPdfLoaded</span>
+            <a id="openFullMapBtn" href="#" target="_blank" class="btn btn-primary btn-sm d-none">
+              <i class="bi bi-box-arrow-up-right"></i> OpenFullMap
+            </a>
+          </div>
         </div>
+
         <div class="map-body">
           <div id="mapBodyContent">
             <div class="pdf-empty">
-              No survey found for selected filter.
+              NoSurveyFoundForSelectedFilter
             </div>
           </div>
         </div>
@@ -559,8 +635,8 @@
       <!-- SPOT DETAILS -->
       <div class="panel">
         <div class="panel-head">
-          <h5><i class="bi bi-bullseye text-primary"></i> Spot Details</h5>
-          <span class="pill" id="spotCountText">0 spots</span>
+          <h5><i class="bi bi-bullseye text-primary"></i> SpotDetails</h5>
+          <span class="pill" id="spotCountText">0 Spots</span>
         </div>
 
         <div class="panel-body">
@@ -608,7 +684,7 @@ async function loadIssues() {
     updateDashboardUIFromFilteredIssues(ALL_ISSUES);
     renderSingleSurvey(ALL_ISSUES);
 
-    document.getElementById("activeFilterText").innerText = "Showing: All Surveys";
+    document.getElementById("activeFilterText").innerText = "Showing: AllSurveys";
   } catch (err) {
     console.error(err);
     setMapEmpty();
@@ -630,11 +706,11 @@ function applyFilter() {
   renderSingleSurvey(filtered);
 
   let label = "Showing: ";
-  if (!floor && !date) label += "All Surveys";
+  if (!floor && !date) label += "AllSurveys";
   else {
-    if (floor) label += `Floor ${floor}`;
+    if (floor) label += `Floor${floor}`;
     if (floor && date) label += " • ";
-    if (date) label += `Date ${date}`;
+    if (date) label += `Date${date}`;
   }
   document.getElementById("activeFilterText").innerText = label;
 }
@@ -647,7 +723,7 @@ function resetFilter() {
   updateDashboardUIFromFilteredIssues(ALL_ISSUES);
   renderSingleSurvey(ALL_ISSUES);
 
-  document.getElementById("activeFilterText").innerText = "Showing: All Surveys";
+  document.getElementById("activeFilterText").innerText = "Showing: AllSurveys";
 }
 
 /* ================= SHOW ONLY ONE SURVEY ================= */
@@ -658,7 +734,6 @@ function renderSingleSurvey(list) {
     return;
   }
 
-  // pick first survey
   const survey = list[0];
 
   if (survey.markedFloorPlan) {
@@ -672,7 +747,13 @@ function renderSingleSurvey(list) {
 
 /* ================= MAP VIEW PDF ================= */
 function showPdfInMap(url, floor){
-  document.getElementById("mapLabel").innerText = `Floor ${floor}`;
+  document.getElementById("mapLabel").innerText = `Floor${floor}`;
+
+  // show button
+  const btn = document.getElementById("openFullMapBtn");
+  btn.href = url;
+  btn.classList.remove("d-none");
+
   document.getElementById("mapBodyContent").innerHTML = `
     <div class="pdf-frame">
       <iframe src="${url}"></iframe>
@@ -681,10 +762,15 @@ function showPdfInMap(url, floor){
 }
 
 function setMapEmpty(){
-  document.getElementById("mapLabel").innerText = "No PDF Loaded";
+  document.getElementById("mapLabel").innerText = "NoPdfLoaded";
+
+  const btn = document.getElementById("openFullMapBtn");
+  btn.href = "#";
+  btn.classList.add("d-none");
+
   document.getElementById("mapBodyContent").innerHTML = `
     <div class="pdf-empty">
-      No marked PDF found for this filter.
+      NoMarkedPdfFoundForThisFilter
     </div>
   `;
 }
@@ -694,7 +780,7 @@ function renderSpotDetails(spots) {
   const container = document.getElementById("spotDetailsContainer");
   container.innerHTML = "";
 
-  document.getElementById("spotCountText").innerText = `${spots.length} spots`;
+  document.getElementById("spotCountText").innerText = `${spots.length} Spots`;
 
   if (!spots.length) {
     setSpotEmpty();
@@ -715,9 +801,9 @@ function renderSpotDetails(spots) {
         <div>
           <p class="spot-title">
             <i class="bi bi-geo-fill text-primary"></i>
-            Spot #${idx + 1}
+            Spot#${idx + 1}
           </p>
-          <div class="helper-text">One marked location in survey</div>
+          <div class="helper-text">OneMarkedLocationInSurvey</div>
         </div>
 
         <span class="spot-pill">${(p.riskLevel || "unknown").toUpperCase()}</span>
@@ -725,14 +811,14 @@ function renderSpotDetails(spots) {
 
       <div class="spot-body">
         <div class="kv">
-          <span>Structure: ${p.structureType || "N/A"}</span>
-          <span>Direction: ${p.direction || "N/A"}</span>
-          <span>Issue: ${p.issueType || "N/A"}</span>
+          <span>Structure:${p.structureType || "N/A"}</span>
+          <span>Direction:${p.direction || "N/A"}</span>
+          <span>Issue:${p.issueType || "N/A"}</span>
         </div>
 
         <div class="desc">
           <strong>Description:</strong>
-          ${p.description ? p.description : "No description provided"}
+          ${p.description ? p.description : "NoDescriptionProvided"}
         </div>
 
         <div class="mt-3">
@@ -742,7 +828,7 @@ function renderSpotDetails(spots) {
               ? `<div class="photo-grid">
                   ${photos.map(img => `<img src="${img}" class="photo" onclick="openImage('${img}')" />`).join("")}
                 </div>`
-              : `<div class="helper-text mt-1">No photos uploaded</div>`
+              : `<div class="helper-text mt-1">NoPhotosUploaded</div>`
           }
         </div>
       </div>
@@ -755,15 +841,14 @@ function renderSpotDetails(spots) {
 }
 
 function setSpotEmpty(){
-  document.getElementById("spotCountText").innerText = "0 spots";
+  document.getElementById("spotCountText").innerText = "0 Spots";
   document.getElementById("spotDetailsContainer").innerHTML = `
     <div class="empty-box">
-      No spot details found.
+      NoSpotDetailsFound
     </div>
   `;
 }
 
-/* OPEN IMAGE FULL */
 function openImage(url){
   window.open(url, "_blank");
 }
@@ -779,34 +864,27 @@ function calculateStatsFromSurveys(surveys) {
   const structureStats = {};
   const issueTypeStats = {};
 
-  const directionStats = {};              // north: 5, south: 2
-  const issueDirectionStats = {};         // crack_north: 2, dampness_south: 1
-  const structureDirectionStats = {};     // wall_north: 2, beam_east: 3
+  const directionStats = {};
+  const issueDirectionStats = {};
+  const structureDirectionStats = {};
 
   surveys.forEach(survey => {
     (survey.structureProblems || []).forEach(p => {
       totalSpots++;
 
-      // risk
       if (p.riskLevel === "high") highRisk++;
       if (p.riskLevel === "medium") mediumRisk++;
       if (p.riskLevel === "low") lowRisk++;
 
-      // issueType
       issueTypeStats[p.issueType] = (issueTypeStats[p.issueType] || 0) + 1;
-
-      // structureType
       structureStats[p.structureType] = (structureStats[p.structureType] || 0) + 1;
 
-      // direction
       const dir = p.direction || "unknown";
       directionStats[dir] = (directionStats[dir] || 0) + 1;
 
-      // issue + direction
       const idKey = `${p.issueType || "unknown"}_${dir}`;
       issueDirectionStats[idKey] = (issueDirectionStats[idKey] || 0) + 1;
 
-      // structure + direction
       const sdKey = `${p.structureType || "unknown"}_${dir}`;
       structureDirectionStats[sdKey] = (structureDirectionStats[sdKey] || 0) + 1;
     });
@@ -827,16 +905,43 @@ function updateDashboardUIFromFilteredIssues(filteredSurveys) {
   const stats = calculateStatsFromSurveys(filteredSurveys);
 
   document.getElementById("statTotalProblems").innerText = stats.summary.totalSpots;
-  document.getElementById("statHighRisk").innerText = stats.summary.highRisk;
-  document.getElementById("statMediumRisk").innerText = stats.summary.mediumRisk;
-  document.getElementById("statLowRisk").innerText = stats.summary.lowRisk;
+
+  // OVERALL RISK
+  let overall = "low";
+  if (stats.summary.highRisk > 0) overall = "high";
+  else if (stats.summary.mediumRisk > 0) overall = "medium";
+  else overall = "low";
+
+  const badge = document.getElementById("overallRiskBadge");
+  badge.classList.remove("risk-high", "risk-medium", "risk-low");
+
+  if (overall === "high") {
+    badge.classList.add("risk-high");
+    badge.innerHTML = `<i class="bi bi-exclamation-octagon-fill"></i> High`;
+  } else if (overall === "medium") {
+    badge.classList.add("risk-medium");
+    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Medium`;
+  } else {
+    badge.classList.add("risk-low");
+    badge.innerHTML = `<i class="bi bi-shield-fill-check"></i> Low`;
+  }
+
+  // MANAGER SUGGESTION
+  const suggestionEl = document.getElementById("managerSuggestionText");
+  if (overall === "high") {
+    suggestionEl.innerHTML = `ImmediateInspectionRequired<br/>PrioritizeHighRiskSpotsFirst`;
+  } else if (overall === "medium") {
+    suggestionEl.innerHTML = `ScheduleMaintenanceSoon<br/>MonitorCrackAndDampnessAreas`;
+  } else {
+    suggestionEl.innerHTML = `ConditionLooksStable<br/>ContinueRoutineChecksMonthly`;
+  }
 
   renderStatsBox("issueTypeStats", stats.issueTypeStats);
   renderStatsBox("structureStats", stats.structureStats);
 
-  renderSideStatsBox("directionStatsBox", stats.directionStats, "Direction");
-  renderSideStatsBox("issueDirectionStatsBox", stats.issueDirectionStats, "Issue + Direction");
-  renderSideStatsBox("structureDirectionStatsBox", stats.structureDirectionStats, "Structure + Direction");
+  renderSideStatsBox("directionStatsBox", stats.directionStats);
+  renderSideStatsBox("issueDirectionStatsBox", stats.issueDirectionStats);
+  renderSideStatsBox("structureDirectionStatsBox", stats.structureDirectionStats);
 }
 
 /* ================= RENDER STATS LIST ================= */
@@ -844,12 +949,12 @@ function renderStatsBox(elementId, statsObj) {
   const el = document.getElementById(elementId);
 
   if (!statsObj || Object.keys(statsObj).length === 0) {
-    el.innerHTML = `<div class="text-muted">No data</div>`;
+    el.innerHTML = `<div class="text-muted fw-semibold">NoData</div>`;
     return;
   }
 
   const list = document.createElement("ul");
-  list.className = "stats-list";
+  list.className = "stats-grid-2col";
 
   Object.entries(statsObj)
     .sort((a,b) => b[1] - a[1])
@@ -863,12 +968,11 @@ function renderStatsBox(elementId, statsObj) {
   el.appendChild(list);
 }
 
-/* Sidebar lists */
 function renderSideStatsBox(elementId, statsObj) {
   const el = document.getElementById(elementId);
 
   if (!statsObj || Object.keys(statsObj).length === 0) {
-    el.innerHTML = `<div class="text-muted small">No data</div>`;
+    el.innerHTML = `<div class="text-muted small fw-semibold">NoData</div>`;
     return;
   }
 

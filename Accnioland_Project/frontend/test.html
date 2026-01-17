@@ -1,1936 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Building Management System | Accnioland</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- PDF Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-    
-    <style>
-        /* ===== CSS Reset & Base Styles ===== */
-        :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary-color: #64748b;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --light-color: #f8fafc;
-            --dark-color: #1e293b;
-            --border-color: #e2e8f0;
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --transition: all 0.3s ease;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        
-        body {
-            background-color: #f1f5f9;
-            color: var(--dark-color);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* ===== Typography ===== */
-        h1, h2, h3, h4 {
-            font-weight: 600;
-            line-height: 1.3;
-            margin-bottom: 1rem;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            color: var(--dark-color);
-        }
-        
-        h2 {
-            font-size: 1.5rem;
-            color: var(--dark-color);
-        }
-        
-        h3 {
-            font-size: 1.25rem;
-        }
-        
-        p {
-            margin-bottom: 1rem;
-        }
-        
-        /* ===== Layout Components ===== */
-        .app-header {
-            background-color: white;
-            padding: 1rem 0;
-            box-shadow: var(--card-shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-        
-        .logo i {
-            font-size: 1.8rem;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .user-role {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .btn-logout {
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        
-        .btn-logout:hover {
-            background-color: #dc2626;
-        }
-        
-        /* ===== Card Components ===== */
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: var(--transition);
-        }
-        
-        .card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        /* ===== Form Elements ===== */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        
-        select.form-control {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 16px;
-            padding-right: 2.5rem;
-        }
-        
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #475569;
-        }
-        
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #0da271;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .btn-full {
-            width: 100%;
-        }
-        
-        /* ===== Tabs & Sections ===== */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-            overflow-x: auto;
-        }
-        
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--secondary-color);
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            transition: var(--transition);
-        }
-        
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-        
-        .section {
-            display: none;
-        }
-        
-        .section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* ===== Issue Legend ===== */
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background-color: #f8fafc;
-            border-radius: 6px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-        
-        .legend-color.crack {
-            background-color: #ef4444;
-        }
-        
-        .legend-color.dampness {
-            background-color: #3b82f6;
-        }
-        
-        .legend-color.crack-dampness {
-            background-color: #10b981;
-        }
-        
-        .legend-color.other {
-            background-color: #1e293b;
-        }
-        
-        /* ===== PDF Viewer ===== */
-        .pdf-container {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-            background-color: #f8fafc;
-        }
-        
-        .pdf-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background-color: white;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .pdf-canvas-container {
-            display: flex;
-            justify-content: center;
-            padding: 1rem;
-            overflow: auto;
-        }
-        
-        #pdfCanvas {
-            max-width: 100%;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            cursor: crosshair;
-        }
-        
-        /* ===== Problem Items ===== */
-        .problem-item {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            background-color: #f8fafc;
-        }
-        
-        .problem-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .problem-number {
-            background-color: var(--primary-color);
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-        
-        .btn-remove-problem {
-            background-color: transparent;
-            color: var(--danger-color);
-            border: 1px solid var(--danger-color);
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-        
-        .btn-remove-problem:hover {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        
-        /* ===== Status Messages ===== */
-        .alert {
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-        
-        .alert-success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border-left: 4px solid var(--success-color);
-        }
-        
-        .alert-error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border-left: 4px solid var(--danger-color);
-        }
-        
-        .alert-info {
-            background-color: #dbeafe;
-            color: #1e40af;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .alert-warning {
-            background-color: #fef3c7;
-            color: #92400e;
-            border-left: 4px solid var(--warning-color);
-        }
-        
-        /* ===== Output Console ===== */
-        .output-console {
-            background-color: #1e293b;
-            color: #f1f5f9;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1.5rem;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.875rem;
-            max-height: 300px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            display: none;
-        }
-        
-        .output-console.active {
-            display: block;
-        }
-        
-        /* ===== Loading Spinner ===== */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* ===== Landing Page ===== */
-        .landing-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        }
-        
-        .landing-card {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            overflow: hidden;
-        }
-        
-        .landing-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        .landing-body {
-            padding: 2rem;
-        }
-        
-        .role-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .role-option {
-            flex: 1;
-            text-align: center;
-            padding: 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .role-option:hover {
-            border-color: var(--primary-color);
-            background-color: #f8fafc;
-        }
-        
-        .role-option.active {
-            border-color: var(--primary-color);
-            background-color: #dbeafe;
-        }
-        
-        .role-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-        
-        .auth-form {
-            display: none;
-        }
-        
-        .auth-form.active {
-            display: block;
-        }
-        
-        /* ===== Responsive Design ===== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            h1 {
-                font-size: 1.75rem;
-            }
-            
-            h2 {
-                font-size: 1.35rem;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            .form-row .form-group {
-                min-width: 100%;
-            }
-            
-            .tabs {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-            }
-            
-            .pdf-canvas-container {
-                padding: 0.5rem;
-            }
-            
-            .role-selector {
-                flex-direction: column;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .user-info {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .card {
-                padding: 1.25rem;
-            }
-            
-            .problem-item {
-                padding: 1rem;
-            }
-            
-            .landing-body {
-                padding: 1.5rem;
-            }
-            
-            .btn {
-                padding: 0.625rem 1.25rem;
-            }
-        }
-        
-        /* ===== Utility Classes ===== */
-        .text-center {
-            text-align: center;
-        }
-        
-        .mb-1 {
-            margin-bottom: 0.5rem;
-        }
-        
-        .mb-2 {
-            margin-bottom: 1rem;
-        }
-        
-        .mb-3 {
-            margin-bottom: 1.5rem;
-        }
-        
-        .mt-1 {
-            margin-top: 0.5rem;
-        }
-        
-        .mt-2 {
-            margin-top: 1rem;
-        }
-        
-        .mt-3 {
-            margin-top: 1.5rem;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .d-flex {
-            display: flex;
-        }
-        
-        .align-center {
-            align-items: center;
-        }
-        
-        .justify-between {
-            justify-content: space-between;
-        }
-        
-        .w-100 {
-            width: 100%;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Accnioland – FINAL FULL TEST</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<style>
+body { font-family: Arial; background:#f4f6f8; padding:20px; }
+.box { background:#fff; padding:15px; border-radius:8px; max-width:1200px; margin-bottom:20px; }
+input,select,textarea,button { width:100%; padding:8px; margin-top:6px; }
+button { background:#007bff; color:#fff; border:none; cursor:pointer; }
+.problem { border:1px solid #ccc; padding:10px; margin-top:10px; }
+canvas { border:2px solid #000; margin-top:10px; }
+.legend span { margin-right:15px; font-weight:bold; }
+pre { background:#111; color:#0f0; padding:10px; }
+</style>
 </head>
+
 <body>
-    <!-- ===== Landing Page ===== -->
-    <div id="landingPage" class="landing-container">
-        <div class="landing-card">
-            <div class="landing-header">
-                <h1><i class="fas fa-building"></i> Building Management System</h1>
-                <p>Report and track structural issues in your building</p>
-            </div>
-            
-            <div class="landing-body">
-                <div class="role-selector">
-                    <div class="role-option active" data-role="office_worker">
-                        <div class="role-icon"><i class="fas fa-user-tie"></i></div>
-                        <h3>Office Worker</h3>
-                        <p>Report issues in your office</p>
-                    </div>
-                    
-                    <div class="role-option" data-role="manager">
-                        <div class="role-icon"><i class="fas fa-clipboard-check"></i></div>
-                        <h3>Manager</h3>
-                        <p>Manage floor plans and view issues</p>
-                    </div>
-                </div>
-                
-                <!-- Office Worker Auth Form -->
-                <div id="officeWorkerAuth" class="auth-form active">
-                    <div class="tabs mb-2">
-                        <button class="tab active" data-form="login">Login</button>
-                        <button class="tab" data-form="register">Register</button>
-                    </div>
-                    
-                    <div id="officeWorkerLogin" class="auth-section active">
-                        <h3>Office Worker Login</h3>
-                        <div class="form-group">
-                            <label for="workerFloor">Floor Number</label>
-                            <input type="number" id="workerFloor" class="form-control" placeholder="Enter floor number">
-                        </div>
-                        <div class="form-group">
-                            <label for="workerPassword">Password</label>
-                            <input type="password" id="workerPassword" class="form-control" placeholder="Enter password">
-                        </div>
-                        <button id="btnWorkerLogin" class="btn btn-primary btn-full">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    </div>
-                    
-                    <div id="officeWorkerRegister" class="auth-section">
-                        <h3>Office Worker Registration</h3>
-                        <div class="form-group">
-                            <label for="regWorkerFloor">Floor Number</label>
-                            <input type="number" id="regWorkerFloor" class="form-control" placeholder="Enter floor number">
-                        </div>
-                        <div class="form-group">
-                            <label for="regWorkerOffice">Office Number (Optional)</label>
-                            <input type="number" id="regWorkerOffice" class="form-control" placeholder="Enter office number">
-                        </div>
-                        <div class="form-group">
-                            <label for="regWorkerPassword">Password</label>
-                            <input type="password" id="regWorkerPassword" class="form-control" placeholder="Create a password">
-                        </div>
-                        <button id="btnWorkerRegister" class="btn btn-success btn-full">
-                            <i class="fas fa-user-plus"></i> Register
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Manager Auth Form -->
-                <div id="managerAuth" class="auth-form">
-                    <div class="tabs mb-2">
-                        <button class="tab active" data-form="login">Login</button>
-                        <button class="tab" data-form="register">Register</button>
-                    </div>
-                    
-                    <div id="managerLogin" class="auth-section active">
-                        <h3>Manager Login</h3>
-                        <div class="form-group">
-                            <label for="managerEmail">Email Address</label>
-                            <input type="email" id="managerEmail" class="form-control" placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <label for="managerPassword">Password</label>
-                            <input type="password" id="managerPassword" class="form-control" placeholder="Enter password">
-                        </div>
-                        <button id="btnManagerLogin" class="btn btn-primary btn-full">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    </div>
-                    
-                    <div id="managerRegister" class="auth-section">
-                        <h3>Manager Registration</h3>
-                        <div class="form-group">
-                            <label for="regManagerEmail">Email Address</label>
-                            <input type="email" id="regManagerEmail" class="form-control" placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <label for="regManagerPassword">Password</label>
-                            <input type="password" id="regManagerPassword" class="form-control" placeholder="Create a password">
-                        </div>
-                        <button id="btnManagerRegister" class="btn btn-success btn-full">
-                            <i class="fas fa-user-plus"></i> Register
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ===== Main Application ===== -->
-    <div id="mainApp" class="hidden">
-        <header class="app-header">
-            <div class="container header-content">
-                <div class="logo">
-                    <i class="fas fa-building"></i>
-                    <span>Building Management</span>
-                </div>
-                
-                <div class="user-info">
-                    <div class="user-role" id="currentRole"></div>
-                    <button id="btnLogout" class="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </div>
-        </header>
-        
-        <main class="container mt-3">
-            <!-- Office Worker Dashboard -->
-            <div id="officeWorkerDashboard" class="hidden">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-tools"></i> Report Structural Issues</h2>
-                        <button id="btnLoadPdf" class="btn btn-primary">
-                            <i class="fas fa-file-pdf"></i> Load Floor Plan
-                        </button>
-                    </div>
-                    
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-color crack"></div>
-                            <span>Crack</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color dampness"></div>
-                            <span>Dampness</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color crack-dampness"></div>
-                            <span>Crack + Dampness</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color other"></div>
-                            <span>Other</span>
-                        </div>
-                    </div>
-                    
-                    <!-- PDF Viewer -->
-                    <div id="pdfContainer" class="pdf-container hidden">
-                        <div class="pdf-controls">
-                            <div>
-                                <button id="btnPrevPage" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Previous
-                                </button>
-                                <button id="btnNextPage" class="btn btn-secondary">
-                                    Next <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                            <div>
-                                <span id="pageInfo">Page 1 of 1</span>
-                            </div>
-                            <div>
-                                <button id="btnClearMarks" class="btn btn-danger">
-                                    <i class="fas fa-eraser"></i> Clear Marks
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="pdf-canvas-container">
-                            <canvas id="pdfCanvas"></canvas>
-                        </div>
-                    </div>
-                    
-                    <!-- Issue Form -->
-                    <div id="issueForm">
-                        <div class="d-flex justify-between align-center mb-2">
-                            <h3>Reported Issues</h3>
-                            <button id="btnAddProblem" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Add Issue
-                            </button>
-                        </div>
-                        
-                        <div id="problemsContainer"></div>
-                        
-                        <div class="mt-3">
-                            <button id="btnSubmitIssue" class="btn btn-success btn-full" disabled>
-                                <i class="fas fa-paper-plane"></i> Submit All Issues
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Manager Dashboard -->
-            <div id="managerDashboard" class="hidden">
-                <div class="tabs">
-                    <button class="tab active" data-tab="uploadPlan">Upload Floor Plan</button>
-                    <button class="tab" data-tab="viewIssues">View Issues</button>
-                </div>
-                
-                <!-- Upload Floor Plan -->
-                <div id="uploadPlan" class="section active">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-upload"></i> Upload Base Floor Plan</h2>
-                        </div>
-                        
-                        <form id="uploadPdfForm">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="baseFloor">Floor Number *</label>
-                                    <input type="number" id="baseFloor" class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="baseOffice">Office Number (Optional)</label>
-                                    <input type="number" id="baseOffice" class="form-control">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="basePdfFile">Floor Plan PDF *</label>
-                                <input type="file" id="basePdfFile" class="form-control" accept=".pdf" required>
-                                <small class="text-muted">Upload a PDF file containing the floor plan</small>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary btn-full">
-                                <i class="fas fa-upload"></i> Upload Floor Plan
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                
-                <!-- View Issues -->
-                <div id="viewIssues" class="section">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-list-alt"></i> All Reported Issues</h2>
-                            <button id="btnRefreshIssues" class="btn btn-secondary">
-                                <i class="fas fa-sync-alt"></i> Refresh
-                            </button>
-                        </div>
-                        
-                        <div id="issuesList" class="text-center">
-                            <p>Click "Refresh" to load all reported issues</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Output Console -->
-            <div id="outputConsole" class="output-console">
-                <!-- API responses will be displayed here -->
-            </div>
-        </main>
-    </div>
-    
-    <!-- ===== Status Messages ===== -->
-    <div id="statusMessage" class="hidden"></div>
-    
-    <script>
-        // ===== Global Variables =====
-        const API_BASE = "http://localhost:5000";
-        let token = "";
-        let currentUserRole = "";
-        let currentUserData = {};
-        
-        // PDF related variables
-        let pdfDoc = null;
-        let pageNum = 1;
-        let pageRendering = false;
-        let pageNumPending = null;
-        let scale = 1.5;
-        let canvas = null;
-        let ctx = null;
-        let basePdfUrl = null;
-        
-        // Issue tracking
-        let problems = [];
-        let marks = [];
-        let currentProblemIndex = -1;
-        
-        // ===== DOM Elements =====
-        const landingPage = document.getElementById('landingPage');
-        const mainApp = document.getElementById('mainApp');
-        const officeWorkerDashboard = document.getElementById('officeWorkerDashboard');
-        const managerDashboard = document.getElementById('managerDashboard');
-        const currentRoleElement = document.getElementById('currentRole');
-        const outputConsole = document.getElementById('outputConsole');
-        const statusMessage = document.getElementById('statusMessage');
-        
-        // ===== Helper Functions =====
-        function showStatus(message, type = 'info') {
-            statusMessage.className = `alert alert-${type}`;
-            statusMessage.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-                <div>${message}</div>
-            `;
-            statusMessage.classList.remove('hidden');
-            
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                statusMessage.classList.add('hidden');
-            }, 5000);
-        }
-        
-        function logToConsole(data, label = 'API Response') {
-            outputConsole.classList.add('active');
-            const timestamp = new Date().toLocaleTimeString();
-            const formattedData = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
-            outputConsole.innerHTML += `\n[${timestamp}] ${label}:\n${formattedData}\n`;
-            outputConsole.scrollTop = outputConsole.scrollHeight;
-        }
-        
-        function setLoading(button, isLoading) {
-            if (isLoading) {
-                button.setAttribute('data-original-text', button.innerHTML);
-                button.innerHTML = `<span class="spinner"></span> Loading...`;
-                button.disabled = true;
-            } else {
-                const originalText = button.getAttribute('data-original-text');
-                if (originalText) {
-                    button.innerHTML = originalText;
-                    button.removeAttribute('data-original-text');
-                }
-                button.disabled = false;
-            }
-        }
-        
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-        
-        // ===== Authentication Functions =====
-        async function register(userType, data) {
-            try {
-                const url = `${API_BASE}/api/auth/register`;
-                const body = { userType, ...data };
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                
-                const result = await response.text();
-                logToConsole(result, 'Register Response');
-                
-                if (response.ok) {
-                    showStatus('Registration successful! Please login.', 'success');
-                    // Switch to login tab
-                    const activeForm = document.querySelector(`#${userType === 'office_worker' ? 'officeWorkerAuth' : 'managerAuth'} .tab.active`);
-                    if (activeForm && activeForm.dataset.form === 'register') {
-                        const loginTab = activeForm.parentElement.querySelector('[data-form="login"]');
-                        if (loginTab) loginTab.click();
-                    }
-                } else {
-                    showStatus(`Registration failed: ${result}`, 'error');
-                }
-            } catch (error) {
-                showStatus(`Registration error: ${error.message}`, 'error');
-                logToConsole(error, 'Register Error');
-            }
-        }
-        
-        async function login(userType, data) {
-            try {
-                const url = `${API_BASE}/api/auth/login`;
-                const body = { userType, ...data };
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                
-                const result = await response.json();
-                logToConsole(result, 'Login Response');
-                
-                if (response.ok && result.token) {
-                    token = result.token;
-                    currentUserRole = userType;
-                    currentUserData = result.user || {};
-                    
-                    // Show main app
-                    landingPage.classList.add('hidden');
-                    mainApp.classList.remove('hidden');
-                    
-                    // Set role display
-                    currentRoleElement.textContent = userType === 'office_worker' ? 'Office Worker' : 'Manager';
-                    
-                    // Show appropriate dashboard
-                    if (userType === 'office_worker') {
-                        officeWorkerDashboard.classList.remove('hidden');
-                        managerDashboard.classList.add('hidden');
-                        // Load PDF automatically
-                        loadFloorPlan();
-                    } else {
-                        officeWorkerDashboard.classList.add('hidden');
-                        managerDashboard.classList.remove('hidden');
-                    }
-                    
-                    showStatus('Login successful!', 'success');
-                } else {
-                    showStatus(`Login failed: ${result.message || 'Invalid credentials'}`, 'error');
-                }
-            } catch (error) {
-                showStatus(`Login error: ${error.message}`, 'error');
-                logToConsole(error, 'Login Error');
-            }
-        }
-        
-        function logout() {
-            token = '';
-            currentUserRole = '';
-            currentUserData = {};
-            problems = [];
-            marks = [];
-            currentProblemIndex = -1;
-            
-            // Clear UI
-            document.getElementById('problemsContainer').innerHTML = '';
-            document.getElementById('pdfContainer').classList.add('hidden');
-            document.getElementById('btnSubmitIssue').disabled = true;
-            
-            // Reset landing page
-            document.querySelectorAll('.role-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            document.querySelector('.role-option[data-role="office_worker"]').classList.add('active');
-            document.querySelectorAll('.auth-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            document.getElementById('officeWorkerAuth').classList.add('active');
-            document.querySelectorAll('.auth-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab[data-form="login"]').forEach(tab => {
-                tab.classList.add('active');
-            });
-            document.querySelectorAll('.auth-section').forEach(section => {
-                if (section.id.includes('Login')) section.classList.add('active');
-                else section.classList.remove('active');
-            });
-            
-            // Clear form fields
-            document.querySelectorAll('input').forEach(input => {
-                if (input.type !== 'checkbox' && input.type !== 'radio') {
-                    input.value = '';
-                }
-            });
-            
-            // Switch to landing page
-            mainApp.classList.add('hidden');
-            landingPage.classList.remove('hidden');
-            
-            showStatus('Logged out successfully', 'info');
-        }
-        
-        // ===== Office Worker Functions =====
-        async function loadFloorPlan() {
-            if (!token) {
-                showStatus('Please login first', 'error');
-                return;
-            }
-            
-            try {
-                const url = `${API_BASE}/api/floor-plans/my`;
-                const response = await fetch(url, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                const result = await response.json();
-                logToConsole(result, 'Floor Plan Response');
-                
-                if (response.ok && result.planPdf) {
-                    basePdfUrl = result.planPdf;
-                    showStatus('Floor plan loaded successfully', 'success');
-                    
-                    // Initialize PDF viewer
-                    initPdfViewer();
-                } else {
-                    showStatus(`Failed to load floor plan: ${result.message || 'No floor plan found'}`, 'error');
-                }
-            } catch (error) {
-                showStatus(`Error loading floor plan: ${error.message}`, 'error');
-                logToConsole(error, 'Floor Plan Error');
-            }
-        }
-        
-        function initPdfViewer() {
-            const pdfContainer = document.getElementById('pdfContainer');
-            pdfContainer.classList.remove('hidden');
-            
-            canvas = document.getElementById('pdfCanvas');
-            ctx = canvas.getContext('2d');
-            
-            // Load PDF document
-            pdfjsLib.getDocument(basePdfUrl).promise.then(function(pdfDoc_) {
-                pdfDoc = pdfDoc_;
-                document.getElementById('pageInfo').textContent = `Page 1 of ${pdfDoc.numPages}`;
-                
-                // Render first page
-                renderPage(pageNum);
-            }).catch(function(error) {
-                showStatus(`Error loading PDF: ${error.message}`, 'error');
-            });
-        }
-        
-        function renderPage(num) {
-            pageRendering = true;
-            
-            pdfDoc.getPage(num).then(function(page) {
-                const viewport = page.getViewport({ scale: scale });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: viewport
-                };
-                
-                const renderTask = page.render(renderContext);
-                
-                renderTask.promise.then(function() {
-                    pageRendering = false;
-                    
-                    // Draw existing marks for this page
-                    drawMarks(num);
-                    
-                    if (pageNumPending !== null) {
-                        renderPage(pageNumPending);
-                        pageNumPending = null;
-                    }
-                });
-            });
-            
-            document.getElementById('pageInfo').textContent = `Page ${num} of ${pdfDoc.numPages}`;
-        }
-        
-        function queueRenderPage(num) {
-            if (pageRendering) {
-                pageNumPending = num;
-            } else {
-                renderPage(num);
-            }
-        }
-        
-        function drawMarks(pageNum) {
-            marks.forEach(mark => {
-                if (mark.pageIndex === pageNum - 1) {
-                    ctx.beginPath();
-                    ctx.arc(mark.x, mark.y, 10, 0, Math.PI * 2);
-                    ctx.strokeStyle = mark.color;
-                    ctx.lineWidth = 3;
-                    ctx.stroke();
-                }
-            });
-        }
-        
-        function addProblem() {
-            const problemIndex = problems.length;
-            problems.push({
-                structureType: '',
-                direction: '',
-                issueType: '',
-                crackType: '',
-                dampnessLevel: '',
-                riskLevel: '',
-                description: '',
-                pdfMarks: [],
-                images: []
-            });
-            
-            const problemElement = document.createElement('div');
-            problemElement.className = 'problem-item';
-            problemElement.id = `problem-${problemIndex}`;
-            problemElement.innerHTML = `
-                <div class="problem-header">
-                    <div class="problem-number">${problemIndex + 1}</div>
-                    <button type="button" class="btn-remove-problem" onclick="removeProblem(${problemIndex})">
-                        <i class="fas fa-trash"></i> Remove
-                    </button>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Structure Type *</label>
-                        <select class="form-control" onchange="updateProblem(${problemIndex}, 'structureType', this.value)">
-                            <option value="">Select Structure</option>
-                            <option value="wall">Wall</option>
-                            <option value="beam">Beam</option>
-                            <option value="column">Column</option>
-                            <option value="roof">Roof</option>
-                            <option value="floor">Floor</option>
-                            <option value="facade">Facade</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Direction *</label>
-                        <select class="form-control" onchange="updateProblem(${problemIndex}, 'direction', this.value)">
-                            <option value="">Select Direction</option>
-                            <option value="north">North</option>
-                            <option value="south">South</option>
-                            <option value="east">East</option>
-                            <option value="west">West</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Issue Type *</label>
-                        <select class="form-control" onchange="handleIssueTypeChange(${problemIndex}, this.value)">
-                            <option value="">Select Issue</option>
-                            <option value="crack">Crack</option>
-                            <option value="dampness">Dampness</option>
-                            <option value="crack_dampness">Crack + Dampness</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Risk Level *</label>
-                        <select class="form-control" onchange="updateProblem(${problemIndex}, 'riskLevel', this.value)">
-                            <option value="">Select Risk Level</option>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="crackFields-${problemIndex}" class="form-group hidden">
-                    <label>Crack Type</label>
-                    <select class="form-control" onchange="updateProblem(${problemIndex}, 'crackType', this.value)">
-                        <option value="">Select Crack Type</option>
-                        <option value="minor">Minor</option>
-                        <option value="medium">Medium</option>
-                        <option value="severe">Severe</option>
-                    </select>
-                </div>
-                
-                <div id="dampnessFields-${problemIndex}" class="form-group hidden">
-                    <label>Dampness Level</label>
-                    <select class="form-control" onchange="updateProblem(${problemIndex}, 'dampnessLevel', this.value)">
-                        <option value="">Select Dampness Level</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea class="form-control" rows="3" placeholder="Describe the issue..." onchange="updateProblem(${problemIndex}, 'description', this.value)"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Upload Images (Optional)</label>
-                    <input type="file" class="form-control" accept="image/*" multiple onchange="handleImageUpload(${problemIndex}, this.files)">
-                    <small class="text-muted">You can upload multiple images for this issue</small>
-                </div>
-                
-                <div class="form-group">
-                    <label>PDF Markings</label>
-                    <div>
-                        <button type="button" class="btn btn-secondary" onclick="setActiveProblem(${problemIndex})">
-                            <i class="fas fa-mouse-pointer"></i> Mark on PDF for this Issue
-                        </button>
-                        <small class="text-muted">Click on the PDF to mark locations for this issue</small>
-                        <div id="markCount-${problemIndex}" class="mt-1">
-                            <span class="badge">0 marks added</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('problemsContainer').appendChild(problemElement);
-            
-            // Enable submit button if we have at least one problem
-            document.getElementById('btnSubmitIssue').disabled = problems.length === 0;
-            
-            // Set this as active problem for marking
-            setActiveProblem(problemIndex);
-        }
-        
-        function updateProblem(index, field, value) {
-            if (problems[index]) {
-                problems[index][field] = value;
-            }
-        }
-        
-        function handleIssueTypeChange(index, issueType) {
-            updateProblem(index, 'issueType', issueType);
-            
-            // Show/hide additional fields based on issue type
-            const crackFields = document.getElementById(`crackFields-${index}`);
-            const dampnessFields = document.getElementById(`dampnessFields-${index}`);
-            
-            crackFields.classList.add('hidden');
-            dampnessFields.classList.add('hidden');
-            
-            if (issueType === 'crack' || issueType === 'crack_dampness') {
-                crackFields.classList.remove('hidden');
-            }
-            
-            if (issueType === 'dampness' || issueType === 'crack_dampness') {
-                dampnessFields.classList.remove('hidden');
-            }
-        }
-        
-        function handleImageUpload(index, files) {
-            if (problems[index]) {
-                problems[index].images = Array.from(files);
-            }
-        }
-        
-        function setActiveProblem(index) {
-            currentProblemIndex = index;
-            showStatus(`Now marking for Issue #${index + 1}. Click on the PDF to add marks.`, 'info');
-        }
-        
-        function removeProblem(index) {
-            if (confirm('Are you sure you want to remove this issue?')) {
-                // Remove problem from array
-                problems.splice(index, 1);
-                
-                // Remove problem element from DOM
-                const problemElement = document.getElementById(`problem-${index}`);
-                if (problemElement) {
-                    problemElement.remove();
-                }
-                
-                // Reindex remaining problems
-                const problemElements = document.querySelectorAll('.problem-item');
-                problemElements.forEach((element, i) => {
-                    element.id = `problem-${i}`;
-                    element.querySelector('.problem-number').textContent = i + 1;
-                    
-                    // Update all event handlers
-                    const selectElements = element.querySelectorAll('select, textarea, input');
-                    selectElements.forEach(select => {
-                        const oldOnChange = select.getAttribute('onchange');
-                        if (oldOnChange) {
-                            const newOnChange = oldOnChange.replace(/\d+/g, i);
-                            select.setAttribute('onchange', newOnChange);
-                        }
-                    });
-                    
-                    const buttons = element.querySelectorAll('button');
-                    buttons.forEach(button => {
-                        const oldOnClick = button.getAttribute('onclick');
-                        if (oldOnClick) {
-                            const newOnClick = oldOnClick.replace(/\d+/g, i);
-                            button.setAttribute('onclick', newOnClick);
-                        }
-                    });
-                    
-                    // Update field IDs
-                    const crackFields = element.querySelector(`[id^="crackFields-"]`);
-                    const dampnessFields = element.querySelector(`[id^="dampnessFields-"]`);
-                    const markCount = element.querySelector(`[id^="markCount-"]`);
-                    
-                    if (crackFields) crackFields.id = `crackFields-${i}`;
-                    if (dampnessFields) dampnessFields.id = `dampnessFields-${i}`;
-                    if (markCount) markCount.id = `markCount-${i}`;
-                });
-                
-                // Update currentProblemIndex if needed
-                if (currentProblemIndex === index) {
-                    currentProblemIndex = problems.length > 0 ? 0 : -1;
-                } else if (currentProblemIndex > index) {
-                    currentProblemIndex--;
-                }
-                
-                // Update submit button state
-                document.getElementById('btnSubmitIssue').disabled = problems.length === 0;
-                
-                showStatus('Issue removed', 'info');
-            }
-        }
-        
-        async function submitIssue() {
-            // Validate all problems
-            for (let i = 0; i < problems.length; i++) {
-                const problem = problems[i];
-                
-                if (!problem.structureType || !problem.direction || !problem.issueType || !problem.riskLevel) {
-                    showStatus(`Please fill all required fields for Issue #${i + 1}`, 'error');
-                    return;
-                }
-                
-                // Validate issue-specific fields
-                if (problem.issueType === 'crack' && !problem.crackType) {
-                    showStatus(`Please select crack type for Issue #${i + 1}`, 'error');
-                    return;
-                }
-                
-                if (problem.issueType === 'dampness' && !problem.dampnessLevel) {
-                    showStatus(`Please select dampness level for Issue #${i + 1}`, 'error');
-                    return;
-                }
-                
-                if (problem.issueType === 'crack_dampness' && (!problem.crackType || !problem.dampnessLevel)) {
-                    showStatus(`Please select both crack type and dampness level for Issue #${i + 1}`, 'error');
-                    return;
-                }
-            }
-            
-            try {
-                // Load the base PDF
-                const response = await fetch(basePdfUrl);
-                const pdfBytes = await response.arrayBuffer();
-                
-                // Load PDF with pdf-lib
-                const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-                const pages = pdfDoc.getPages();
-                
-                // Add marks to PDF
-                marks.forEach(mark => {
-                    const page = pages[mark.pageIndex];
-                    const color = getPdfColor(mark.color);
-                    
-                    page.drawCircle({
-                        x: mark.x,
-                        y: page.getHeight() - mark.y, // PDF coordinates are inverted
-                        size: 8,
-                        borderColor: color,
-                        borderWidth: 2,
-                    });
-                });
-                
-                // Save the modified PDF
-                const modifiedPdfBytes = await pdfDoc.save();
-                
-                // Prepare form data
-                const formData = new FormData();
-                formData.append('structureProblems', JSON.stringify(problems));
-                formData.append('markedFloorPlan', new Blob([modifiedPdfBytes], { type: 'application/pdf' }), 'marked_floor_plan.pdf');
-                
-                // Add images
-                problems.forEach((problem, index) => {
-                    if (problem.images && problem.images.length > 0) {
-                        problem.images.forEach((image, imgIndex) => {
-                            formData.append(`issueImages_${index}`, image);
-                        });
-                    }
-                });
-                
-                // Submit to API
-                const url = `${API_BASE}/api/issues/create`;
-                const submitBtn = document.getElementById('btnSubmitIssue');
-                setLoading(submitBtn, true);
-                
-                const apiResponse = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-                
-                const result = await apiResponse.text();
-                logToConsole(result, 'Submit Issue Response');
-                setLoading(submitBtn, false);
-                
-                if (apiResponse.ok) {
-                    showStatus('Issue submitted successfully!', 'success');
-                    
-                    // Reset form
-                    problems = [];
-                    marks = [];
-                    currentProblemIndex = -1;
-                    document.getElementById('problemsContainer').innerHTML = '';
-                    document.getElementById('btnSubmitIssue').disabled = true;
-                    
-                    // Clear PDF marks
-                    if (pdfDoc) {
-                        renderPage(pageNum);
-                    }
-                } else {
-                    showStatus(`Submission failed: ${result}`, 'error');
-                }
-            } catch (error) {
-                showStatus(`Submission error: ${error.message}`, 'error');
-                logToConsole(error, 'Submit Issue Error');
-                setLoading(document.getElementById('btnSubmitIssue'), false);
-            }
-        }
-        
-        function getPdfColor(colorName) {
-            switch (colorName) {
-                case 'red': return PDFLib.rgb(1, 0, 0);
-                case 'blue': return PDFLib.rgb(0, 0, 1);
-                case 'green': return PDFLib.rgb(0, 1, 0);
-                case 'black': return PDFLib.rgb(0, 0, 0);
-                default: return PDFLib.rgb(0, 0, 0);
-            }
-        }
-        
-        // ===== Manager Functions =====
-        async function uploadFloorPlan() {
-            const floorNumber = document.getElementById('baseFloor').value;
-            const officeNumber = document.getElementById('baseOffice').value;
-            const pdfFile = document.getElementById('basePdfFile').files[0];
-            
-            if (!floorNumber || !pdfFile) {
-                showStatus('Please provide floor number and PDF file', 'error');
-                return;
-            }
-            
-            try {
-                const formData = new FormData();
-                formData.append('floorNumber', floorNumber);
-                if (officeNumber) formData.append('officeNumber', officeNumber);
-                formData.append('planPdf', pdfFile);
-                
-                const url = `${API_BASE}/api/floor-plans/upload`;
-                const uploadBtn = document.querySelector('#uploadPdfForm button[type="submit"]');
-                setLoading(uploadBtn, true);
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-                
-                const result = await response.text();
-                logToConsole(result, 'Upload Floor Plan Response');
-                setLoading(uploadBtn, false);
-                
-                if (response.ok) {
-                    showStatus('Floor plan uploaded successfully!', 'success');
-                    document.getElementById('uploadPdfForm').reset();
-                } else {
-                    showStatus(`Upload failed: ${result}`, 'error');
-                }
-            } catch (error) {
-                showStatus(`Upload error: ${error.message}`, 'error');
-                logToConsole(error, 'Upload Floor Plan Error');
-                setLoading(document.querySelector('#uploadPdfForm button[type="submit"]'), false);
-            }
-        }
-        
-        async function getAllIssues() {
-            try {
-                const url = `${API_BASE}/api/issues/all`;
-                const refreshBtn = document.getElementById('btnRefreshIssues');
-                setLoading(refreshBtn, true);
-                
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const result = await response.json();
-                logToConsole(result, 'All Issues Response');
-                setLoading(refreshBtn, false);
-                
-                if (response.ok) {
-                    displayIssues(result);
-                } else {
-                    showStatus(`Failed to load issues: ${result.message || 'Unknown error'}`, 'error');
-                    document.getElementById('issuesList').innerHTML = '<p>Failed to load issues. Please try again.</p>';
-                }
-            } catch (error) {
-                showStatus(`Error loading issues: ${error.message}`, 'error');
-                logToConsole(error, 'All Issues Error');
-                setLoading(document.getElementById('btnRefreshIssues'), false);
-            }
-        }
-        
-        function displayIssues(issues) {
-            const issuesList = document.getElementById('issuesList');
-            
-            if (!issues || issues.length === 0) {
-                issuesList.innerHTML = '<p>No issues reported yet.</p>';
-                return;
-            }
-            
-            let html = '<div class="issues-container">';
-            
-            issues.forEach((issue, index) => {
-                const date = new Date(issue.createdAt).toLocaleDateString();
-                const riskColor = issue.riskLevel === 'high' ? 'danger' : issue.riskLevel === 'medium' ? 'warning' : 'success';
-                
-                html += `
-                    <div class="card mb-2">
-                        <div class="d-flex justify-between align-center">
-                            <h4>Issue #${index + 1} - ${issue.structureType}</h4>
-                            <span class="badge bg-${riskColor}">${issue.riskLevel} risk</span>
-                        </div>
-                        <p><strong>Direction:</strong> ${issue.direction}</p>
-                        <p><strong>Issue Type:</strong> ${issue.issueType.replace('_', ' + ')}</p>
-                        ${issue.crackType ? `<p><strong>Crack Type:</strong> ${issue.crackType}</p>` : ''}
-                        ${issue.dampnessLevel ? `<p><strong>Dampness Level:</strong> ${issue.dampnessLevel}</p>` : ''}
-                        ${issue.description ? `<p><strong>Description:</strong> ${issue.description}</p>` : ''}
-                        <p class="text-muted"><small>Reported on ${date}</small></p>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            issuesList.innerHTML = html;
-        }
-        
-        // ===== Event Listeners =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Role selection
-            document.querySelectorAll('.role-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const role = this.dataset.role;
-                    document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
-                    document.getElementById(`${role}Auth`).classList.add('active');
-                });
-            });
-            
-            // Tab switching in auth forms
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const formType = this.dataset.form;
-                    const parentForm = this.closest('.auth-form');
-                    
-                    // Update active tab
-                    parentForm.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show corresponding form
-                    parentForm.querySelectorAll('.auth-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    
-                    const role = parentForm.id.replace('Auth', '');
-                    document.getElementById(`${role}${formType.charAt(0).toUpperCase() + formType.slice(1)}`).classList.add('active');
-                });
-            });
-            
-            // Tab switching in manager dashboard
-            document.querySelectorAll('[data-tab]').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    // Update active tab
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show corresponding section
-                    document.querySelectorAll('.section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-            
-            // Office worker login
-            document.getElementById('btnWorkerLogin').addEventListener('click', function() {
-                const floor = document.getElementById('workerFloor').value;
-                const password = document.getElementById('workerPassword').value;
-                
-                if (!floor || !password) {
-                    showStatus('Please enter floor number and password', 'error');
-                    return;
-                }
-                
-                setLoading(this, true);
-                login('office_worker', { floorNumber: parseInt(floor), password });
-                setLoading(this, false);
-            });
-            
-            // Office worker register
-            document.getElementById('btnWorkerRegister').addEventListener('click', function() {
-                const floor = document.getElementById('regWorkerFloor').value;
-                const office = document.getElementById('regWorkerOffice').value;
-                const password = document.getElementById('regWorkerPassword').value;
-                
-                if (!floor || !password) {
-                    showStatus('Please enter floor number and password', 'error');
-                    return;
-                }
-                
-                const data = {
-                    floorNumber: parseInt(floor),
-                    password
-                };
-                
-                if (office) {
-                    data.officeNumber = parseInt(office);
-                }
-                
-                setLoading(this, true);
-                register('office_worker', data);
-                setLoading(this, false);
-            });
-            
-            // Manager login
-            document.getElementById('btnManagerLogin').addEventListener('click', function() {
-                const email = document.getElementById('managerEmail').value;
-                const password = document.getElementById('managerPassword').value;
-                
-                if (!email || !password) {
-                    showStatus('Please enter email and password', 'error');
-                    return;
-                }
-                
-                if (!validateEmail(email)) {
-                    showStatus('Please enter a valid email address', 'error');
-                    return;
-                }
-                
-                setLoading(this, true);
-                login('manager', { email, password });
-                setLoading(this, false);
-            });
-            
-            // Manager register
-            document.getElementById('btnManagerRegister').addEventListener('click', function() {
-                const email = document.getElementById('regManagerEmail').value;
-                const password = document.getElementById('regManagerPassword').value;
-                
-                if (!email || !password) {
-                    showStatus('Please enter email and password', 'error');
-                    return;
-                }
-                
-                if (!validateEmail(email)) {
-                    showStatus('Please enter a valid email address', 'error');
-                    return;
-                }
-                
-                setLoading(this, true);
-                register('manager', { email, password });
-                setLoading(this, false);
-            });
-            
-            // Logout
-            document.getElementById('btnLogout').addEventListener('click', logout);
-            
-            // Office worker: Load PDF
-            document.getElementById('btnLoadPdf').addEventListener('click', loadFloorPlan);
-            
-            // PDF navigation
-            document.getElementById('btnPrevPage').addEventListener('click', function() {
-                if (pageNum <= 1) return;
-                pageNum--;
-                queueRenderPage(pageNum);
-            });
-            
-            document.getElementById('btnNextPage').addEventListener('click', function() {
-                if (pageNum >= pdfDoc.numPages) return;
-                pageNum++;
-                queueRenderPage(pageNum);
-            });
-            
-            // PDF canvas click handler
-            document.getElementById('pdfCanvas').addEventListener('click', function(e) {
-                if (!pdfDoc || currentProblemIndex === -1) {
-                    showStatus('Please select an issue first before marking the PDF', 'warning');
-                    return;
-                }
-                
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Get color based on issue type
-                const issueType = problems[currentProblemIndex]?.issueType;
-                let color = 'black';
-                
-                if (issueType === 'crack') color = 'red';
-                else if (issueType === 'dampness') color = 'blue';
-                else if (issueType === 'crack_dampness') color = 'green';
-                else if (issueType === 'other') color = 'black';
-                
-                // Add mark
-                marks.push({
-                    pageIndex: pageNum - 1,
-                    x,
-                    y,
-                    color
-                });
-                
-                // Add to current problem
-                problems[currentProblemIndex].pdfMarks.push({
-                    pageIndex: pageNum - 1,
-                    x,
-                    y
-                });
-                
-                // Update mark count display
-                const markCountElement = document.getElementById(`markCount-${currentProblemIndex}`);
-                if (markCountElement) {
-                    const count = problems[currentProblemIndex].pdfMarks.length;
-                    markCountElement.innerHTML = `<span class="badge">${count} mark${count !== 1 ? 's' : ''} added</span>`;
-                }
-                
-                // Redraw canvas with new mark
-                drawMarks(pageNum);
-                showStatus(`Mark added to Issue #${currentProblemIndex + 1}`, 'success');
-            });
-            
-            // Clear marks
-            document.getElementById('btnClearMarks').addEventListener('click', function() {
-                if (confirm('Clear all marks from the PDF?')) {
-                    marks = [];
-                    
-                    // Clear marks from all problems
-                    problems.forEach(problem => {
-                        problem.pdfMarks = [];
-                    });
-                    
-                    // Update mark counts
-                    document.querySelectorAll('[id^="markCount-"]').forEach(element => {
-                        element.innerHTML = `<span class="badge">0 marks added</span>`;
-                    });
-                    
-                    // Redraw PDF without marks
-                    renderPage(pageNum);
-                    showStatus('All marks cleared', 'info');
-                }
-            });
-            
-            // Add problem
-            document.getElementById('btnAddProblem').addEventListener('click', addProblem);
-            
-            // Submit issue
-            document.getElementById('btnSubmitIssue').addEventListener('click', submitIssue);
-            
-            // Manager: Upload floor plan
-            document.getElementById('uploadPdfForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                uploadFloorPlan();
-            });
-            
-            // Manager: Refresh issues
-            document.getElementById('btnRefreshIssues').addEventListener('click', getAllIssues);
-            
-            // Console toggle (for debugging)
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === '`') {
-                    outputConsole.classList.toggle('active');
-                }
-            });
-        });
-    </script>
+
+<h1>Accnioland – COMPLETE BACKEND FLOW TEST</h1>
+
+<!-- REGISTER -->
+<div class="box">
+<h2>1️⃣ Register</h2>
+<select id="regType">
+  <option value="office_worker">Office Worker</option>
+  <option value="manager">Manager</option>
+</select>
+<input id="regEmail" placeholder="Email">
+<input id="regFloor" placeholder="Floor (worker)">
+<input id="regOffice" placeholder="Office (worker)">
+<input id="regPassword" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+</div>
+
+<!-- LOGIN -->
+<div class="box">
+<h2>2️⃣ Login</h2>
+<select id="loginType">
+  <option value="office_worker">Office Worker</option>
+  <option value="manager">Manager</option>
+</select>
+<input id="loginEmail" placeholder="Email (manager)">
+<input id="loginFloor" placeholder="Floor (worker)">
+<input id="loginPassword" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<!-- MANAGER BASE PDF -->
+<div class="box">
+<h2>3️⃣ Manager – Upload Base Floor Plan</h2>
+<input id="baseFloor" placeholder="Floor Number">
+<input id="baseOffice" placeholder="Office Number (optional)">
+<input type="file" id="basePdf">
+<button onclick="uploadBase()">Upload Base PDF</button>
+</div>
+
+<!-- OFFICE WORKER CREATE ISSUE -->
+<div class="box">
+<h2>4️⃣ Office Worker – Create Issue</h2>
+
+<div class="legend">
+<span style="color:red">Red = Crack</span>
+<span style="color:blue">Blue = Dampness</span>
+<span style="color:green">Green = Crack + Dampness</span>
+<span style="color:black">Black = Other</span>
+</div>
+
+<button onclick="addProblem()">➕ Add Structure Problem</button>
+<div id="problems"></div>
+
+<h3>PDF Marking</h3>
+<button onclick="prevPage()">⬅ Prev</button>
+<button onclick="nextPage()">Next ➡</button>
+<canvas id="pdfCanvas"></canvas>
+
+<button onclick="submitIssue()">Submit Issue</button>
+</div>
+
+<!-- MANAGER VIEW -->
+<div class="box">
+<h2>5️⃣ Manager – View All Issues</h2>
+<button onclick="getAllIssues()">Get All Issues</button>
+</div>
+
+<pre id="output"></pre>
+
+<script>
+const API = "http://localhost:5000";
+let token = "";
+
+const problemsDiv = document.getElementById("problems");
+let problems = [];
+let marks = [];
+
+let pdfDocJs, basePdfUrl;
+let pageIndex = 0;
+let scale = 1.5;
+
+/* ================= AUTH ================= */
+async function register() {
+  const body = {
+    userType: regType.value,
+    email: regEmail.value,
+    password: regPassword.value
+  };
+  if (body.userType === "office_worker") {
+    body.floorNumber = +regFloor.value;
+    body.officeNumber = +regOffice.value;
+  }
+  const r = await fetch(API + "/api/auth/register", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(body)
+  });
+  output.textContent = await r.text();
+}
+
+async function login() {
+  const body = { userType: loginType.value, password: loginPassword.value };
+  if (body.userType === "office_worker") body.floorNumber = +loginFloor.value;
+  else body.email = loginEmail.value;
+
+  const r = await fetch(API + "/api/auth/login", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(body)
+  });
+  const d = await r.json();
+  token = d.token;
+  output.textContent = JSON.stringify(d,null,2);
+
+  if (loginType.value === "office_worker") loadPdf();
+}
+
+/* ================= BASE PDF ================= */
+async function uploadBase() {
+  const fd = new FormData();
+  fd.append("floorNumber", baseFloor.value);
+  if (baseOffice.value) fd.append("officeNumber", baseOffice.value);
+  fd.append("planPdf", basePdf.files[0]);
+
+  const r = await fetch(API + "/api/floor-plans/upload", {
+    method:"POST",
+    headers:{ Authorization:"Bearer "+token },
+    body:fd
+  });
+  output.textContent = await r.text();
+}
+
+/* ================= STRUCTURE ================= */
+function addProblem() {
+  const i = problems.length;
+  problems.push({ pdfMarks: [] });
+
+  const d = document.createElement("div");
+  d.className = "problem";
+  d.innerHTML = `
+    <h4>Structure ${i+1}</h4>
+
+    <select onchange="problems[${i}].structureType=this.value">
+      <option value="">Structure</option>
+      <option>wall</option><option>beam</option><option>column</option>
+      <option>roof</option><option>floor</option><option>facade</option><option>other</option>
+    </select>
+
+    <select onchange="problems[${i}].direction=this.value">
+      <option value="">Direction</option>
+      <option>north</option><option>south</option><option>east</option><option>west</option>
+    </select>
+
+    <select onchange="handleIssue(${i},this.value)">
+      <option value="">Issue</option>
+      <option value="crack">Crack</option>
+      <option value="dampness">Dampness</option>
+      <option value="crack_dampness">Crack + Dampness</option>
+      <option value="other">Other</option>
+    </select>
+
+    <select id="crack_${i}" style="display:none"
+      onchange="problems[${i}].crackType=this.value">
+      <option value="">Crack Type</option>
+      <option>minor</option><option>medium</option><option>severe</option>
+    </select>
+
+    <select id="damp_${i}" style="display:none"
+      onchange="problems[${i}].dampnessLevel=this.value">
+      <option value="">Dampness Level</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+
+    <select onchange="problems[${i}].riskLevel=this.value">
+      <option value="">Risk Level</option>
+      <option>low</option><option>medium</option><option>high</option>
+    </select>
+
+    <textarea onchange="problems[${i}].description=this.value"
+      placeholder="Description"></textarea>
+
+    <input type="file" multiple
+      onchange="problems[${i}].images=this.files">
+  `;
+  problemsDiv.appendChild(d);
+}
+
+function handleIssue(i, v) {
+  const crackEl = document.getElementById(`crack_${i}`);
+  const dampEl = document.getElementById(`damp_${i}`);
+
+  problems[i].issueType = v;
+
+  // reset fields
+  crackEl.style.display = "none";
+  dampEl.style.display = "none";
+  problems[i].crackType = null;
+  problems[i].dampnessLevel = null;
+
+  if (v === "crack") {
+    crackEl.style.display = "block";
+  }
+
+  if (v === "dampness") {
+    dampEl.style.display = "block";
+  }
+
+  if (v === "crack_dampness") {
+    crackEl.style.display = "block";
+    dampEl.style.display = "block";
+  }
+}
+
+
+/* ================= PDF ================= */
+async function loadPdf() {
+  const r = await fetch(API + "/api/floor-plans/my", {
+    headers:{ Authorization:"Bearer "+token }
+  });
+  const d = await r.json();
+  basePdfUrl = d.planPdf;
+  pdfDocJs = await pdfjsLib.getDocument(basePdfUrl).promise;
+  renderPage();
+}
+
+async function renderPage() {
+  const p = await pdfDocJs.getPage(pageIndex+1);
+  const vp = p.getViewport({ scale });
+  pdfCanvas.width = vp.width;
+  pdfCanvas.height = vp.height;
+  const ctx = pdfCanvas.getContext("2d");
+  await p.render({ canvasContext:ctx, viewport:vp }).promise;
+
+  marks.forEach(m=>{
+    if(m.pageIndex===pageIndex){
+      ctx.beginPath();
+      ctx.arc(m.x,m.y,10,0,Math.PI*2);
+      ctx.strokeStyle=m.color;
+      ctx.lineWidth=3;
+      ctx.stroke();
+    }
+  });
+
+  pdfCanvas.onclick = e=>{
+    if(!problems.length) return alert("Add structure first");
+    const r = pdfCanvas.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const p = problems[problems.length-1];
+    const c = getColor(p.issueType);
+    marks.push({ pageIndex,x,y,color:c });
+    p.pdfMarks.push({ pageIndex,x,y });
+    renderPage();
+  };
+}
+
+function nextPage(){ if(pageIndex<pdfDocJs.numPages-1){ pageIndex++; renderPage(); } }
+function prevPage(){ if(pageIndex>0){ pageIndex--; renderPage(); } }
+
+function getColor(t){
+  return t==="crack"?"red":
+         t==="dampness"?"blue":
+         t==="crack_dampness"?"green":"black";
+}
+
+/* ================= SUBMIT ================= */
+async function submitIssue() 
+{
+  if(!problems.length) return alert("Add at least one structure");
+
+  for(let i=0;i<problems.length;i++){
+    const p=problems[i];
+    if(!p.structureType||!p.direction||!p.issueType||!p.riskLevel){
+      alert(`Fill all fields for structure ${i+1}`);
+      return;
+    }
+  }
+
+  const bytes = await fetch(basePdfUrl).then(r=>r.arrayBuffer());
+  const pdf = await PDFLib.PDFDocument.load(bytes);
+  const pages = pdf.getPages();
+
+  marks.forEach(m=>{
+   pages[m.pageIndex].drawCircle({
+  x: m.x / scale,
+  y: (pdfCanvas.height - m.y) / scale,
+  size: 8,
+  borderColor: pdfColor(m.color), // ✅ USE STORED COLOR
+  borderWidth: 2,
+});
+
+  });
+
+  const edited = await pdf.save();
+  const fd = new FormData();
+  fd.append("structureProblems",JSON.stringify(problems));
+  fd.append("markedFloorPlan",new Blob([edited],{type:"application/pdf"}),"marked.pdf");
+
+  problems.forEach((p,i)=>{
+    if(p.images){
+      Array.from(p.images).forEach(img=>{
+        fd.append(`issueImages_${i}`,img);
+      });
+    }
+  });
+
+  const r = await fetch(API + "/api/issues/create", {
+    method:"POST",
+    headers:{ Authorization:"Bearer "+token },
+    body:fd
+  });
+  output.textContent = await r.text();
+
+  function pdfColor(color) {
+  switch (color) {
+    case "red":
+      return PDFLib.rgb(1, 0, 0);
+    case "blue":
+      return PDFLib.rgb(0, 0, 1);
+    case "green":
+      return PDFLib.rgb(0, 1, 0);
+    case "black":
+    default:
+      return PDFLib.rgb(0, 0, 0);
+  }
+}
+
+if (p.issueType === "dampness" && !p.dampnessLevel) {
+     alert(`Select dampness level for structure ${i + 1}`);
+  return;
+  }
+
+  if (p.issueType === "crack_dampness") {
+    if (!p.crackType || !p.dampnessLevel) {
+      alert(`Select crack type and dampness level for structure ${i + 1}`);
+      return;
+    }
+  }
+
+}
+
+/* ================= MANAGER ================= */
+async function getAllIssues() {
+  const r = await fetch(API + "/api/issues/all", {
+    headers:{ Authorization:"Bearer "+token }
+  });
+  output.textContent = await r.text();
+}
+</script>
+
 </body>
 </html>

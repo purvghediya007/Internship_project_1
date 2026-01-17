@@ -186,17 +186,19 @@
 
     /* ANALYTICS */
     .analytics-panel{
-      min-height: 420px;
-      margin-bottom: 18px;
+      margin-bottom: 10px;
     }
 
+    /* TOP 3 CARDS */
     .stats-grid{
       display:grid;
-      grid-template-columns: repeat(2,1fr);
+      grid-template-columns: repeat(3,1fr);
       gap: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-
+    @media (max-width: 1200px){
+      .stats-grid{ grid-template-columns: repeat(2,1fr); }
+    }
     @media (max-width: 576px){
       .stats-grid{ grid-template-columns: 1fr; }
     }
@@ -205,9 +207,8 @@
       border-radius: 18px;
       border: 1px solid #eef2f7;
       background: linear-gradient(180deg,#ffffff,#f8fafc);
-      padding: 16px 16px;
+      padding: 14px 14px;
       box-shadow: 0 10px 22px rgba(15,23,42,0.06);
-      transition: 0.25s ease;
     }
 
     .stat-title{
@@ -257,11 +258,12 @@
       border-color:#bbf7d0;
     }
 
+    /* MINI BOXES */
     .mini-box{
       border-radius: 18px;
       border: 1px solid #eef2f7;
       background: linear-gradient(180deg,#ffffff,#f8fafc);
-      padding: 16px;
+      padding: 14px;
       box-shadow: 0 10px 22px rgba(15,23,42,0.06);
       height: 100%;
     }
@@ -269,27 +271,30 @@
     .mini-box h6{
       font-weight: 900;
       font-size: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display:flex;
       align-items:center;
       gap:8px;
     }
 
-    .stats-list{
-      margin:0;
-      padding-left: 18px;
+    /* Issue/Structure Stats in 2 columns */
+    .stats-grid-2col{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.6;
       color:#0f172a;
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 1.7;
     }
-
-    /* colored number style */
-    .stats-list li strong{
+    .stats-grid-2col li strong{
       color:#0b5ed7;
     }
 
-    /* MAP VIEW PDF - FULL VIEW */
+    /* MAP VIEW */
     .map-card{
       border-radius: 18px;
       border: 1px solid #eef2f7;
@@ -297,10 +302,11 @@
       box-shadow: 0 10px 22px rgba(15,23,42,0.06);
       overflow:hidden;
       margin-bottom: 18px;
+      margin-top: 10px;
     }
 
     .map-head{
-      padding: 14px 16px;
+      padding: 12px 16px;
       background: linear-gradient(180deg,#f8fafc,#ffffff);
       border-bottom: 1px solid #eef2f7;
       display:flex;
@@ -318,17 +324,22 @@
       font-size: 18px;
     }
 
-    .map-body{ padding: 14px 16px; }
+    .map-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .map-body{
+      padding: 0;
+    }
 
     .pdf-frame{
       width: 100%;
-      height: 78vh; /* ✅ Full view */
-      min-height: 650px;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
+      height: 110vh;
+      border-top: 1px solid #e5e7eb;
       overflow: hidden;
       background: #0b1220;
-      box-shadow: 0 10px 30px rgba(15,23,42,0.15);
     }
 
     .pdf-frame iframe{
@@ -338,10 +349,10 @@
     }
 
     .pdf-empty{
-      border-radius: 18px;
-      border: 1px dashed #cbd5e1;
+      border-radius: 0;
+      border: none;
       background: linear-gradient(180deg,#ffffff,#f8fafc);
-      height: 500px;
+      height: 420px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -501,13 +512,13 @@
           <div class="mb-3">
             <label class="form-label fw-semibold">Floor Number</label>
             <input type="number" id="floorInput" class="form-control" placeholder="e.g. 2" />
-            <div class="helper-text">Leave empty to view all floors</div>
+            <div class="helper-text">Leave Empty To View All Floors</div>
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Date</label>
             <input type="date" id="dateInput" class="form-control" />
-            <div class="helper-text">Filter survey submitted on a specific day</div>
+            <div class="helper-text">Filter Survey Submitted On Specific Day</div>
           </div>
 
           <div class="d-grid gap-2">
@@ -522,17 +533,17 @@
           <!-- EXTRA CIVIL ANALYTICS -->
           <div class="side-mini">
             <h6><i class="bi bi-compass text-primary"></i> Direction Analysis</h6>
-            <div id="directionStatsBox" class="text-muted small">No data</div>
+            <div id="directionStatsBox" class="text-muted small">No Data</div>
           </div>
 
           <div class="side-mini">
-            <h6><i class="bi bi-activity text-primary"></i> Issue + Direction</h6>
-            <div id="issueDirectionStatsBox" class="text-muted small">No data</div>
+            <h6><i class="bi bi-activity text-primary"></i> Issue Direction Stats</h6>
+            <div id="issueDirectionStatsBox" class="text-muted small">No Data</div>
           </div>
 
           <div class="side-mini">
-            <h6><i class="bi bi-bricks text-primary"></i> Structure + Direction</h6>
-            <div id="structureDirectionStatsBox" class="text-muted small">No data</div>
+            <h6><i class="bi bi-bricks text-primary"></i> Structure Direction Stats</h6>
+            <div id="structureDirectionStatsBox" class="text-muted small">No Data</div>
           </div>
 
         </div>
@@ -551,21 +562,30 @@
 
         <div class="panel-body">
           <div class="stats-grid">
+
             <div class="stat-card">
               <div class="stat-title"><i class="bi bi-bullseye"></i> Total Spots</div>
               <div class="stat-value" id="statTotalProblems">0</div>
             </div>
 
-            <!-- ✅ ONLY ONE OVERALL RISK BOX -->
             <div class="stat-card">
               <div class="stat-title"><i class="bi bi-exclamation-triangle-fill"></i> Overall Risk</div>
               <div class="risk-badge risk-low" id="overallRiskBadge">
-                <i class="bi bi-shield-fill-check"></i> LOW
+                <i class="bi bi-shield-fill-check"></i> Low
               </div>
               <div class="helper-text mt-2">
-                Based on highest risk present in any spot.
+                Based On Highest Risk Present In Any Spot
               </div>
             </div>
+
+            <div class="stat-card">
+              <div class="stat-title"><i class="bi bi-lightbulb-fill"></i> Manager Suggestion</div>
+              <div class="helper-text" id="managerSuggestionText"
+                style="font-size:15px; font-weight:900; color:#0f172a; margin-top:10px;">
+                No Suggestion Yet
+              </div>
+            </div>
+
           </div>
 
           <div class="row g-3">
@@ -588,18 +608,25 @@
       </div>
 
       <!-- MAP VIEW -->
-      <div class="map-card mt-4" id="mapCard">
+      <div class="map-card" id="mapCard">
         <div class="map-head">
           <p class="map-title">
             <i class="bi bi-map-fill text-primary"></i>
-            Survey Map View (Marked PDF)
+            Survey Map View Marked Pdf
           </p>
-          <span class="pill" id="mapLabel">No PDF Loaded</span>
+
+          <div class="map-actions">
+            <span class="pill" id="mapLabel">No Pdf Loaded</span>
+            <a id="openFullMapBtn" href="#" target="_blank" class="btn btn-primary btn-sm d-none">
+              <i class="bi bi-box-arrow-up-right"></i> Open Full Map
+            </a>
+          </div>
         </div>
+
         <div class="map-body">
           <div id="mapBodyContent">
             <div class="pdf-empty">
-              No survey found for selected filter.
+              No Survey Found For Selected Filter
             </div>
           </div>
         </div>
@@ -609,7 +636,7 @@
       <div class="panel">
         <div class="panel-head">
           <h5><i class="bi bi-bullseye text-primary"></i> Spot Details</h5>
-          <span class="pill" id="spotCountText">0 spots</span>
+          <span class="pill" id="spotCountText">0 Spots</span>
         </div>
 
         <div class="panel-body">
@@ -707,7 +734,6 @@ function renderSingleSurvey(list) {
     return;
   }
 
-  // pick first survey
   const survey = list[0];
 
   if (survey.markedFloorPlan) {
@@ -722,6 +748,12 @@ function renderSingleSurvey(list) {
 /* ================= MAP VIEW PDF ================= */
 function showPdfInMap(url, floor){
   document.getElementById("mapLabel").innerText = `Floor ${floor}`;
+
+  // show button
+  const btn = document.getElementById("openFullMapBtn");
+  btn.href = url;
+  btn.classList.remove("d-none");
+
   document.getElementById("mapBodyContent").innerHTML = `
     <div class="pdf-frame">
       <iframe src="${url}"></iframe>
@@ -730,10 +762,15 @@ function showPdfInMap(url, floor){
 }
 
 function setMapEmpty(){
-  document.getElementById("mapLabel").innerText = "No PDF Loaded";
+  document.getElementById("mapLabel").innerText = "No Pdf Loaded";
+
+  const btn = document.getElementById("openFullMapBtn");
+  btn.href = "#";
+  btn.classList.add("d-none");
+
   document.getElementById("mapBodyContent").innerHTML = `
     <div class="pdf-empty">
-      No marked PDF found for this filter.
+      No Marked Pdf Found For This Filter
     </div>
   `;
 }
@@ -743,7 +780,7 @@ function renderSpotDetails(spots) {
   const container = document.getElementById("spotDetailsContainer");
   container.innerHTML = "";
 
-  document.getElementById("spotCountText").innerText = `${spots.length} spots`;
+  document.getElementById("spotCountText").innerText = `${spots.length} Spots`;
 
   if (!spots.length) {
     setSpotEmpty();
@@ -766,10 +803,10 @@ function renderSpotDetails(spots) {
             <i class="bi bi-geo-fill text-primary"></i>
             Spot #${idx + 1}
           </p>
-          <div class="helper-text">One marked location in survey</div>
+          <div class="helper-text">One Marked Location In Survey</div>
         </div>
 
-        <span class="spot-pill">${(p.riskLevel || "unknown").toUpperCase()}</span>
+        <span class="spot-pill">${(p.riskLevel || "Unknown").toUpperCase()}</span>
       </div>
 
       <div class="spot-body">
@@ -781,7 +818,7 @@ function renderSpotDetails(spots) {
 
         <div class="desc">
           <strong>Description:</strong>
-          ${p.description ? p.description : "No description provided"}
+          ${p.description ? p.description : "No Description Provided"}
         </div>
 
         <div class="mt-3">
@@ -791,7 +828,7 @@ function renderSpotDetails(spots) {
               ? `<div class="photo-grid">
                   ${photos.map(img => `<img src="${img}" class="photo" onclick="openImage('${img}')" />`).join("")}
                 </div>`
-              : `<div class="helper-text mt-1">No photos uploaded</div>`
+              : `<div class="helper-text mt-1">No Photos Uploaded</div>`
           }
         </div>
       </div>
@@ -804,15 +841,14 @@ function renderSpotDetails(spots) {
 }
 
 function setSpotEmpty(){
-  document.getElementById("spotCountText").innerText = "0 spots";
+  document.getElementById("spotCountText").innerText = "0 Spots";
   document.getElementById("spotDetailsContainer").innerHTML = `
     <div class="empty-box">
-      No spot details found.
+      No Spot Details Found
     </div>
   `;
 }
 
-/* OPEN IMAGE FULL */
 function openImage(url){
   window.open(url, "_blank");
 }
@@ -843,13 +879,13 @@ function calculateStatsFromSurveys(surveys) {
       issueTypeStats[p.issueType] = (issueTypeStats[p.issueType] || 0) + 1;
       structureStats[p.structureType] = (structureStats[p.structureType] || 0) + 1;
 
-      const dir = p.direction || "unknown";
+      const dir = p.direction || "Unknown";
       directionStats[dir] = (directionStats[dir] || 0) + 1;
 
-      const idKey = `${p.issueType || "unknown"}_${dir}`;
+      const idKey = `${p.issueType || "Unknown"}_${dir}`;
       issueDirectionStats[idKey] = (issueDirectionStats[idKey] || 0) + 1;
 
-      const sdKey = `${p.structureType || "unknown"}_${dir}`;
+      const sdKey = `${p.structureType || "Unknown"}_${dir}`;
       structureDirectionStats[sdKey] = (structureDirectionStats[sdKey] || 0) + 1;
     });
   });
@@ -870,7 +906,7 @@ function updateDashboardUIFromFilteredIssues(filteredSurveys) {
 
   document.getElementById("statTotalProblems").innerText = stats.summary.totalSpots;
 
-  // ✅ OVERALL RISK = highest present
+  // OVERALL RISK
   let overall = "low";
   if (stats.summary.highRisk > 0) overall = "high";
   else if (stats.summary.mediumRisk > 0) overall = "medium";
@@ -881,13 +917,23 @@ function updateDashboardUIFromFilteredIssues(filteredSurveys) {
 
   if (overall === "high") {
     badge.classList.add("risk-high");
-    badge.innerHTML = `<i class="bi bi-exclamation-octagon-fill"></i> HIGH`;
+    badge.innerHTML = `<i class="bi bi-exclamation-octagon-fill"></i> High`;
   } else if (overall === "medium") {
     badge.classList.add("risk-medium");
-    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> MEDIUM`;
+    badge.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Medium`;
   } else {
     badge.classList.add("risk-low");
-    badge.innerHTML = `<i class="bi bi-shield-fill-check"></i> LOW`;
+    badge.innerHTML = `<i class="bi bi-shield-fill-check"></i> Low`;
+  }
+
+  // MANAGER SUGGESTION
+  const suggestionEl = document.getElementById("managerSuggestionText");
+  if (overall === "high") {
+    suggestionEl.innerHTML = `Immediate Inspection Required<br/>Prioritize High Risk Spots First`;
+  } else if (overall === "medium") {
+    suggestionEl.innerHTML = `Schedule Maintenance Soon<br/>Monitor Crack And Dampness Areas`;
+  } else {
+    suggestionEl.innerHTML = `Condition Looks Stable<br/>Continue Routine Checks Monthly`;
   }
 
   renderStatsBox("issueTypeStats", stats.issueTypeStats);
@@ -903,12 +949,12 @@ function renderStatsBox(elementId, statsObj) {
   const el = document.getElementById(elementId);
 
   if (!statsObj || Object.keys(statsObj).length === 0) {
-    el.innerHTML = `<div class="text-muted fw-semibold">No data</div>`;
+    el.innerHTML = `<div class="text-muted fw-semibold">No Data</div>`;
     return;
   }
 
   const list = document.createElement("ul");
-  list.className = "stats-list";
+  list.className = "stats-grid-2col";
 
   Object.entries(statsObj)
     .sort((a,b) => b[1] - a[1])
@@ -922,12 +968,11 @@ function renderStatsBox(elementId, statsObj) {
   el.appendChild(list);
 }
 
-/* Sidebar lists */
 function renderSideStatsBox(elementId, statsObj) {
   const el = document.getElementById(elementId);
 
   if (!statsObj || Object.keys(statsObj).length === 0) {
-    el.innerHTML = `<div class="text-muted small fw-semibold">No data</div>`;
+    el.innerHTML = `<div class="text-muted small fw-semibold">No Data</div>`;
     return;
   }
 
