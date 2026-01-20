@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const db='mongodb://localhost:27017/ns';
+const db="mongodb+srv://purvghediya007_db_user:vSBABaIz4cz6sCRC@cluster1.axzk2ty.mongodb.net/accionland?retryWrites=true&w=majority";
 const connectDB = async () => {
   try {
     await mongoose.connect(db);
