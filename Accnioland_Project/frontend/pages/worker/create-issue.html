@@ -588,20 +588,43 @@ async function renderPage() {
     }
   });
 
+  // pdfCanvas.onclick = e => {
+  //   if (!problems.length) return alert("Add structure first");
+
+  //   const rect = pdfCanvas.getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const y = e.clientY - rect.top;
+
+  //   const p = problems[problems.length - 1];
+  //   const color = getColor(p.issueType);
+
+  //   marks.push({ pageIndex, x, y, color });
+  //   p.pdfMarks.push({ pageIndex, x, y });
+  //   renderPage();
+  // };
+
+
   pdfCanvas.onclick = e => {
-    if (!problems.length) return alert("Add structure first");
+  if (!problems.length) return alert("Add structure first");
 
-    const rect = pdfCanvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  const rect = pdfCanvas.getBoundingClientRect();
 
-    const p = problems[problems.length - 1];
-    const color = getColor(p.issueType);
+  const scaleX = pdfCanvas.width / rect.width;
+  const scaleY = pdfCanvas.height / rect.height;
 
-    marks.push({ pageIndex, x, y, color });
-    p.pdfMarks.push({ pageIndex, x, y });
-    renderPage();
-  };
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+
+  const p = problems[problems.length - 1];
+  const color = getColor(p.issueType);
+
+  marks.push({ pageIndex, x, y, color });
+  p.pdfMarks.push({ pageIndex, x, y });
+
+  renderPage();
+};
+
+
 }
 
 function nextPage() {
