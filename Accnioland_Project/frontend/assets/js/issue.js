@@ -1,4 +1,4 @@
-const API = " https://accionland-rvs.onrender.com";
+const API = "https://accionland-rvs.onrender.com";
 
 async function loadIssueDetails() {
   const params = new URLSearchParams(window.location.search);

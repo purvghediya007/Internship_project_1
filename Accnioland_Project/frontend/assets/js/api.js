@@ -2,7 +2,7 @@
 // GLOBAL API CONFIG
 // ===============================
 
-const API = " https://accionland-rvs.onrender.com";
+const API = "https://accionland-rvs.onrender.com";
 
 // Auth header helper
 function authHeaders() {
