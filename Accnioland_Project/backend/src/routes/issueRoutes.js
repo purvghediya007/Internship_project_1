@@ -8,7 +8,8 @@ const upload = require("../middleware/upload");
 const {
   createIssue,
   getAllIssues,
-  addSpotPhotos, // ✅ NEW
+  addSpotPhotos,     // ✅ NEW
+  deleteSpotPhoto,   // ✅ NEW
 } = require("../controllers/issueController");
 
 // OFFICE WORKER → CREATE ISSUE
@@ -22,7 +23,7 @@ router.post(
     // required edited PDF
     { name: "markedFloorPlan", maxCount: 1 },
 
-    // 🔥 dynamic multi-structure images
+    // 🔥 dynamic multi-structure images (worker side)
     { name: "issueImages_0", maxCount: 10 },
     { name: "issueImages_1", maxCount: 10 },
     { name: "issueImages_2", maxCount: 10 },
@@ -56,6 +57,18 @@ router.patch(
     { name: "issueImages_9", maxCount: 10 },
   ]),
   addSpotPhotos
+);
+
+/**
+ * ✅ MANAGER → DELETE A SINGLE PHOTO FROM A SPOT
+ * DELETE /api/issues/:issueId/spot/:spotIndex/photo
+ * Body: { photoUrl: "https://..." }
+ */
+router.delete(
+  "/:issueId/spot/:spotIndex/photo",
+  authMiddleware,
+  managerOnly,
+  deleteSpotPhoto
 );
 
 module.exports = router;
