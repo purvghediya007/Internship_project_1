@@ -1,7 +1,6 @@
 const Issue = require("../models/Issue");
 const FloorPlan = require("../models/FloorPlan");
 
-
 /**
  * Helper: derive color from issueType
  * (backend safety – frontend already handles this)
@@ -37,22 +36,14 @@ exports.createIssue = async (req, res) => {
     const markedFloorPlan = req.files.markedFloorPlan[0].path;
 
     /* ================= BASE FLOOR PLAN (FIX) ================= */
-    // const floorPlan = await FloorPlan.findOne({
-    //   floorNumber: user.floorNumber,
-    //   $or: [
-    //     { officeNumber: user.officeNumber },
-    //     { officeNumber:null},
-    //   ],
-    // });
     const floorPlan = await FloorPlan.findOne({
-  floorNumber: user.floorNumber,
-  $or: [
-    { officeNumber: user.officeNumber }, // office-specific
-    { officeNumber: null },              // floor-level
-    { officeNumber: { $exists: false } } // legacy / undefined
-  ],
-}).sort({ createdAt: -1 });
-
+      floorNumber: user.floorNumber,
+      $or: [
+        { officeNumber: user.officeNumber }, // office-specific
+        { officeNumber: null },              // floor-level
+        { officeNumber: { $exists: false } } // legacy / undefined
+      ],
+    }).sort({ createdAt: -1 });
 
     if (!floorPlan) {
       return res.status(400).json({
@@ -132,7 +123,6 @@ exports.createIssue = async (req, res) => {
   }
 };
 
-
 /**
  * GET ALL ISSUES (Manager)
  */
@@ -145,6 +135,57 @@ exports.getAllIssues = async (req, res) => {
     res.json(issues);
   } catch (error) {
     console.error("Get Issues Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * ✅ NEW: MANAGER ADD PHOTOS TO A SPOT
+ * PATCH /api/issues/:issueId/spot/:spotIndex/add-photos
+ */
+exports.addSpotPhotos = async (req, res) => {
+  try {
+    const { issueId, spotIndex } = req.params;
+
+    const index = Number(spotIndex);
+    if (isNaN(index) || index < 0) {
+      return res.status(400).json({ message: "Invalid spot index" });
+    }
+
+    const issue = await Issue.findById(issueId);
+    if (!issue) {
+      return res.status(404).json({ message: "Issue not found" });
+    }
+
+    if (!issue.structureProblems || !issue.structureProblems[index]) {
+      return res.status(404).json({ message: "Spot not found in this issue" });
+    }
+
+    const fieldName = `issueImages_${index}`;
+    const uploadedFiles = req.files?.[fieldName] || [];
+
+    if (!uploadedFiles.length) {
+      return res.status(400).json({ message: "No images uploaded" });
+    }
+
+    const newUrls = uploadedFiles.map((f) => f.path);
+
+    if (!Array.isArray(issue.structureProblems[index].images)) {
+      issue.structureProblems[index].images = [];
+    }
+
+    issue.structureProblems[index].images.push(...newUrls);
+
+    await issue.save();
+
+    return res.status(200).json({
+      message: "Spot photos added successfully",
+      added: newUrls.length,
+      newUrls,
+      issue,
+    });
+  } catch (error) {
+    console.error("Add Spot Photos Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
