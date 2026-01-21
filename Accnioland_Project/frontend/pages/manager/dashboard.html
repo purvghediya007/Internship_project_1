@@ -22,7 +22,6 @@
     }
 
     /* NAVBAR */
-    /* 2563eb */
     .topbar{
       background: linear-gradient(90deg,#2f6dcb,#2f6dcb);
       box-shadow: 0 12px 30px rgba(2,6,23,0.18);
@@ -37,21 +36,13 @@
       gap:10px;
     }
 
-    /* ✅ LOGO */
-    /* .brand-logo{
-      height: 34px;
+    /* LOGO */
+    .brand-logo{
+      height: 50px;
       width: auto;
       border-radius: 8px;
-      background: rgba(255,255,255,0.15);
-      padding: 2px;
-    } */
-     .brand-logo{
-  height: 50px;   /* 🔥 change this value for size */
-  width: auto;    /* keeps logo ratio */
-  border-radius: 8px;
-  object-fit: contain;
-}
-
+      object-fit: contain;
+    }
 
     /* GRID LAYOUT */
     .dashboard-wrap{
@@ -502,7 +493,6 @@
 <!-- NAVBAR -->
 <nav class="navbar navbar-dark px-3 topbar">
   <span class="navbar-brand fw-semibold d-flex align-items-center gap-2">
-    <!-- ✅ LOGO (Change Path If Needed) -->
     <img src="./logo.png" alt="AccionLAND Logo" class="brand-logo" />
     AccionLAND – RVS
   </span>
@@ -529,7 +519,6 @@
 
         <div class="sidebar-body">
 
-          <!-- ✅ UPDATED FLOOR FILTER (SHORT INPUT) -->
           <div class="mb-3">
             <label class="form-label fw-semibold">Floor</label>
             <input
@@ -680,7 +669,7 @@
 
 <script>
 /* ================= CONFIG ================= */
-const API = "https://accionland-rvs.onrender.com";/////////////////////////////////////
+const API = "https://accionland-rvs.onrender.com";
 const token = localStorage.getItem("token");
 const userType = localStorage.getItem("userType");
 
@@ -693,22 +682,18 @@ function getFloorLabel(floorNumber){
   return `Floor ${floorNumber}`;
 }
 
-// ✅ SHORT INPUT SUPPORT: 1, 2, B1, GF
 function parseFloorInput(input){
   if (!input) return null;
 
   const text = String(input).trim().toUpperCase();
 
-  // Ground Floor
   if (text === "GF") return 0;
 
-  // Basement floors: B1 => -1, B2 => -2
   if (text.startsWith("B")) {
     const num = text.replace(/[^0-9]/g, "");
     if (num) return -Number(num);
   }
 
-  // Normal floors: 1 => 1, 2 => 2
   if (!isNaN(Number(text))) return Number(text);
 
   return null;
@@ -801,7 +786,7 @@ function renderSingleSurvey(list) {
     setMapEmpty();
   }
 
-  renderSpotDetails(survey.structureProblems || []);
+  renderSpotDetails(survey, survey.structureProblems || []);
 }
 
 /* ================= MAP VIEW PDF ================= */
@@ -834,7 +819,7 @@ function setMapEmpty(){
 }
 
 /* ================= SPOT DETAILS ================= */
-function renderSpotDetails(spots) {
+function renderSpotDetails(survey, spots) {
   const container = document.getElementById("spotDetailsContainer");
   container.innerHTML = "";
 
@@ -881,13 +866,35 @@ function renderSpotDetails(spots) {
 
         <div class="mt-3">
           <strong>Photos:</strong>
+
           ${
             photos.length
-              ? `<div class="photo-grid">
-                  ${photos.map(img => `<img src="${img}" class="photo" onclick="openImage('${img}')" />`).join("")}
+              ? `<div class="photo-grid" id="photoGrid_${idx}">
+                  ${photos.map(img => `
+                    <img src="${img}" class="photo" onclick="openImage('${img}')" />
+                  `).join("")}
                 </div>`
-              : `<div class="helper-text mt-1">No Photos Uploaded</div>`
+              : `<div class="helper-text mt-1" id="photoGrid_${idx}">No Photos Uploaded</div>`
           }
+
+          <!-- ✅ Manager Add Photos -->
+          <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+            <input
+              type="file"
+              id="spotFileInput_${idx}"
+              class="form-control"
+              style="max-width:260px;"
+              multiple
+              accept="image/*"
+            />
+
+            <button class="btn btn-primary btn-sm"
+              onclick="uploadSpotPhotos('${survey._id}', ${idx})">
+              <i class="bi bi-camera-fill"></i> Add Photos
+            </button>
+
+            <span id="uploadStatus_${idx}" class="text-muted small fw-semibold"></span>
+          </div>
         </div>
       </div>
     `;
@@ -909,6 +916,54 @@ function setSpotEmpty(){
 
 function openImage(url){
   window.open(url, "_blank");
+}
+
+/* ================= ✅ NEW: UPLOAD SPOT PHOTOS ================= */
+async function uploadSpotPhotos(issueId, spotIndex) {
+  const input = document.getElementById(`spotFileInput_${spotIndex}`);
+  const status = document.getElementById(`uploadStatus_${spotIndex}`);
+
+  if (!input.files || input.files.length === 0) {
+    alert("Please select images first!");
+    return;
+  }
+
+  try {
+    status.innerText = "Uploading...";
+
+    const formData = new FormData();
+
+    // backend will accept any field using upload.any()
+    // but we still keep name as issueImages_{index}
+    for (let file of input.files) {
+      formData.append(`issueImages_${spotIndex}`, file);
+    }
+
+    const res = await fetch(API + `/api/issues/${issueId}/spot/${spotIndex}/add-photos`, {
+      method: "PATCH",
+      headers: { Authorization: "Bearer " + token },
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data);
+      status.innerText = "Failed ❌";
+      alert(data.message || "Upload failed");
+      return;
+    }
+
+    status.innerText = "Uploaded ✅";
+
+    // Refresh UI to show newly added images
+    await loadIssues();
+
+  } catch (err) {
+    console.error(err);
+    status.innerText = "Error ❌";
+    alert("Something went wrong");
+  }
 }
 
 /* ================= CALCULATE ENGINEER STATS ================= */
