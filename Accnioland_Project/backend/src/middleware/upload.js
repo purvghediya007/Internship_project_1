@@ -1,3 +1,32 @@
+// const multer = require("multer");
+// const { CloudinaryStorage } = require("multer-storage-cloudinary");
+// const cloudinary = require("../config/cloudinary");
+
+// const storage = new CloudinaryStorage({
+//   cloudinary,
+//   params: (req, file) => {
+//     if (file.mimetype.startsWith("image/")) {
+//       return {
+//         folder: "issues/images",
+//         allowed_formats: ["jpg", "jpeg", "png"],
+//       };
+//     }
+
+//     if (file.mimetype === "application/pdf") {
+//       return {
+//         folder: "issues/floor-plans",
+//          resource_type: "image",
+//         allowed_formats: ["pdf"],
+//       };
+//     }
+
+//     return null;
+//   },
+// });
+
+// const upload = multer({ storage });
+
+// module.exports = upload;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
@@ -5,22 +34,26 @@ const cloudinary = require("../config/cloudinary");
 const storage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => {
+    // ✅ IMAGE UPLOAD
     if (file.mimetype.startsWith("image/")) {
       return {
         folder: "issues/images",
-        allowed_formats: ["jpg", "jpeg", "png"],
+        allowed_formats: ["jpg", "jpeg", "png", "webp"],
       };
     }
 
+    // ✅ PDF UPLOAD
     if (file.mimetype === "application/pdf") {
       return {
         folder: "issues/floor-plans",
-         resource_type: "image",
-        allowed_formats: ["pdf"],
+        resource_type: "raw",
+        format: "pdf",
       };
     }
 
-    return null;
+    return {
+      folder: "issues/others",
+    };
   },
 });
 
