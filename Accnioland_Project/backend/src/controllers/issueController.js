@@ -464,6 +464,57 @@ exports.addSpotPhotos = async (req, res) => {
       return res.status(404).json({ message: "Spot not found in this issue" });
     }
 
+    const fieldName = `issueImages_${index}`;
+    const uploadedFiles = req.files?.[fieldName] || [];
+
+    if (!uploadedFiles.length) {
+      return res.status(400).json({ message: "No images uploaded" });
+    }
+
+    const newUrls = uploadedFiles.map((f) => f.path);
+
+    if (!Array.isArray(issue.structureProblems[index].images)) {
+      issue.structureProblems[index].images = [];
+    }
+
+    issue.structureProblems[index].images.push(...newUrls);
+
+    await issue.save();
+
+    return res.status(200).json({
+      message: "Spot photos added successfully",
+      added: newUrls.length,
+      newUrls,
+      issue,
+    });
+  } catch (error) {
+    console.error("Add Spot Photos Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * ✅ NEW: MANAGER ADD PHOTOS TO A SPOT
+ * PATCH /api/issues/:issueId/spot/:spotIndex/add-photos
+ */
+exports.addSpotPhotos = async (req, res) => {
+  try {
+    const { issueId, spotIndex } = req.params;
+
+    const index = Number(spotIndex);
+    if (isNaN(index) || index < 0) {
+      return res.status(400).json({ message: "Invalid spot index" });
+    }
+
+    const issue = await Issue.findById(issueId);
+    if (!issue) {
+      return res.status(404).json({ message: "Issue not found" });
+    }
+
+    if (!issue.structureProblems || !issue.structureProblems[index]) {
+      return res.status(404).json({ message: "Spot not found in this issue" });
+    }
+
     // multer fields => req.files is object
     const fieldName = `issueImages_${index}`;
     const uploadedFiles = req.files?.[fieldName] || [];
