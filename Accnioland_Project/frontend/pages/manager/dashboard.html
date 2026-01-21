@@ -21,7 +21,6 @@
       color:#0f172a;
     }
 
-    /* NAVBAR */
     .topbar{
       background: linear-gradient(90deg,#2f6dcb,#2f6dcb);
       box-shadow: 0 12px 30px rgba(2,6,23,0.18);
@@ -36,7 +35,6 @@
       gap:10px;
     }
 
-    /* LOGO */
     .brand-logo{
       height: 50px;
       width: auto;
@@ -44,7 +42,6 @@
       object-fit: contain;
     }
 
-    /* GRID LAYOUT */
     .dashboard-wrap{
       display:grid;
       grid-template-columns: 340px 1fr;
@@ -55,7 +52,6 @@
       .dashboard-wrap{ grid-template-columns: 1fr; }
     }
 
-    /* SIDEBAR */
     .sidebar{
       position: sticky;
       top: 16px;
@@ -123,7 +119,6 @@
       margin-top: 6px;
     }
 
-    /* SIDEBAR ANALYTICS BOX */
     .side-mini{
       margin-top: 14px;
       border-radius: 16px;
@@ -162,7 +157,6 @@
       white-space: nowrap;
     }
 
-    /* PANELS */
     .panel{
       border-radius: 18px;
       border: 1px solid #e5e7eb;
@@ -192,12 +186,10 @@
 
     .panel-body{ padding: 18px; }
 
-    /* ANALYTICS */
     .analytics-panel{
       margin-bottom: 10px;
     }
 
-    /* TOP 3 CARDS */
     .stats-grid{
       display:grid;
       grid-template-columns: repeat(3,1fr);
@@ -237,7 +229,6 @@
       color:#0b5ed7;
     }
 
-    /* Overall Risk Badge */
     .risk-badge{
       display:inline-flex;
       align-items:center;
@@ -266,13 +257,12 @@
       border-color:#bbf7d0;
     }
 
-    /* MINI BOXES */
     .mini-box{
       border-radius: 18px;
       border: 1px solid #eef2f7;
       background: linear-gradient(180deg,#ffffff,#f8fafc);
       padding: 14px;
-      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+      box-shadow:  0 10px 22px rgba(15,23,42,0.06);
       height: 100%;
     }
 
@@ -285,7 +275,6 @@
       gap:8px;
     }
 
-    /* Issue/Structure Stats in 2 columns */
     .stats-grid-2col{
       display:grid;
       grid-template-columns: repeat(2, 1fr);
@@ -302,7 +291,6 @@
       color:#0b5ed7;
     }
 
-    /* MAP VIEW */
     .map-card{
       border-radius: 18px;
       border: 1px solid #eef2f7;
@@ -371,7 +359,6 @@
       padding: 12px;
     }
 
-    /* SPOTS LIST */
     .spot-grid{
       display:grid;
       grid-template-columns: repeat(2, 1fr);
@@ -475,6 +462,28 @@
       transform: scale(1.02);
     }
 
+    /* ✅ DELETE BUTTON */
+    .photo-wrap{
+      position: relative;
+    }
+    .photo-delete-btn{
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      border: none;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-weight: 900;
+      font-size: 12px;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .photo-delete-btn:hover{
+      background: rgba(220,38,38,0.95);
+    }
+
     .empty-box{
       border-radius: 16px;
       border: 1px dashed #cbd5e1;
@@ -521,12 +530,7 @@
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Floor</label>
-            <input
-              type="text"
-              id="floorInput"
-              class="form-control"
-              placeholder="e.g. 1, 2, B1, GF"
-            />
+            <input type="text" id="floorInput" class="form-control" placeholder="e.g. 1, 2, B1, GF" />
             <div class="helper-text">Type: 1, 2, 3... | B1, B2... | GF</div>
           </div>
 
@@ -545,7 +549,6 @@
             </button>
           </div>
 
-          <!-- EXTRA CIVIL ANALYTICS -->
           <div class="side-mini">
             <h6><i class="bi bi-compass text-primary"></i> Direction Analysis</h6>
             <div id="directionStatsBox" class="text-muted small">No Data</div>
@@ -669,7 +672,7 @@
 
 <script>
 /* ================= CONFIG ================= */
-const API = "https://accionland-rvs.onrender.com";
+const API = "https://accionland-rvs.onrender.com"; // ✅ DEPLOYMENT URL
 const token = localStorage.getItem("token");
 const userType = localStorage.getItem("userType");
 
@@ -869,12 +872,18 @@ function renderSpotDetails(survey, spots) {
 
           ${
             photos.length
-              ? `<div class="photo-grid" id="photoGrid_${idx}">
+              ? `<div class="photo-grid">
                   ${photos.map(img => `
-                    <img src="${img}" class="photo" onclick="openImage('${img}')" />
+                    <div class="photo-wrap">
+                      <button class="photo-delete-btn"
+                        onclick="deleteSpotPhoto(event,'${survey._id}',${idx},'${img}')">
+                        ✕
+                      </button>
+                      <img src="${img}" class="photo" onclick="openImage('${img}')" />
+                    </div>
                   `).join("")}
                 </div>`
-              : `<div class="helper-text mt-1" id="photoGrid_${idx}">No Photos Uploaded</div>`
+              : `<div class="helper-text mt-1">No Photos Uploaded</div>`
           }
 
           <!-- ✅ Manager Add Photos -->
@@ -918,7 +927,7 @@ function openImage(url){
   window.open(url, "_blank");
 }
 
-/* ================= ✅ NEW: UPLOAD SPOT PHOTOS ================= */
+/* ================= ✅ UPLOAD SPOT PHOTOS ================= */
 async function uploadSpotPhotos(issueId, spotIndex) {
   const input = document.getElementById(`spotFileInput_${spotIndex}`);
   const status = document.getElementById(`uploadStatus_${spotIndex}`);
@@ -933,8 +942,6 @@ async function uploadSpotPhotos(issueId, spotIndex) {
 
     const formData = new FormData();
 
-    // backend will accept any field using upload.any()
-    // but we still keep name as issueImages_{index}
     for (let file of input.files) {
       formData.append(`issueImages_${spotIndex}`, file);
     }
@@ -948,21 +955,53 @@ async function uploadSpotPhotos(issueId, spotIndex) {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error(data);
+      console.error("Backend Error:", data);
       status.innerText = "Failed ❌";
       alert(data.message || "Upload failed");
       return;
     }
 
     status.innerText = "Uploaded ✅";
-
-    // Refresh UI to show newly added images
     await loadIssues();
 
   } catch (err) {
-    console.error(err);
+    console.error("Upload Error:", err);
     status.innerText = "Error ❌";
-    alert("Something went wrong");
+    alert("Upload Error: " + err.message);
+  }
+}
+
+/* ================= ✅ DELETE SPOT PHOTO ================= */
+async function deleteSpotPhoto(e, issueId, spotIndex, photoUrl){
+  e.stopPropagation();
+
+  const ok = confirm("Delete this photo?");
+  if (!ok) return;
+
+  try {
+    const res = await fetch(API + `/api/issues/${issueId}/spot/${spotIndex}/photo`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ photoUrl })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Delete Error:", data);
+      alert(data.message || "Delete failed");
+      return;
+    }
+
+    alert("Photo deleted ✅");
+    await loadIssues();
+
+  } catch (err) {
+    console.error("Delete Error:", err);
+    alert("Delete error: " + err.message);
   }
 }
 
@@ -1019,7 +1058,6 @@ function updateDashboardUIFromFilteredIssues(filteredSurveys) {
 
   document.getElementById("statTotalProblems").innerText = stats.summary.totalSpots;
 
-  // OVERALL RISK
   let overall = "low";
   if (stats.summary.highRisk > 0) overall = "high";
   else if (stats.summary.mediumRisk > 0) overall = "medium";
@@ -1039,7 +1077,6 @@ function updateDashboardUIFromFilteredIssues(filteredSurveys) {
     badge.innerHTML = `<i class="bi bi-shield-fill-check"></i> Low`;
   }
 
-  // MANAGER SUGGESTION
   const suggestionEl = document.getElementById("managerSuggestionText");
   if (overall === "high") {
     suggestionEl.innerHTML = `Immediate Inspection Required<br/>Prioritize High Risk Spots First`;
