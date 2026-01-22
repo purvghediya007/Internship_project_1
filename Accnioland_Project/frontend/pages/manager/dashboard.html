@@ -262,7 +262,7 @@
       border: 1px solid #eef2f7;
       background: linear-gradient(180deg,#ffffff,#f8fafc);
       padding: 14px;
-      box-shadow:  0 10px 22px rgba(15,23,42,0.06);
+      box-shadow: 0 10px 22px rgba(15,23,42,0.06);
       height: 100%;
     }
 
@@ -672,11 +672,36 @@
 
 <script>
 /* ================= CONFIG ================= */
-const API = "https://accionland-rvs.onrender.com"; // ✅ DEPLOYMENT URL
+const API = "http://localhost:5000"; // ✅ LOCAL TEST
+// const API = "https://accionland-rvs.onrender.com"; // ✅ DEPLOYMENT
 const token = localStorage.getItem("token");
 const userType = localStorage.getItem("userType");
 
 let ALL_ISSUES = [];
+
+/* ================= ✅ TEXT FORMATTERS (TITLE CASE / SENTENCE CASE) ================= */
+function toTitleCase(text){
+  if (!text) return "N/A";
+
+  return String(text)
+    .replace(/[_-]+/g, " ")
+    .toLowerCase()
+    .split(" ")
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function toSentenceCase(text){
+  if (!text) return "N/A";
+
+  const str = String(text)
+    .replace(/[_-]+/g, " ")
+    .toLowerCase()
+    .trim();
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 /* ================= FLOOR LABEL + SHORT PARSER ================= */
 function getFloorLabel(floorNumber){
@@ -852,14 +877,14 @@ function renderSpotDetails(survey, spots) {
           <div class="helper-text">One Marked Location In Survey</div>
         </div>
 
-        <span class="spot-pill">${(p.riskLevel || "Unknown").toUpperCase()}</span>
+        <span class="spot-pill">${toTitleCase(p.riskLevel || "Unknown")}</span>
       </div>
 
       <div class="spot-body">
         <div class="kv">
-          <span>Structure: ${p.structureType || "N/A"}</span>
-          <span>Direction: ${p.direction || "N/A"}</span>
-          <span>Issue: ${p.issueType || "N/A"}</span>
+          <span>Structure: ${toTitleCase(p.structureType)}</span>
+          <span>Direction: ${toTitleCase(p.direction)}</span>
+          <span>Issue: ${toTitleCase(p.issueType)}</span>
         </div>
 
         <div class="desc">
@@ -1110,7 +1135,7 @@ function renderStatsBox(elementId, statsObj) {
     .sort((a,b) => b[1] - a[1])
     .forEach(([key, value]) => {
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${key}</strong> : ${value}`;
+      li.innerHTML = `<strong>${toTitleCase(key)}</strong> : ${value}`;
       list.appendChild(li);
     });
 
@@ -1133,7 +1158,7 @@ function renderSideStatsBox(elementId, statsObj) {
     .sort((a,b) => b[1] - a[1])
     .forEach(([key, value]) => {
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${key}</strong> : ${value}`;
+      li.innerHTML = `<strong>${toTitleCase(key)}</strong> : ${value}`;
       list.appendChild(li);
     });
 
