@@ -81,6 +81,26 @@ const structureProblemSchema = new mongoose.Schema(
     images: [{ type: String, required: true }],
 
     pdfMarks: { type: [pdfMarkSchema], default: [] },
+
+    status: {
+      type: String,
+      enum: ["in_progress", "resolved"],
+      default: "in_progress",
+    },
+
+    resolution: 
+    {
+      description: String,
+      images: [String],
+      resolvedAt: Date,
+      resolvedBy: 
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+    }
+
+
   },
   { _id: false }
 );
@@ -238,11 +258,11 @@ const issueSchema = new mongoose.Schema(
       default: [],
     },
 
-    status: {
-      type: String,
-      enum: ["open", "in_progress", "resolved"],
-      default: "open",
-    },
+    // status: {
+    //   type: String,
+    //   enum: ["open", "in_progress", "resolved"],
+    //   default: "open",
+    // },
   },
   { timestamps: true }
 );
