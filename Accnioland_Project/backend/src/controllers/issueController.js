@@ -243,3 +243,99 @@ exports.deleteSpotPhoto = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+/**
+ * 🆕 WORKER → GET MY ISSUES (HISTORY)
+ * GET /api/issues/my
+ */
+exports.getMyIssues = async (req, res) => {
+  try {
+    const user = req.user;
+
+    // Only office workers allowed
+    if (user.userType !== "office_worker") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const issues = await Issue.find({
+      reportedBy: user._id,
+      floorNumber: user.floorNumber,
+    })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json(issues);
+  } catch (error) {
+    console.error("Get My Issues Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * 🆕 WORKER → RESOLVE A STRUCTURE (SPOT)
+ * PATCH /api/issues/:issueId/spot/:spotIndex/resolve
+ */
+exports.resolveStructureProblem = async (req, res) => {
+  try {
+    const user = req.user;
+    const { issueId, spotIndex } = req.params;
+    const { description } = req.body;
+
+    // Only office workers allowed
+    if (user.userType !== "office_worker") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const index = Number(spotIndex);
+    if (isNaN(index) || index < 0) {
+      return res.status(400).json({ message: "Invalid spot index" });
+    }
+
+    const issue = await Issue.findById(issueId);
+    if (!issue) {
+      return res.status(404).json({ message: "Issue not found" });
+    }
+
+    // Ensure worker owns this issue
+    if (String(issue.reportedBy) !== String(user._id)) {
+      return res.status(403).json({ message: "Not authorized for this issue" });
+    }
+
+    if (!issue.structureProblems || !issue.structureProblems[index]) {
+      return res.status(404).json({ message: "Spot not found in this issue" });
+    }
+
+    const spot = issue.structureProblems[index];
+
+    // Prevent double resolve
+    if (spot.status === "resolved") {
+      return res.status(400).json({ message: "This spot is already resolved" });
+    }
+
+    if (!description || !description.trim()) {
+      return res.status(400).json({ message: "Resolution description is required" });
+    }
+
+    // Handle resolution images
+    const uploadedFiles = req.files?.resolutionImages || [];
+    const imageUrls = uploadedFiles.map((f) => f.path);
+
+    // Update spot
+    spot.status = "resolved";
+    spot.resolution = {
+      description,
+      images: imageUrls,
+      resolvedAt: new Date(),
+      resolvedBy: user._id,
+    };
+
+    await issue.save();
+
+    return res.status(200).json({
+      message: "Structure resolved successfully",
+      issue,
+    });
+  } catch (error) {
+    console.error("Resolve Structure Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

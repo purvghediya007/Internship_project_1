@@ -494,6 +494,226 @@
       font-weight: 700;
       font-size: 15px;
     }
+
+
+    /* ===== STATUS BADGES ===== */
+    .status-badge{
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .status-in-progress{
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #92400e;
+    }
+
+    .status-resolved{
+      background: #dcfce7;
+      border-color: #bbf7d0;
+      color: #065f46;
+    }
+
+    /* ===== RESOLUTION BOX ===== */
+    .resolution-box{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid #bbf7d0;
+      background: linear-gradient(180deg,#f0fdf4,#ffffff);
+    }
+    .resolution-title{
+      font-weight:900;
+      font-size:14px;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+
+    .status-badge{
+  font-size:13px;
+  font-weight:900;
+  padding:7px 14px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.status-in-progress{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#92400e;
+}
+
+.status-resolved{
+  background:#dcfce7;
+  border:1px solid #bbf7d0;
+  color:#065f46;
+}
+
+/* .resolution-box{
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid #bbf7d0;
+  background:linear-gradient(180deg,#f0fdf4,#ffffff);
+} */
+/* ===== UPDATED UI CHANGE: RESOLUTION FLOAT OVERLAY ===== */
+.resolution-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(4px);
+  border-radius:18px;
+  padding:18px;
+  overflow-y:auto;
+  display:none;
+  animation:fadeIn 0.25s ease;
+  z-index:5;
+}
+
+.resolution-overlay.active{
+  display:block;
+}
+
+.resolution-close{
+  position:absolute;
+  top:10px;
+  right:12px;
+  border:none;
+  background:#111827;
+  color:#fff;
+  border-radius:999px;
+  width:28px;
+  height:28px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(0.98);}
+  to{opacity:1; transform:scale(1);}
+}
+
+
+
+/* ===== UNIFORM PHOTO + UPLOAD SECTION ===== */
+
+.photo-section{
+  margin-top:14px;
+}
+
+.photo-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+.photo{
+  width:100%;
+  height:130px;
+  border-radius:16px;
+  object-fit:cover;
+  border:1px solid #e5e7eb;
+  background:#f1f5f9;
+}
+
+/* Force equal upload alignment */
+.add-photo-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:16px;
+}
+
+.add-photo-row input[type="file"]{
+  flex:1;
+  min-width:0;
+}
+
+.add-photo-row button{
+  white-space:nowrap;
+  padding:10px 18px;
+}
+
+.upload-status{
+  display:block;
+  margin-top:8px;
+  font-size:13px;
+  font-weight:700;
+}
+
+/* ===== FORCE UNIFORM CARD HEIGHT ===== */
+.spot-card{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+
+.spot-body{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+/* ===== PHOTO AREA FIXED HEIGHT ===== */
+.photo-section{
+  margin-top:16px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+/* Fixed photo container height */
+.photo-grid{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+  min-height:140px;   /* 👈 important */
+  align-items:flex-start;
+}
+
+.photo-wrap{
+  width:140px;
+  height:130px;
+  flex-shrink:0;
+  position:relative;
+}
+
+.photo{
+  width:100%;
+  height:100%;
+  border-radius:16px;
+  object-fit:cover;
+  border:1px solid #e5e7eb;
+  background:#f1f5f9;
+}
+
+/* ===== UPLOAD ALWAYS AT BOTTOM ===== */
+.add-photo-row{
+  display:flex;
+  gap:12px;
+  margin-top:auto;   /* 👈 pushes to bottom */
+}
+
+.add-photo-row input[type="file"]{
+  flex:1;
+  min-width:0;
+}
+
+.add-photo-row button{
+  white-space:nowrap;
+  padding:10px 18px;
+}
+
+
+
+
   </style>
 </head>
 
@@ -707,6 +927,8 @@ function toSentenceCase(text){
 function getFloorLabel(floorNumber){
   if (floorNumber === -1) return "Basement 1";
   if (floorNumber === 0) return "Ground Floor";
+  if (floorNumber === 41) return "3rd Mezzanine Floor";
+
   return `Floor ${floorNumber}`;
 }
 
@@ -716,11 +938,14 @@ function parseFloorInput(input){
   const text = String(input).trim().toUpperCase();
 
   if (text === "GF") return 0;
+  if (text === "MZ3") return 41;
 
   if (text.startsWith("B")) {
     const num = text.replace(/[^0-9]/g, "");
     if (num) return -Number(num);
   }
+
+
 
   if (!isNaN(Number(text))) return Number(text);
 
@@ -846,12 +1071,14 @@ function setMapEmpty(){
   `;
 }
 
-/* ================= SPOT DETAILS ================= */
+
+
 function renderSpotDetails(survey, spots) {
   const container = document.getElementById("spotDetailsContainer");
   container.innerHTML = "";
 
-  document.getElementById("spotCountText").innerText = `${spots.length} Spots`;
+  document.getElementById("spotCountText").innerText =
+    `${spots.length} Spots`;
 
   if (!spots.length) {
     setSpotEmpty();
@@ -862,10 +1089,28 @@ function renderSpotDetails(survey, spots) {
   grid.className = "spot-grid";
 
   spots.forEach((p, idx) => {
+
     const card = document.createElement("div");
-    card.className = "spot-card";
+    card.className = "spot-card position-relative";
 
     const photos = Array.isArray(p.images) ? p.images : [];
+    const resolutionPhotos = p.resolution?.images || [];
+    const isResolved = p.status === "resolved";
+    const resolutionId = `resolution_${survey._id}_${idx}`;
+
+    const statusBadge = isResolved
+      ? `
+        <span class="status-badge status-resolved"
+              style="cursor:pointer;"
+              onclick="openResolution('${resolutionId}')">
+          <i class="bi bi-check-circle-fill"></i> Resolved
+        </span>
+      `
+      : `
+        <span class="status-badge status-in-progress">
+          <i class="bi bi-hourglass-split"></i> In Progress
+        </span>
+      `;
 
     card.innerHTML = `
       <div class="spot-top">
@@ -874,13 +1119,21 @@ function renderSpotDetails(survey, spots) {
             <i class="bi bi-geo-fill text-primary"></i>
             Spot #${idx + 1}
           </p>
-          <div class="helper-text">One Marked Location In Survey</div>
+          <div class="helper-text">
+            One Marked Location In Survey
+          </div>
         </div>
 
-        <span class="spot-pill">${toTitleCase(p.riskLevel || "Unknown")}</span>
+        <div class="d-flex flex-column align-items-end gap-2">
+          ${statusBadge}
+          <span class="spot-pill">
+            ${toTitleCase(p.riskLevel || "Unknown")}
+          </span>
+        </div>
       </div>
 
-      <div class="spot-body">
+      <div class="spot-body d-flex flex-column">
+
         <div class="kv">
           <span>Structure: ${toTitleCase(p.structureType)}</span>
           <span>Direction: ${toTitleCase(p.direction)}</span>
@@ -889,30 +1142,37 @@ function renderSpotDetails(survey, spots) {
 
         <div class="desc">
           <strong>Description:</strong>
-          ${p.description ? p.description : "No Description Provided"}
+          ${p.description || "No Description Provided"}
         </div>
 
+        <!-- PHOTOS SECTION -->
         <div class="mt-3">
           <strong>Photos:</strong>
 
           ${
             photos.length
-              ? `<div class="photo-grid">
+              ? `
+                <div class="photo-grid mt-2">
                   ${photos.map(img => `
                     <div class="photo-wrap">
                       <button class="photo-delete-btn"
                         onclick="deleteSpotPhoto(event,'${survey._id}',${idx},'${img}')">
                         ✕
                       </button>
-                      <img src="${img}" class="photo" onclick="openImage('${img}')" />
+                      <img src="${img}" class="photo"
+                        onclick="openImage('${img}')" />
                     </div>
                   `).join("")}
-                </div>`
-              : `<div class="helper-text mt-1">No Photos Uploaded</div>`
+                </div>
+              `
+              : `<div class="helper-text mt-2">No Photos Uploaded</div>`
           }
+        </div>
 
-          <!-- ✅ Manager Add Photos -->
-          <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+        <!-- PUSH ADD SECTION TO BOTTOM -->
+        <div class="mt-auto pt-3">
+
+          <div class="border-top pt-3 d-flex gap-2 align-items-center">
             <input
               type="file"
               id="spotFileInput_${idx}"
@@ -927,10 +1187,51 @@ function renderSpotDetails(survey, spots) {
               <i class="bi bi-camera-fill"></i> Add Photos
             </button>
 
-            <span id="uploadStatus_${idx}" class="text-muted small fw-semibold"></span>
+            <span id="uploadStatus_${idx}"
+              class="text-muted small fw-semibold"></span>
           </div>
+
         </div>
       </div>
+
+      ${
+        isResolved
+          ? `
+          <div class="resolution-overlay" id="${resolutionId}">
+            <button class="resolution-close"
+                    onclick="closeResolution('${resolutionId}')">
+              ✕
+            </button>
+
+            <div class="resolution-title">
+              <i class="bi bi-check-circle-fill text-success"></i>
+              Resolution Details
+            </div>
+
+            <div class="desc mt-3">
+              <strong>Resolution:</strong>
+              ${p.resolution?.description || "No Description"}
+            </div>
+
+            ${
+              resolutionPhotos.length
+                ? `
+                <div class="mt-4">
+                  ${resolutionPhotos.map(img => `
+                    <img src="${img}"
+                      style="width:50%; height:50%; margin-bottom:18px; border-radius:16px; border:1px solid #e5e7eb;"
+                      onclick="openImage('${img}')" />
+                  `).join("")}
+                </div>
+                `
+                : `<div class="helper-text mt-3">
+                    No Resolution Photos
+                  </div>`
+            }
+          </div>
+          `
+          : ""
+      }
     `;
 
     grid.appendChild(card);
@@ -938,6 +1239,34 @@ function renderSpotDetails(survey, spots) {
 
   container.appendChild(grid);
 }
+
+
+
+
+
+
+// function toggleResolution(id){
+//   const box = document.getElementById(id);
+//   if(!box) return;
+
+//   if(box.style.display === "none"){
+//     box.style.display = "block";
+//   } else {
+//     box.style.display = "none";
+//   }
+// }
+
+/* ===== UPDATED UI CHANGE: Overlay Toggle Functions ===== */
+function openResolution(id){
+  const el = document.getElementById(id);
+  if(el) el.classList.add("active");
+}
+
+function closeResolution(id){
+  const el = document.getElementById(id);
+  if(el) el.classList.remove("active");
+}
+
 
 function setSpotEmpty(){
   document.getElementById("spotCountText").innerText = "0 Spots";

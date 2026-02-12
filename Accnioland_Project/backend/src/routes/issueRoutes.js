@@ -10,6 +10,9 @@ const {
   getAllIssues,
   addSpotPhotos,     // ✅ NEW
   deleteSpotPhoto,   // ✅ NEW
+
+  getMyIssues,
+  resolveStructureProblem,
 } = require("../controllers/issueController");
 
 // OFFICE WORKER → CREATE ISSUE
@@ -32,6 +35,30 @@ router.post(
   ]),
   createIssue
 );
+
+/* =========================================================
+   🆕 WORKER → GET MY ISSUE HISTORY
+   GET /api/issues/my
+========================================================= */
+router.get(
+  "/my",
+  authMiddleware,
+  getMyIssues
+);
+
+/* =========================================================
+   🆕 WORKER → RESOLVE A STRUCTURE (SPOT)
+   PATCH /api/issues/:issueId/spot/:spotIndex/resolve
+========================================================= */
+router.patch(
+  "/:issueId/spot/:spotIndex/resolve",
+  authMiddleware,
+  upload.fields([
+    { name: "resolutionImages", maxCount: 10 }
+  ]),
+  resolveStructureProblem
+);
+
 
 // MANAGER → VIEW ALL ISSUES
 router.get("/all", authMiddleware, managerOnly, getAllIssues);
