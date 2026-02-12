@@ -307,18 +307,64 @@
     gap:10px;
   }
 
-  /* ===== OUTPUT ===== */
-  #output{
-    border-radius: 16px;
-    border: 1px solid rgba(16,185,129,0.35);
-    background: #0b1220 !important;
-  }
-
   /* ===== MOBILE ===== */
   @media (max-width: 768px){
     .brand-logo{ height: 34px; }
     .top-right-meta{ justify-content:flex-end; }
     .pdf-controls{ top: 62px; }
+  }
+
+  /* ===== MODAL BEAUTY ===== */
+  .modal-content{
+    border-radius: 22px !important;
+    border: 1px solid rgba(2,6,23,0.08) !important;
+    box-shadow: 0 30px 80px rgba(2,6,23,0.25) !important;
+  }
+  .modal-backdrop.show{
+    opacity: 0.55;
+  }
+  .big-icon{
+    width: 74px;
+    height: 74px;
+    border-radius: 999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin: 0 auto 12px auto;
+    font-size: 34px;
+  }
+  .big-success{
+    background: linear-gradient(180deg,#dcfce7,#ffffff);
+    border: 1px solid rgba(34,197,94,0.25);
+    color:#166534;
+  }
+  .big-warning{
+    background: linear-gradient(180deg,#fffbeb,#ffffff);
+    border: 1px solid rgba(245,158,11,0.25);
+    color:#92400e;
+  }
+
+  .field-error{
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 4px rgba(245,158,11,0.18) !important;
+  }
+
+  /* ===== IMAGE EDITOR ===== */
+  .editor-canvas-wrap{
+    width: 100%;
+    background: #0b1220;
+    border-radius: 18px;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 18px 50px rgba(2,6,23,0.35);
+  }
+  #editCanvas{
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    background: #111827;
+    touch-action: none;
+    display:block;
   }
 </style>
 </head>
@@ -329,32 +375,62 @@
 <nav class="navbar navbar-dark px-3 topbar">
   <div class="d-flex align-items-center justify-content-between w-100">
     <span class="navbar-brand brand">
-      <!-- ✅ Update logo path if needed -->
       <img src="../manager/logo.png" alt="AccionLAND Logo" class="brand-logo">
       AccionLAND - RVS
     </span>
 
-    <div class="top-right-meta">
+    <!-- <div class="top-right-meta">
       <span class="meta-pill">
         <i class="bi bi-layers-fill"></i>
         <strong id="floorText"></strong>
       </span>
+
       <span class="meta-pill">
         <i class="bi bi-door-open-fill"></i>
         <strong id="officeText"></strong>
       </span>
-    </div>
+
+      <button class="btn btn-light btn-sm fw-bold px-3"
+        style="border-radius:999px;"
+        onclick="logoutUser()">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </button>
+    </div> -->
+
+    <div class="top-right-meta">
+
+  <a href="history.html"
+     class="btn btn-light btn-sm fw-bold px-3"
+     style="border-radius:999px;">
+    <i class="bi bi-clock-history me-1"></i> History
+  </a>
+
+  <span class="meta-pill">
+    <i class="bi bi-layers-fill"></i>
+    <strong id="floorText"></strong>
+  </span>
+
+  <span class="meta-pill">
+    <i class="bi bi-door-open-fill"></i>
+    <strong id="officeText"></strong>
+  </span>
+
+  <button class="btn btn-light btn-sm fw-bold px-3"
+    style="border-radius:999px;"
+    onclick="logoutUser()">
+    <i class="bi bi-box-arrow-right me-1"></i> Logout
+  </button>
+</div>
+
   </div>
 </nav>
 
 <div class="page-wrap">
 
-  <!-- BASE PDF WARNING -->
   <div id="noBasePdf" class="alert soft-alert d-none">
     ⚠ Base floor plan not uploaded for your floor.
   </div>
 
-  <!-- LEGEND -->
   <div class="legend-wrap">
     <div class="legend-title">
       <i class="bi bi-palette-fill text-primary"></i>
@@ -381,11 +457,12 @@
     <i class="bi bi-info-circle-fill"></i>
     <div>
       Tap / Click on the PDF to add a numbered mark for the <strong>last added structure</strong>.
-      Use <strong>Prev/Next</strong> to mark on different pages.
+      <br />
+      <strong>Prev:</strong> Undo last mark &nbsp; | &nbsp;
+      <strong>Next:</strong> Redo last removed mark
     </div>
   </div>
 
-  <!-- PDF CONTROLS -->
   <div class="pdf-controls">
     <button class="btn btn-outline-primary" onclick="prevPage()">
       <i class="bi bi-arrow-left-circle"></i> Prev
@@ -395,7 +472,6 @@
     </button>
   </div>
 
-  <!-- PDF VIEW -->
   <div class="pdf-wrapper">
     <canvas id="pdfCanvas"></canvas>
   </div>
@@ -403,8 +479,6 @@
   <button class="btn btn-success w-100 mt-3" onclick="submitIssue()">
     <i class="bi bi-check2-circle me-1"></i> Submit Issue
   </button>
-
-  <pre id="output" class="text-success p-3 mt-3"></pre>
 
 </div>
 
@@ -416,24 +490,29 @@
 const API = "https://accionland-rvs.onrender.com";
 const token = localStorage.getItem("token");
 
-if (!token) {
-  location.href = "../login.html";
-}
+if (!token) location.href = "../login.html";
 
 /* ================= USER INFO ================= */
 document.getElementById("floorText").innerText =
   "Floor: " + localStorage.getItem("floorNumber");
-
 document.getElementById("officeText").innerText =
   "Office: " + localStorage.getItem("officeNumber");
 
 /* ================= STATE ================= */
 let problems = [];
 let marks = [];
+let redoStack = [];
+
 let pdfDocJs;
 let basePdfUrl;
 let pageIndex = 0;
 let scale = 1.4;
+
+/* ================= IMAGE EDITOR STATE ================= */
+let currentEdit = { structureIndex: null, fileIndex: null, originalFile: null };
+let editHistory = []; // undo for drawing
+let isDrawing = false;
+let lastPoint = null;
 
 /* ================= LOAD BASE PDF ================= */
 async function loadBasePdf() {
@@ -461,17 +540,32 @@ loadBasePdf();
 /* ================= STRUCTURE ================= */
 window.addProblem = function () {
   const i = problems.length;
-  problems.push({ pdfMarks: [] });
+
+  problems.push({
+    pdfMarks: [],
+    imagesEdited: [] // ✅ store edited images here
+  });
 
   const div = document.createElement("div");
   div.className = "problem";
+  div.id = `problemCard_${i}`;
+
   div.innerHTML = `
     <div class="problem-head">
       <h6 class="problem-title">
         <i class="bi bi-building-fill text-primary"></i>
         Structure ${i + 1}
       </h6>
-      <span class="badge-soft">Tap PDF to mark</span>
+
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge-soft">Tap PDF to mark</span>
+
+        <button class="btn btn-sm btn-outline-danger"
+          onclick="deleteStructure(${i})"
+          title="Delete this structure">
+          <i class="bi bi-trash3-fill"></i>
+        </button>
+      </div>
     </div>
 
     <select class="form-select mb-2" onchange="problems[${i}].structureType=this.value">
@@ -482,7 +576,8 @@ window.addProblem = function () {
 
     <select class="form-select mb-2" onchange="problems[${i}].direction=this.value">
       <option value="">Direction</option>
-      <option>north</option><option>south</option><option>east</option><option>west</option><option>north-west</option><option>north-east</option><option>south-west</option><option>south-east</option>
+      <option>north</option><option>south</option><option>east</option><option>west</option>
+      <option>north-west</option><option>north-east</option><option>south-west</option><option>south-east</option>
     </select>
 
     <select class="form-select mb-2" onchange="handleIssue(${i},this.value)">
@@ -517,12 +612,66 @@ window.addProblem = function () {
       placeholder="Description"
       onchange="problems[${i}].description=this.value"></textarea>
 
-    <input type="file" class="form-control" multiple
-      onchange="problems[${i}].images=this.files" />
+    <input id="imgInput_${i}" type="file" class="form-control" multiple accept="image/*" capture="environment"
+      onchange="handleImagesSelected(${i}, this.files)" />
 
-    <div class="hint">Tip: Add mark on PDF after selecting issue type.</div>
+    <div class="hint">
+      Tip: After selecting image, click <b>Edit</b> to draw on it.
+    </div>
+
+    <div id="imgPreview_${i}" class="mt-2 d-flex flex-wrap gap-2"></div>
   `;
   document.getElementById("problems").appendChild(div);
+};
+
+window.handleImagesSelected = function(structureIndex, fileList){
+  if (!fileList || !fileList.length) return;
+
+  // store original files
+  problems[structureIndex].images = fileList;
+
+  // create editable list
+  problems[structureIndex].imagesEdited = Array.from(fileList);
+
+  renderImagePreview(structureIndex);
+};
+
+function renderImagePreview(structureIndex){
+  const wrap = document.getElementById(`imgPreview_${structureIndex}`);
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  const files = problems[structureIndex].imagesEdited || [];
+  files.forEach((file, fileIndex) => {
+    const url = URL.createObjectURL(file);
+
+    const card = document.createElement("div");
+    card.className = "p-2 border rounded-4 bg-white shadow-sm";
+    card.style.width = "160px";
+
+    card.innerHTML = `
+      <img src="${url}" style="width:100%; height:110px; object-fit:cover; border-radius:12px;" />
+      <div class="d-flex gap-2 mt-2">
+        <button class="btn btn-sm btn-outline-primary w-100"
+          onclick="openImageEditor(${structureIndex}, ${fileIndex})">
+          <i class="bi bi-pencil-square"></i> Edit
+        </button>
+        <button class="btn btn-sm btn-outline-danger"
+          onclick="removeImage(${structureIndex}, ${fileIndex})" title="Remove">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+window.removeImage = function(structureIndex, fileIndex){
+  const arr = problems[structureIndex].imagesEdited || [];
+  arr.splice(fileIndex, 1);
+  problems[structureIndex].imagesEdited = arr;
+  renderImagePreview(structureIndex);
 };
 
 function handleIssue(i, v) {
@@ -536,8 +685,6 @@ function handleIssue(i, v) {
     document.getElementById(`crack_${i}`).classList.remove("d-none");
     document.getElementById(`damp_${i}`).classList.remove("d-none");
   }
-
-  // optional: leakage doesn't need dampnessLevel
   if (v === "dampness_leakage") {
     document.getElementById(`damp_${i}`).classList.remove("d-none");
   }
@@ -573,7 +720,6 @@ async function renderPage() {
   const ctx = pdfCanvas.getContext("2d");
   await page.render({ canvasContext: ctx, viewport }).promise;
 
-  // Draw marks with numbering
   marks.forEach((m, index) => {
     if (m.pageIndex === pageIndex) {
       ctx.beginPath();
@@ -589,38 +735,342 @@ async function renderPage() {
   });
 
   pdfCanvas.onclick = e => {
-    if (!problems.length) return alert("Add structure first");
+    if (!problems.length) return showWarningModal("Please add structure first.");
+
+    const lastIndex = problems.length - 1;
+    const p = problems[lastIndex];
+    if (!p.issueType) return showWarningModal("Please select Issue type first.");
 
     const rect = pdfCanvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = pdfCanvas.width / rect.width;
+    const scaleY = pdfCanvas.height / rect.height;
 
-    const p = problems[problems.length - 1];
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
     const color = getColor(p.issueType);
 
-    marks.push({ pageIndex, x, y, color });
+    const markObj = { pageIndex, x, y, color, structureIndex: lastIndex };
+
+    marks.push(markObj);
     p.pdfMarks.push({ pageIndex, x, y });
+
+    redoStack = [];
     renderPage();
   };
 }
 
-function nextPage() {
-  if (pageIndex < pdfDocJs.numPages - 1) {
-    pageIndex++;
-    renderPage();
+/* ================= UNDO / REDO ================= */
+function undoLastMark() {
+  if (!marks.length) return;
+
+  const last = marks.pop();
+  redoStack.push(last);
+
+  const sIndex = last.structureIndex;
+  if (problems[sIndex] && problems[sIndex].pdfMarks && problems[sIndex].pdfMarks.length) {
+    const arr = problems[sIndex].pdfMarks;
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const pm = arr[i];
+      if (pm.pageIndex === last.pageIndex && pm.x === last.x && pm.y === last.y) {
+        arr.splice(i, 1);
+        break;
+      }
+    }
   }
+  renderPage();
 }
 
-function prevPage() {
-  if (pageIndex > 0) {
-    pageIndex--;
-    renderPage();
+function redoLastMark() {
+  if (!redoStack.length) return;
+
+  const m = redoStack.pop();
+  marks.push(m);
+
+  const sIndex = m.structureIndex;
+  if (problems[sIndex]) {
+    if (!problems[sIndex].pdfMarks) problems[sIndex].pdfMarks = [];
+    problems[sIndex].pdfMarks.push({ pageIndex: m.pageIndex, x: m.x, y: m.y });
   }
+  renderPage();
 }
+
+function nextPage() { redoLastMark(); }
+function prevPage() { undoLastMark(); }
+
+/* ================= DELETE STRUCTURE ================= */
+window.deleteStructure = function(structureIndex) {
+  if (!confirm(`Delete Structure ${structureIndex + 1}? This will remove its marks also.`)) return;
+
+  marks = marks.filter(m => m.structureIndex !== structureIndex);
+  redoStack = redoStack.filter(m => m.structureIndex !== structureIndex);
+
+  problems.splice(structureIndex, 1);
+
+  marks = marks.map(m => ({
+    ...m,
+    structureIndex: m.structureIndex > structureIndex ? m.structureIndex - 1 : m.structureIndex
+  }));
+
+  redoStack = redoStack.map(m => ({
+    ...m,
+    structureIndex: m.structureIndex > structureIndex ? m.structureIndex - 1 : m.structureIndex
+  }));
+
+  rebuildStructureCards();
+  renderPage();
+};
+
+function rebuildStructureCards() {
+  const container = document.getElementById("problems");
+  container.innerHTML = "";
+
+  const oldProblems = problems;
+  problems = [];
+
+  oldProblems.forEach((p) => {
+    addProblem();
+    const idx = problems.length - 1;
+
+    problems[idx] = {
+      ...problems[idx],
+      ...p,
+      pdfMarks: p.pdfMarks || [],
+      imagesEdited: p.imagesEdited || []
+    };
+
+    // restore previews
+    renderImagePreview(idx);
+
+    const card = document.getElementById(`problemCard_${idx}`);
+    if (!card) return;
+
+    const selects = card.querySelectorAll("select");
+    const textarea = card.querySelector("textarea");
+
+    if (selects[0] && problems[idx].structureType) selects[0].value = problems[idx].structureType;
+    if (selects[1] && problems[idx].direction) selects[1].value = problems[idx].direction;
+
+    if (selects[2] && problems[idx].issueType) {
+      selects[2].value = problems[idx].issueType;
+      handleIssue(idx, problems[idx].issueType);
+    }
+
+    const crackSel = document.getElementById(`crack_${idx}`);
+    if (crackSel && problems[idx].crackType) crackSel.value = problems[idx].crackType;
+
+    const dampSel = document.getElementById(`damp_${idx}`);
+    if (dampSel && problems[idx].dampnessLevel) dampSel.value = problems[idx].dampnessLevel;
+
+    if (selects[3] && problems[idx].riskLevel) selects[3].value = problems[idx].riskLevel;
+    if (textarea && problems[idx].description) textarea.value = problems[idx].description;
+  });
+}
+
+/* ================= LOGOUT ================= */
+function logoutUser() {
+  localStorage.removeItem("token");
+  location.href = "../login.html";
+}
+
+/* ================= VALIDATION ================= */
+function validateBeforeSubmit() {
+  if (!problems.length) return { ok:false, msg:"Please add at least one structure." };
+
+  for (let i = 0; i < problems.length; i++) {
+    const p = problems[i];
+
+    if (!p.structureType) return { ok:false, msg:`Structure ${i + 1}: Please select Structure.` };
+    if (!p.direction) return { ok:false, msg:`Structure ${i + 1}: Please select Direction.` };
+    if (!p.issueType) return { ok:false, msg:`Structure ${i + 1}: Please select Issue.` };
+    if (!p.riskLevel) return { ok:false, msg:`Structure ${i + 1}: Please select Risk Level.` };
+    if (!p.description || !p.description.trim()) return { ok:false, msg:`Structure ${i + 1}: Please enter Description.` };
+
+    if (p.issueType === "crack" && !p.crackType) return { ok:false, msg:`Structure ${i + 1}: Please select Crack Type.` };
+    if (p.issueType === "dampness" && !p.dampnessLevel) return { ok:false, msg:`Structure ${i + 1}: Please select Dampness Level.` };
+    if (p.issueType === "crack_dampness") {
+      if (!p.crackType) return { ok:false, msg:`Structure ${i + 1}: Please select Crack Type.` };
+      if (!p.dampnessLevel) return { ok:false, msg:`Structure ${i + 1}: Please select Dampness Level.` };
+    }
+    if (p.issueType === "dampness_leakage" && !p.dampnessLevel) return { ok:false, msg:`Structure ${i + 1}: Please select Dampness Level.` };
+
+    if (!p.pdfMarks || p.pdfMarks.length === 0) return { ok:false, msg:`Structure ${i + 1}: Please add at least 1 mark on PDF.` };
+  }
+
+  return { ok:true };
+}
+
+/* ================= MODALS ================= */
+function showSuccessModal(message = "Issue created successfully.") {
+  document.getElementById("successModalMsg").innerText = message;
+  const modal = new bootstrap.Modal(document.getElementById("successModal"));
+  modal.show();
+}
+
+function showWarningModal(message = "Please fill all required fields.") {
+  document.getElementById("warningModalMsg").innerText = message;
+  const modal = new bootstrap.Modal(document.getElementById("warningModal"));
+  modal.show();
+}
+
+/* ================= IMAGE EDITOR ================= */
+window.openImageEditor = async function(structureIndex, fileIndex){
+  const file = (problems[structureIndex].imagesEdited || [])[fileIndex];
+  if (!file) return;
+
+  currentEdit = { structureIndex, fileIndex, originalFile: file };
+  editHistory = [];
+
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.getElementById("editCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // set canvas size = image size
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    // draw base image
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img, 0, 0);
+
+    // save first state for undo
+    editHistory.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+
+    // open modal
+    const modal = new bootstrap.Modal(document.getElementById("imageEditorModal"));
+    modal.show();
+  };
+
+  img.src = URL.createObjectURL(file);
+};
+
+function getCanvasPoint(e, canvas){
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  let clientX, clientY;
+  if (e.touches && e.touches.length){
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
+
+function startDraw(e){
+  const canvas = document.getElementById("editCanvas");
+  const ctx = canvas.getContext("2d");
+
+  isDrawing = true;
+  lastPoint = getCanvasPoint(e, canvas);
+
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#ef4444"; // red pen
+}
+
+function drawMove(e){
+  if (!isDrawing) return;
+
+  const canvas = document.getElementById("editCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const p = getCanvasPoint(e, canvas);
+
+  ctx.beginPath();
+  ctx.moveTo(lastPoint.x, lastPoint.y);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+
+  lastPoint = p;
+}
+
+function endDraw(){
+  if (!isDrawing) return;
+  isDrawing = false;
+
+  const canvas = document.getElementById("editCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // push state for undo
+  editHistory.push(ctx.getImageData(0,0,canvas.width,canvas.height));
+}
+
+window.undoEdit = function(){
+  const canvas = document.getElementById("editCanvas");
+  const ctx = canvas.getContext("2d");
+
+  if (editHistory.length <= 1) return;
+  editHistory.pop();
+  ctx.putImageData(editHistory[editHistory.length - 1], 0, 0);
+};
+
+window.clearEdit = function(){
+  const canvas = document.getElementById("editCanvas");
+  const ctx = canvas.getContext("2d");
+
+  if (!currentEdit.originalFile) return;
+
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img, 0, 0);
+    editHistory = [ctx.getImageData(0,0,canvas.width,canvas.height)];
+  };
+  img.src = URL.createObjectURL(currentEdit.originalFile);
+};
+
+window.saveEditedImage = async function(){
+  const canvas = document.getElementById("editCanvas");
+
+  canvas.toBlob((blob) => {
+    if (!blob) return;
+
+    const { structureIndex, fileIndex, originalFile } = currentEdit;
+
+    const newFileName = (originalFile?.name || "image") + "_edited.png";
+    const editedFile = new File([blob], newFileName, { type: "image/png" });
+
+    problems[structureIndex].imagesEdited[fileIndex] = editedFile;
+
+    renderImagePreview(structureIndex);
+
+    // close modal
+    const modalEl = document.getElementById("imageEditorModal");
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+  }, "image/png", 1.0);
+};
+
+/* attach drawing events */
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("editCanvas");
+
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", drawMove);
+  window.addEventListener("mouseup", endDraw);
+
+  canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDraw(e); }, { passive:false });
+  canvas.addEventListener("touchmove", (e) => { e.preventDefault(); drawMove(e); }, { passive:false });
+  canvas.addEventListener("touchend", (e) => { e.preventDefault(); endDraw(); }, { passive:false });
+});
 
 /* ================= SUBMIT ISSUE ================= */
 async function submitIssue() {
-  if (!problems.length) return alert("Add at least one structure");
+  const validation = validateBeforeSubmit();
+  if (!validation.ok) {
+    showWarningModal(validation.msg);
+    return;
+  }
 
   const bytes = await fetch(basePdfUrl).then(r => r.arrayBuffer());
   const pdf = await PDFLib.PDFDocument.load(bytes);
@@ -629,7 +1079,6 @@ async function submitIssue() {
   marks.forEach((m, index) => {
     const color = getPdfRgb(m.color);
 
-    // draw circle
     pages[m.pageIndex].drawCircle({
       x: m.x / scale,
       y: (pdfCanvas.height - m.y) / scale,
@@ -638,7 +1087,6 @@ async function submitIssue() {
       borderColor: color
     });
 
-    // draw number
     pages[m.pageIndex].drawText(String(index + 1), {
       x: m.x / scale + 10,
       y: (pdfCanvas.height - m.y) / scale + 5,
@@ -653,12 +1101,12 @@ async function submitIssue() {
   fd.append("structureProblems", JSON.stringify(problems));
   fd.append("markedFloorPlan", new Blob([edited], { type: "application/pdf" }), "marked.pdf");
 
+  // ✅ upload edited images (if exists)
   problems.forEach((p, i) => {
-    if (p.images) {
-      Array.from(p.images).forEach(img => {
-        fd.append(`issueImages_${i}`, img);
-      });
-    }
+    const imgs = p.imagesEdited || [];
+    imgs.forEach(img => {
+      fd.append(`issueImages_${i}`, img);
+    });
   });
 
   const res = await fetch(API + "/api/issues/create", {
@@ -667,9 +1115,97 @@ async function submitIssue() {
     body: fd
   });
 
-  output.textContent = await res.text();
+  if (res.ok) {
+    showSuccessModal("Issue created successfully.");
+  } else {
+    const text = await res.text();
+    showWarningModal(text || "Something went wrong. Please try again.");
+  }
 }
 </script>
+
+<!-- ✅ SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-body text-center">
+        <div class="big-icon big-success">
+          <i class="bi bi-check2-circle"></i>
+        </div>
+        <h4 style="font-weight: 900;">Success</h4>
+        <p id="successModalMsg" class="mb-0 fw-semibold text-muted" style="font-size: 16px;">
+          Issue created successfully.
+        </p>
+
+        <div class="d-flex gap-2 justify-content-center mt-4">
+          <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⚠ WARNING MODAL -->
+<div class="modal fade" id="warningModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-body text-center">
+        <div class="big-icon big-warning">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h4 style="font-weight: 900;">Form Incomplete</h4>
+        <p id="warningModalMsg" class="mb-0 fw-semibold text-muted" style="font-size: 16px;">
+          Please fill all required fields.
+        </p>
+
+        <div class="d-flex gap-2 justify-content-center mt-4">
+          <button type="button" class="btn btn-warning px-4 fw-bold" data-bs-dismiss="modal">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✏️ IMAGE EDITOR MODAL -->
+<div class="modal fade" id="imageEditorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content p-3">
+      <div class="modal-body">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h5 class="mb-0" style="font-weight:900;">Edit Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="editor-canvas-wrap">
+          <canvas id="editCanvas"></canvas>
+        </div>
+
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <button class="btn btn-outline-primary" onclick="undoEdit()">
+            <i class="bi bi-arrow-counterclockwise"></i> Undo
+          </button>
+          <button class="btn btn-outline-danger" onclick="clearEdit()">
+            <i class="bi bi-eraser-fill"></i> Clear
+          </button>
+
+          <div class="flex-grow-1"></div>
+
+          <button class="btn btn-success" onclick="saveEditedImage()">
+            <i class="bi bi-check2-circle"></i> Save
+          </button>
+        </div>
+
+        <div class="text-muted mt-2" style="font-weight:700; font-size:13px;">
+          Tip: Draw on image using finger/mouse. Save will update image for submission.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
