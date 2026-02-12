@@ -898,6 +898,10 @@ const token = localStorage.getItem("token");
 const userType = localStorage.getItem("userType");
 
 let ALL_ISSUES = [];
+let CURRENT_FILTER = {
+  floor: null,
+  date: null
+};
 
 /* ================= ✅ TEXT FORMATTERS (TITLE CASE / SENTENCE CASE) ================= */
 function toTitleCase(text){
@@ -965,6 +969,25 @@ function logout() {
 }
 
 /* ================= LOAD ALL SURVEYS ================= */
+// async function loadIssues() {
+//   try {
+//     const res = await fetch(API + "/api/issues/all", {
+//       headers: { Authorization: "Bearer " + token }
+//     });
+
+//     ALL_ISSUES = await res.json();
+
+//     updateDashboardUIFromFilteredIssues(ALL_ISSUES);
+//     renderSingleSurvey(ALL_ISSUES);
+
+//     document.getElementById("activeFilterText").innerText = "Showing: All Surveys";
+//   } catch (err) {
+//     console.error(err);
+//     setMapEmpty();
+//     setSpotEmpty();
+//   }
+// }
+
 async function loadIssues() {
   try {
     const res = await fetch(API + "/api/issues/all", {
@@ -973,10 +996,9 @@ async function loadIssues() {
 
     ALL_ISSUES = await res.json();
 
-    updateDashboardUIFromFilteredIssues(ALL_ISSUES);
-    renderSingleSurvey(ALL_ISSUES);
+    // ✅ Preserve filter
+    applyFilter();
 
-    document.getElementById("activeFilterText").innerText = "Showing: All Surveys";
   } catch (err) {
     console.error(err);
     setMapEmpty();
@@ -990,6 +1012,8 @@ function applyFilter() {
   const date = document.getElementById("dateInput").value;
 
   const floorNumber = parseFloorInput(floorText);
+  CURRENT_FILTER.floor = floorNumber;
+CURRENT_FILTER.date = date;
 
   let filtered = [...ALL_ISSUES];
 

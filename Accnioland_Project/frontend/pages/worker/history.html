@@ -10,40 +10,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 
 <style>
-:root{
-  --bg1:#f8fafc;
-  --bg2:#eef2ff;
-  --card:#ffffff;
-  --text:#0f172a;
-  --muted:#64748b;
-  --border:#e5e7eb;
-  --shadow:0 16px 40px rgba(15,23,42,0.08);
-  --shadow2:0 22px 55px rgba(15,23,42,0.12);
-
-  --brand1:#0b5ed7;
-  --brand2:#2563eb;
-  --brand3:#1d4ed8;
-
-  --green1:#16a34a;
-  --green2:#22c55e;
-}
-
 body{
   font-family:"Inter",sans-serif;
-  background: radial-gradient(1200px 700px at 20% 0%, #dbeafe 0%, transparent 55%),
-              radial-gradient(1200px 700px at 80% 0%, #e0e7ff 0%, transparent 55%),
-              linear-gradient(180deg,var(--bg1),var(--bg2));
+  background:#f8fafc;
 }
 
+/* ===== NAVBAR ===== */
 .topbar{
-  background:linear-gradient(90deg,var(--brand1),var(--brand2));
+  background:linear-gradient(90deg,#0b5ed7,#2563eb);
   box-shadow:0 14px 40px rgba(2,6,23,0.25);
-  position:sticky;
-  top:0;
-  z-index:50;
 }
-
-.brand{font-weight:900;}
 
 .meta-pill{
   background:rgba(255,255,255,0.15);
@@ -55,82 +31,183 @@ body{
 }
 
 .page-wrap{
-  max-width:1100px;
-  margin:25px auto 60px auto;
-  padding:0 12px;
+  max-width:1200px;
+  margin:30px auto;
+  padding:0 15px;
 }
 
-.issue-card{
+/* ===== GRID ===== */
+.spot-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+@media(max-width:992px){
+  .spot-grid{grid-template-columns:1fr;}
+}
+
+/* ===== CARD ===== */
+.spot-card{
   background:#fff;
-  border-radius:22px;
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  padding:18px;
-  margin-bottom:20px;
-  transition:0.3s;
+  border-radius:20px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 12px 30px rgba(15,23,42,0.08);
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+  transition:0.25s;
 }
-.issue-card:hover{transform:translateY(-3px); box-shadow:var(--shadow2);}
+.spot-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 40px rgba(15,23,42,0.12);
+}
 
-.structure-card{
-  border-radius:16px;
-  border:1px solid var(--border);
-  padding:14px;
+.spot-top{
+  padding:16px;
+  background:linear-gradient(180deg,#f8fafc,#ffffff);
+  border-bottom:1px solid #eef2f7;
+  display:flex;
+  justify-content:space-between;
+}
+
+.spot-title{
+  font-weight:900;
+  font-size:17px;
+  margin:0;
+}
+
+.spot-pill{
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid #e5e7eb;
+  font-size:13px;
+  font-weight:800;
+}
+
+.spot-body{
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+/* ===== INFO TAGS ===== */
+.kv{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.kv span{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:14px;
+  background:#f1f5f9;
+  border:1px solid #e5e7eb;
+  font-weight:700;
+}
+
+/* ===== PHOTOS ONE LINE ===== */
+.photo-grid{
+  display:flex;
+  gap:12px;
   margin-top:12px;
-  background:#f8fafc;
+  overflow-x:auto;
+}
+.photo{
+  min-width:140px;
+  height:130px;
+  object-fit:cover;
+  border-radius:16px;
+  border:1px solid #e5e7eb;
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+/* ===== RESOLUTION OVERLAY ===== */
+.resolution-overlay{
+  position:absolute;
+  inset:0;
+  background:#ffffff;
+  border-radius:20px;
+  padding:20px;
+  display:none;
+  z-index:5;
+}
+
+.resolution-overlay.active{
+  display:block;
+}
+
+.resolution-overlay .photo{
+  width:100%;
+  height:auto;
+  border-radius:18px;
+  object-fit:contain;
+}
+
+.resolution-close{
+  position:absolute;
+  top:15px;
+  right:15px;
+  border:none;
+  background:#111827;
+  color:#fff;
+  border-radius:999px;
+  width:30px;
+  height:30px;
+  font-weight:900;
+  cursor:pointer;
 }
 
 .status-badge{
-  padding:6px 12px;
-  border-radius:999px;
   font-size:12px;
   font-weight:900;
+  padding:6px 12px;
+  border-radius:999px;
 }
 
-.status-progress{
+.status-in-progress{
   background:#fff7ed;
-  border:1px solid #fde68a;
+  border:1px solid #fed7aa;
   color:#92400e;
 }
 
 .status-resolved{
   background:#dcfce7;
-  border:1px solid rgba(34,197,94,0.3);
-  color:#166534;
+  border:1px solid #bbf7d0;
+  color:#065f46;
 }
 
-.btn-resolve{
-  background:linear-gradient(90deg,var(--green1),var(--green2));
-  border:none;
-  color:#fff;
-  font-weight:800;
-  border-radius:12px;
+/* ===== RESOLUTION IMAGE FULL SIZE FIX ===== */
+.resolution-image{
+  width:60%;
+  max-width:100%;
+  height:60%;
+  max-height:100%;     /* control max height */
+  object-fit:contain;   /* no crop */
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  display:block;
 }
 
-.modal-content{
-  border-radius:22px !important;
-}
 
-.image-preview{
-  width:90px;
-  height:90px;
-  object-fit:cover;
-  border-radius:12px;
-  border:1px solid #ddd;
-}
 </style>
 </head>
+
 <body>
 
 <nav class="navbar navbar-dark px-3 topbar">
   <div class="d-flex justify-content-between w-100 align-items-center">
-    <span class="navbar-brand brand">
-      AccionLAND - RVS
-    </span>
+    <span class="navbar-brand fw-bold">AccionLAND - RVS</span>
     <div class="d-flex gap-2">
       <span class="meta-pill">Floor: <span id="floorText"></span></span>
       <span class="meta-pill">Office: <span id="officeText"></span></span>
-      <button class="btn btn-light btn-sm fw-bold px-3"
-        style="border-radius:999px;"
+      <button class="btn btn-light btn-sm fw-bold px-3 rounded-pill"
+        onclick="window.history.back()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <button class="btn btn-light btn-sm fw-bold px-3 rounded-pill"
         onclick="logoutUser()">
         Logout
       </button>
@@ -139,39 +216,13 @@ body{
 </nav>
 
 <div class="page-wrap">
-  <h4 class="fw-bold mb-3">
+  <h4 class="fw-bold mb-4">
     <i class="bi bi-clock-history text-primary me-2"></i>
     My Issue History
   </h4>
 
   <div id="issuesContainer"></div>
 </div>
-
-<!-- RESOLVE MODAL -->
-<div class="modal fade" id="resolveModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-3">
-      <div class="modal-body">
-        <h5 class="fw-bold mb-3">Resolve Structure</h5>
-
-        <textarea id="resolveDesc" class="form-control mb-3"
-          placeholder="Enter resolution description"></textarea>
-
-        <input type="file" id="resolveImages" class="form-control mb-3"
-          multiple accept="image/*"/>
-
-        <div id="previewContainer" class="d-flex gap-2 flex-wrap mb-3"></div>
-
-        <button class="btn btn-resolve w-100"
-          onclick="submitResolve()">
-          Submit Resolution
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 const API="https://accionland-rvs.onrender.com";
@@ -181,113 +232,132 @@ if(!token) location.href="../login.html";
 document.getElementById("floorText").innerText=localStorage.getItem("floorNumber");
 document.getElementById("officeText").innerText=localStorage.getItem("officeNumber");
 
-let currentIssueId=null;
-let currentSpotIndex=null;
-
 async function loadHistory(){
-  const res=await fetch(API+"/api/issues/my",{
-    headers:{Authorization:"Bearer "+token}
+  const res = await fetch(API + "/api/issues/my",{
+    headers:{ Authorization:"Bearer "+token }
   });
-  const data=await res.json();
-  const container=document.getElementById("issuesContainer");
-  container.innerHTML="";
+
+  const data = await res.json();
+  const container = document.getElementById("issuesContainer");
+  container.innerHTML = "";
+
+  if(!data.length){
+    container.innerHTML="<div class='text-muted fw-bold'>No Issues Found</div>";
+    return;
+  }
 
   data.forEach(issue=>{
-    const card=document.createElement("div");
-    card.className="issue-card";
-
-    card.innerHTML=`
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <div class="fw-bold">Office ${issue.officeNumber}</div>
-        <div class="small text-muted">
-          ${new Date(issue.createdAt).toLocaleString()}
-        </div>
-      </div>
-    `;
+    const grid=document.createElement("div");
+    grid.className="spot-grid";
 
     issue.structureProblems.forEach((spot,index)=>{
-      const statusClass=spot.status==="resolved"?"status-resolved":"status-progress";
-      const statusText=spot.status==="resolved"?"Resolved":"In Progress";
+      const photos=spot.images||[];
+      const resolutionPhotos=spot.resolution?.images||[];
+      const isResolved=spot.status==="resolved";
+      const resolutionId=`resolution_${issue._id}_${index}`;
 
-      const sDiv=document.createElement("div");
-      sDiv.className="structure-card";
+      const card=document.createElement("div");
+      card.className="spot-card";
 
-      sDiv.innerHTML=`
-        <div class="d-flex justify-content-between align-items-center">
+      card.innerHTML=`
+        <div class="spot-top">
           <div>
-            <strong>${spot.structureType}</strong> - ${spot.direction}
+            <p class="spot-title">
+              <i class="bi bi-geo-fill text-primary"></i>
+              Spot #${index+1}
+            </p>
+            <div class="text-muted small">
+              ${new Date(issue.createdAt).toLocaleString()}
+            </div>
           </div>
-          <span class="status-badge ${statusClass}">
-            ${statusText}
-          </span>
+
+          <div class="d-flex flex-column align-items-end gap-2">
+            ${
+              isResolved
+              ? `<span class="status-badge status-resolved"
+                   style="cursor:pointer"
+                   onclick="openResolution('${resolutionId}')">
+                   <i class="bi bi-check-circle-fill"></i> Resolved
+                 </span>`
+              : `<span class="status-badge status-in-progress">
+                   <i class="bi bi-hourglass-split"></i> In Progress
+                 </span>`
+            }
+            <span class="spot-pill">${spot.riskLevel}</span>
+          </div>
         </div>
-        <div class="small text-muted mt-1">
-          Risk: ${spot.riskLevel}
+
+        <div class="spot-body">
+          <div class="kv">
+            <span>Structure: ${spot.structureType}</span>
+            <span>Direction: ${spot.direction}</span>
+            <span>Issue: ${spot.issueType}</span>
+          </div>
+
+          <div class="mt-2 fw-semibold">
+            Description: ${spot.description || "No Description"}
+          </div>
+
+          <div class="mt-3">
+            <strong>Photos:</strong>
+            ${
+              photos.length
+              ? `<div class="photo-grid">
+                  ${photos.map(img=>`
+                    <img src="${img}" class="photo"
+                      onclick="window.open('${img}','_blank')" />
+                  `).join("")}
+                </div>`
+              : `<div class="text-muted small mt-2">
+                   No Photos Uploaded
+                 </div>`
+            }
+          </div>
         </div>
+
         ${
-          spot.status==="in_progress"
-          ? `<button class="btn btn-resolve btn-sm mt-2"
-              onclick="openResolve('${issue._id}',${index})">
-              Resolve
-            </button>`
+          isResolved
+          ? `
+            <div class="resolution-overlay" id="${resolutionId}">
+              <button class="resolution-close"
+                onclick="closeResolution('${resolutionId}')">✕</button>
+
+              <h5 class="fw-bold mb-3">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                Resolution Details
+              </h5>
+
+              <div class="fw-semibold mb-3">
+                ${spot.resolution?.description || "No Description"}
+              </div>
+
+              ${
+                resolutionPhotos.length
+                ? resolutionPhotos.map(img=>`
+                   <img src="${img}" class="resolution-image mb-3"
+  onclick="window.open('${img}','_blank')" />
+
+                  `).join("")
+                : `<div class="text-muted small">No Resolution Photos</div>`
+              }
+            </div>
+          `
           : ""
         }
       `;
 
-      card.appendChild(sDiv);
+      grid.appendChild(card);
     });
 
-    container.appendChild(card);
+    container.appendChild(grid);
   });
 }
 
-function openResolve(issueId,index){
-  currentIssueId=issueId;
-  currentSpotIndex=index;
-  document.getElementById("resolveDesc").value="";
-  document.getElementById("resolveImages").value="";
-  document.getElementById("previewContainer").innerHTML="";
-  new bootstrap.Modal(document.getElementById("resolveModal")).show();
+function openResolution(id){
+  document.getElementById(id).classList.add("active");
 }
-
-document.getElementById("resolveImages").addEventListener("change",function(){
-  const preview=document.getElementById("previewContainer");
-  preview.innerHTML="";
-  Array.from(this.files).forEach(file=>{
-    const img=document.createElement("img");
-    img.src=URL.createObjectURL(file);
-    img.className="image-preview";
-    preview.appendChild(img);
-  });
-});
-
-async function submitResolve(){
-  const desc=document.getElementById("resolveDesc").value.trim();
-  if(!desc) return alert("Description required");
-
-  const fd=new FormData();
-  fd.append("description",desc);
-
-  const files=document.getElementById("resolveImages").files;
-  Array.from(files).forEach(f=>{
-    fd.append("resolutionImages",f);
-  });
-
-  const res=await fetch(
-    API+`/api/issues/${currentIssueId}/spot/${currentSpotIndex}/resolve`,
-    {
-      method:"PATCH",
-      headers:{Authorization:"Bearer "+token},
-      body:fd
-    }
-  );
-
-  if(res.ok){
-    bootstrap.Modal.getInstance(document.getElementById("resolveModal")).hide();
-    loadHistory();
-  }else{
-    alert("Failed to resolve");
-  }
+function closeResolution(id){
+  document.getElementById(id).classList.remove("active");
 }
 
 function logoutUser(){
