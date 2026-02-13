@@ -139,11 +139,15 @@ body{
   display:block;
 }
 
-.resolution-overlay .photo{
-  width:100%;
-  height:auto;
-  border-radius:18px;
+.resolution-image{
+  width:40%;
+  max-width:100%;
+  height:60%;
   object-fit:contain;
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  display:block;
+  margin-bottom:12px;
 }
 
 .resolution-close{
@@ -179,19 +183,6 @@ body{
   color:#065f46;
 }
 
-/* ===== RESOLUTION IMAGE FULL SIZE FIX ===== */
-.resolution-image{
-  width:60%;
-  max-width:100%;
-  height:60%;
-  max-height:100%;     /* control max height */
-  object-fit:contain;   /* no crop */
-  border-radius:18px;
-  border:1px solid #e5e7eb;
-  display:block;
-}
-
-
 </style>
 </head>
 
@@ -224,13 +215,44 @@ body{
   <div id="issuesContainer"></div>
 </div>
 
+<!-- RESOLVE MODAL -->
+<div class="modal fade" id="resolveModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-body">
+        <h5 class="fw-bold mb-3">Resolve Structure</h5>
+
+        <textarea id="resolveDesc" class="form-control mb-3"
+          placeholder="Enter resolution description"></textarea>
+
+        <input type="file" id="resolveImages"
+          class="form-control mb-3"
+          multiple accept="image/*"/>
+
+        <div id="previewContainer"
+          class="d-flex gap-2 flex-wrap mb-3"></div>
+
+        <button class="btn btn-success w-100 fw-bold"
+          onclick="submitResolve()">
+          Submit Resolution
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-const API="https://accionland-rvs.onrender.com";
+const API="http://localhost:5000";
 const token=localStorage.getItem("token");
 if(!token) location.href="../login.html";
 
 document.getElementById("floorText").innerText=localStorage.getItem("floorNumber");
 document.getElementById("officeText").innerText=localStorage.getItem("officeNumber");
+
+let currentIssueId=null;
+let currentSpotIndex=null;
 
 async function loadHistory(){
   const res = await fetch(API + "/api/issues/my",{
@@ -313,6 +335,15 @@ async function loadHistory(){
                  </div>`
             }
           </div>
+
+          ${
+            !isResolved
+            ? `<button class="btn btn-success btn-sm mt-3"
+                 onclick="openResolve('${issue._id}',${index})">
+                 Resolve
+               </button>`
+            : ""
+          }
         </div>
 
         ${
@@ -328,15 +359,15 @@ async function loadHistory(){
               </h5>
 
               <div class="fw-semibold mb-3">
-                ${spot.resolution?.description || "No Description"}
+               Resolution: ${spot.resolution?.description || "No Description"}
               </div>
 
               ${
                 resolutionPhotos.length
                 ? resolutionPhotos.map(img=>`
-                   <img src="${img}" class="resolution-image mb-3"
-  onclick="window.open('${img}','_blank')" />
-
+                   <img src="${img}"
+                        class="resolution-image"
+                        onclick="window.open('${img}','_blank')" />
                   `).join("")
                 : `<div class="text-muted small">No Resolution Photos</div>`
               }
@@ -358,6 +389,66 @@ function openResolution(id){
 }
 function closeResolution(id){
   document.getElementById(id).classList.remove("active");
+}
+
+function openResolve(issueId,index){
+  currentIssueId=issueId;
+  currentSpotIndex=index;
+
+  document.getElementById("resolveDesc").value="";
+  document.getElementById("resolveImages").value="";
+  document.getElementById("previewContainer").innerHTML="";
+
+  new bootstrap.Modal(
+    document.getElementById("resolveModal")
+  ).show();
+}
+
+document.addEventListener("change",function(e){
+  if(e.target.id==="resolveImages"){
+    const preview=document.getElementById("previewContainer");
+    preview.innerHTML="";
+    Array.from(e.target.files).forEach(file=>{
+      const img=document.createElement("img");
+      img.src=URL.createObjectURL(file);
+      img.style.width="80px";
+      img.style.height="80px";
+      img.style.objectFit="cover";
+      img.style.borderRadius="10px";
+      preview.appendChild(img);
+    });
+  }
+});
+
+async function submitResolve(){
+  const desc=document.getElementById("resolveDesc").value.trim();
+  if(!desc) return alert("Description required");
+
+  const fd=new FormData();
+  fd.append("description",desc);
+
+  const files=document.getElementById("resolveImages").files;
+  Array.from(files).forEach(f=>{
+    fd.append("resolutionImages",f);
+  });
+
+  const res=await fetch(
+    API+`/api/issues/${currentIssueId}/spot/${currentSpotIndex}/resolve`,
+    {
+      method:"PATCH",
+      headers:{ Authorization:"Bearer "+token },
+      body:fd
+    }
+  );
+
+  if(res.ok){
+    bootstrap.Modal
+      .getInstance(document.getElementById("resolveModal"))
+      .hide();
+    loadHistory();
+  }else{
+    alert("Failed to resolve");
+  }
 }
 
 function logoutUser(){
