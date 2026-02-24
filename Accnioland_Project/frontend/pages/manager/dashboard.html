@@ -13,8 +13,13 @@
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+</script>
 
-  <style>
+ <style>
     body{
       font-family:"Inter",sans-serif;
       background:#f5f7fb;
@@ -600,118 +605,217 @@
 }
 
 
+/* ===== FORCE TRUE DESKTOP LAYOUT ON ALL DEVICES ===== */
 
-/* ===== UNIFORM PHOTO + UPLOAD SECTION ===== */
-
-.photo-section{
-  margin-top:14px;
+.dashboard-wrap{
+  grid-template-columns: 340px 1fr !important;
 }
 
-.photo-grid{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:12px;
-  margin-top:12px;
+/* Lock full desktop width */
+.container-fluid{
+  min-width: 1280px;   /* keep desktop lock */
+  width: 100%;         /* allow full width on big screens */
+  margin: 0;           /* remove side centering gap */
 }
 
-.photo{
-  width:100%;
-  height:130px;
-  border-radius:16px;
-  object-fit:cover;
-  border:1px solid #e5e7eb;
-  background:#f1f5f9;
+
+/* Make navbar same width */
+.topbar{
+  min-width: 1280px;
 }
 
-/* Force equal upload alignment */
-.add-photo-row{
+/* Allow horizontal scrolling instead of shrinking */
+body{
+  overflow-x: auto;
+}
+
+/* ================= FLOOR DRAWER ================= */
+
+.floor-drawer{
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 360px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: -8px 0 30px rgba(0,0,0,0.15);
+  transition: 0.35s ease;
+  z-index: 1050;
+}
+
+.floor-drawer.open{
+  right: 0;
+}
+
+.floor-drawer-content{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header{
+  padding: 16px;
+  border-bottom: 1px solid #eef2f7;
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:12px;
-  margin-top:16px;
+  font-weight:900;
 }
 
-.add-photo-row input[type="file"]{
-  flex:1;
-  min-width:0;
+.floor-list{
+  padding: 16px;
+  overflow-y: auto;
 }
 
-.add-photo-row button{
-  white-space:nowrap;
-  padding:10px 18px;
+.floor-card{
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-weight: 800;
+  transition: 0.25s ease;
+  border: 1px solid #e5e7eb;
 }
 
-.upload-status{
-  display:block;
-  margin-top:8px;
-  font-size:13px;
+.floor-card:hover{
+  transform: translateY(-2px);
+}
+
+.floor-high{
+  background: #fee2e2;
+  border-color: #fecaca;
+  color:#b91c1c;
+}
+
+.floor-medium{
+  background: #ffedd5;
+  border-color: #fed7aa;
+  color:#92400e;
+}
+
+.floor-low{
+  background: #dcfce7;
+  border-color: #bbf7d0;
+  color:#065f46;
+}
+
+/* Mobile full width */
+@media (max-width: 768px){
+  .floor-drawer{
+    width: 100%;
+    right: -100%;
+  }
+}
+
+/* ================= VENDOR MODAL ================= */
+
+.vendor-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.55);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.2s ease;
+}
+
+.vendor-modal.show{
+  display: flex;
+}
+
+.vendor-modal-content{
+  width: 90%;
+  max-width: 1000px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(15,23,42,0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.vendor-header{
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef2f7;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg,#f8fafc,#ffffff);
+}
+
+/* .vendor-body{
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+} */
+ .vendor-body{
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.vendor-search{
+  margin-bottom: 18px;
+}
+
+.vendor-grid{
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:16px;
+}
+
+@media(max-width:768px){
+  .vendor-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+.vendor-card{
+  border:1px solid #eef2f7;
+  border-radius:18px;
+  padding:16px;
+  background: linear-gradient(180deg,#ffffff,#f8fafc);
+  box-shadow:0 10px 22px rgba(15,23,42,0.06);
+  transition:0.25s ease;
+}
+
+.vendor-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 20px 35px rgba(15,23,42,0.12);
+}
+
+.vendor-name{
+  font-weight:900;
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+.vendor-service{
+  font-size:14px;
   font-weight:700;
+  color:#0b5ed7;
 }
 
-/* ===== FORCE UNIFORM CARD HEIGHT ===== */
-.spot-card{
-  display:flex;
-  flex-direction:column;
-  height:100%;
+.vendor-info{
+  font-size:13px;
+  margin-top:8px;
+  color:#475569;
+  font-weight:600;
+}
+body.modal-open {
+  overflow: hidden;
+}
+.bi-pencil-square:hover{
+  color:#0b5ed7;
+  transform: scale(1.1);
 }
 
-.spot-body{
-  display:flex;
-  flex-direction:column;
-  flex:1;
+.bi-trash-fill:hover{
+  color:#dc3545;
+  transform: scale(1.1);
 }
-
-/* ===== PHOTO AREA FIXED HEIGHT ===== */
-.photo-section{
-  margin-top:16px;
-  display:flex;
-  flex-direction:column;
-  flex:1;
-}
-
-/* Fixed photo container height */
-.photo-grid{
-  display:flex;
-  gap:12px;
-  margin-top:12px;
-  min-height:140px;   /* 👈 important */
-  align-items:flex-start;
-}
-
-.photo-wrap{
-  width:140px;
-  height:130px;
-  flex-shrink:0;
-  position:relative;
-}
-
-.photo{
-  width:100%;
-  height:100%;
-  border-radius:16px;
-  object-fit:cover;
-  border:1px solid #e5e7eb;
-  background:#f1f5f9;
-}
-
-/* ===== UPLOAD ALWAYS AT BOTTOM ===== */
-.add-photo-row{
-  display:flex;
-  gap:12px;
-  margin-top:auto;   /* 👈 pushes to bottom */
-}
-
-.add-photo-row input[type="file"]{
-  flex:1;
-  min-width:0;
-}
-
-.add-photo-row button{
-  white-space:nowrap;
-  padding:10px 18px;
-}
-
-
 
 
   </style>
@@ -727,6 +831,12 @@
   </span>
 
   <div class="d-flex gap-2">
+    <button class="btn btn-light btn-sm fw-semibold" onclick="toggleFloorDrawer()">
+      <i class="bi bi-grid-fill"></i> Floors Summary
+    </button>
+    <button class="btn btn-light btn-sm fw-semibold" onclick="openVendorModal()">
+      <i class="bi bi-people-fill"></i> Vendors
+    </button>
     <a href="upload-floor.html" class="btn btn-light btn-sm fw-semibold">
       <i class="bi bi-upload"></i> Upload Floor Plan
     </a>
@@ -893,11 +1003,190 @@
 <script>
 /* ================= CONFIG ================= */
 
-const API = "https://accionland-rvs.onrender.com"; // ✅ DEPLOYMENT
+const API = "https://accionland-rvs.onrender.com";
 const token = localStorage.getItem("token");
 const userType = localStorage.getItem("userType");
 
 let ALL_ISSUES = [];
+function toggleFloorDrawer(){
+  document.getElementById("floorDrawer").classList.toggle("open");
+}
+function buildLatestFloorMap(surveys){
+  const map = {};
+
+  surveys.forEach(s => {
+    const floor = s.floorNumber;
+
+    if (!map[floor]) {
+      map[floor] = s;
+    } else {
+      // choose latest by date
+      if (new Date(s.createdAt) > new Date(map[floor].createdAt)) {
+        map[floor] = s;
+      }
+    }
+  });
+
+  return map;
+}
+
+function calculateFloorRisk(survey){
+  const spots = survey.structureProblems || [];
+
+  let hasHigh = false;
+  let hasMedium = false;
+
+  spots.forEach(p => {
+    if (p.riskLevel === "high") hasHigh = true;
+    else if (p.riskLevel === "medium") hasMedium = true;
+  });
+
+  if (hasHigh) return "high";
+  if (hasMedium) return "medium";
+  return "low";
+}
+
+async function generatePdfThumbnail(pdfUrl) {
+  try {
+    const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+    const page = await pdf.getPage(1);
+
+    const scale = 0.4; // adjust thumbnail size
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({
+      canvasContext: ctx,
+      viewport: viewport
+    }).promise;
+
+    return canvas.toDataURL("image/png");
+  } catch (err) {
+    console.error("Thumbnail error:", err);
+    return null;
+  }
+}
+
+
+
+async function renderFloorDrawer() {
+  const container = document.getElementById("floorListContainer");
+  container.innerHTML = "";
+
+  const floorMap = buildLatestFloorMap(ALL_ISSUES);
+  const floors = Object.values(floorMap);
+
+  // Sort by risk (High → Medium → Low)
+  floors.sort((a, b) => {
+    const riskOrder = { high: 3, medium: 2, low: 1 };
+    return riskOrder[calculateFloorRisk(b)] - riskOrder[calculateFloorRisk(a)];
+  });
+
+  for (const survey of floors) {
+
+    const risk = calculateFloorRisk(survey);
+    const spots = survey.structureProblems?.length || 0;
+
+    const div = document.createElement("div");
+    div.className = `floor-card floor-${risk}`;
+
+    // Generate thumbnail image from PDF
+    const thumbnail = survey.markedFloorPlan
+      ? await generatePdfThumbnail(survey.markedFloorPlan)
+      : null;
+
+    div.innerHTML = `
+      <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          font-weight:900;
+          margin-bottom:10px;
+          font-size:15px;
+      ">
+          <span>${getFloorLabel(survey.floorNumber)}</span>
+          <span style="font-size:13px;">
+            ${spots} Spots • ${risk.toUpperCase()}
+          </span>
+      </div>
+
+      <div style="
+          width:100%;
+          height:180px;
+          border-radius:16px;
+          overflow:hidden;
+          border:1px solid #e5e7eb;
+          background:#f8fafc;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+      ">
+        ${
+          thumbnail
+            ? `<img 
+                 src="${thumbnail}" 
+                 style="
+                   width:100%;
+                   height:100%;
+                   object-fit:contain;
+                 "
+               />`
+            : `<div style="
+                 font-size:13px;
+                 color:#64748b;
+                 font-weight:600;
+               ">
+                 No Map Available
+               </div>`
+        }
+      </div>
+    `;
+
+    // Click behavior
+    div.onclick = () => {
+      renderSingleSurvey([survey]);
+      updateDashboardUIFromFilteredIssues([survey]);
+
+      if (window.innerWidth < 768) {
+        toggleFloorDrawer();
+      }
+    };
+
+    container.appendChild(div);
+  }
+}
+
+
+
+
+/* ================= ✅ TEXT FORMATTERS (TITLE CASE / SENTENCE CASE) ================= */
+function toTitleCase(text){
+  if (!text) return "N/A";
+
+  return String(text)
+    .replace(/[_-]+/g, " ")
+    .toLowerCase()
+    .split(" ")
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function toSentenceCase(text){
+  if (!text) return "N/A";
+
+  const str = String(text)
+    .replace(/[_-]+/g, " ")
+    .toLowerCase()
+    .trim();
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 let CURRENT_FILTER = {
   floor: null,
   date: null
@@ -995,7 +1284,10 @@ async function loadIssues() {
     });
 
     ALL_ISSUES = await res.json();
+// 🔥 ADD THIS LINE
+    await renderFloorDrawer();
 
+   
     // ✅ Preserve filter
     applyFilter();
 
@@ -1524,4 +1816,112 @@ loadIssues();
 </script>
 
 </body>
+<!-- ================= VENDOR MODAL ================= -->
+<div id="vendorModal" class="vendor-modal">
+  <div class="vendor-modal-content">
+
+    <div class="vendor-header">
+      <h5><i class="bi bi-people-fill text-primary"></i> Approved Vendors</h5>
+     <div class="d-flex gap-2 align-items-center">
+
+  <!-- ➕ Add Vendor -->
+  <button class="btn btn-sm btn-success" onclick="openVendorForm()">
+    <i class="bi bi-plus-lg"></i> Add Vendor
+  </button>
+
+  <!-- 🖨 Print -->
+  <button class="btn btn-sm btn-primary" onclick="printVendorList()">
+    <i class="bi bi-printer-fill"></i> Print PDF
+  </button>
+
+  <!-- Close -->
+  <button class="btn btn-sm btn-light" onclick="closeVendorModal()">✕</button>
+
+</div>
+    </div>
+
+    <!-- <div class="vendor-body">
+      <div class="vendor-search">
+        <input type="text" id="vendorSearch" class="form-control"
+          placeholder="Search vendor by name or service..."
+          onkeyup="filterVendors()"/>
+      </div>
+
+      <div id="vendorListContainer" class="vendor-grid"></div>
+    </div> -->
+<div class="vendor-body">
+
+  <!-- 🔍 Search -->
+  <div class="vendor-search">
+    <input type="text" id="vendorSearch" class="form-control"
+      placeholder="Search vendor by name or service..."
+      onkeyup="filterVendors()"/>
+  </div>
+
+  <!-- 🟢 Small Add/Edit Form -->
+<!-- ================= SMALL VENDOR FORM MODAL ================= -->
+<div id="vendorFormModal" class="vendor-modal">
+
+  <div class="vendor-modal-content" style="max-width:500px;">
+
+    <div class="vendor-header">
+      <h6 class="fw-bold mb-0" id="vendorFormTitle">Add Vendor</h6>
+      <button class="btn btn-sm btn-light" onclick="closeVendorForm()">✕</button>
+    </div>
+
+    <div class="vendor-body">
+
+      <div class="mb-2">
+        <input type="text" id="vendorName" class="form-control" placeholder="Vendor Name">
+      </div>
+
+      <div class="mb-2">
+        <input type="text" id="vendorService" class="form-control" placeholder="Service">
+      </div>
+
+      <div class="mb-2">
+        <input type="text" id="vendorPhone" class="form-control" placeholder="Phone">
+      </div>
+
+      <div class="mb-2">
+        <input type="email" id="vendorEmail" class="form-control" placeholder="Email">
+      </div>
+
+      <div class="mb-3">
+        <input type="number" step="0.1" min="1" max="5"
+          id="vendorRating" class="form-control"
+          placeholder="Rating (1-5)">
+      </div>
+
+      <div class="d-grid">
+        <button class="btn btn-success btn-sm" onclick="saveVendor()">
+          Save Vendor
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+  <!-- 📋 Vendor List -->
+  <div id="vendorListContainer" class="vendor-grid"></div>
+
+</div>
+  </div>
+</div>
+<!-- FLOOR DRAWER -->
+<div id="floorDrawer" class="floor-drawer">
+  <div class="floor-drawer-content">
+    
+    <div class="drawer-header">
+      <h6><i class="bi bi-layers-fill"></i> Floors Overview</h6>
+      <button class="btn btn-sm btn-light" onclick="toggleFloorDrawer()">✕</button>
+    </div>
+
+    <div id="floorListContainer" class="floor-list"></div>
+
+  </div>
+</div>
+<script src="../../assets/js/vendor.js"></script>
 </html>
