@@ -816,7 +816,33 @@ body.modal-open {
   color:#dc3545;
   transform: scale(1.1);
 }
+/* Desktop shows normal iframe */
+.pdf-desktop {
+  width: 100%;
+  height: 600px;
+  border: none;
+  display: block;
+}
 
+.pdf-mobile {
+  display: none;
+}
+
+/* Mobile shows Google viewer */
+@media (max-width: 768px) {
+
+  .pdf-desktop {
+    display: none;
+  }
+
+  .pdf-mobile {
+    display: block;
+    width: 100%;
+    height: 500px;
+    border: none;
+  }
+
+}
 
   </style>
 </head>
@@ -1368,7 +1394,21 @@ function showPdfInMap(url, floor){
 
   document.getElementById("mapBodyContent").innerHTML = `
     <div class="pdf-frame">
-            <iframe src="https://docs.google.com/gview?url=${url}&embedded=true"></iframe>
+         
+
+            <!-- Desktop PDF -->
+<iframe 
+  id="pdfDesktop"
+  class="pdf-desktop"
+  src="${url}">
+</iframe>
+
+<!-- Mobile PDF -->
+<iframe 
+  id="pdfMobile"
+  class="pdf-mobile"
+  src="https://docs.google.com/gview?url=${url}&embedded=true">
+</iframe>
     </div>
   `;
 }
