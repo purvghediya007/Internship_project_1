@@ -160,7 +160,7 @@
 //   }
 // };
 const Issue = require("../models/Issue");
-
+const getConnection = require("../config/dbManager");
 /**
  * GET /api/analytics/summary
  * Optional query:
@@ -170,6 +170,9 @@ const Issue = require("../models/Issue");
  *   ?risk=high
  */
 exports.getDashboardSummary = async (req, res) => {
+
+  const connection = await getConnection(req.user.building);
+  const IssueDB = connection.model("Issue", Issue.schema);
   try {
     const { floor, date, status, risk } = req.query;
 
@@ -196,7 +199,7 @@ exports.getDashboardSummary = async (req, res) => {
     }
 
     // Fetch issues
-    const issues = await Issue.find(filter).lean();
+    const issues = await IssueDB.find(filter).lean();
 
     // Total issues
     const totalIssues = issues.length;
@@ -281,10 +284,13 @@ exports.getDashboardSummary = async (req, res) => {
  * Returns your "detailed structure" like you wanted
  */
 exports.getFloorAnalyticsDetailed = async (req, res) => {
+
+  const connection = await getConnection(req.user.building);
+  const IssueDB = connection.model("Issue", Issue.schema);
   try {
     const floorNumber = Number(req.params.floorNumber);
 
-    const issues = await Issue.find({ floorNumber })
+    const issues = await IssueDB.find({ floorNumber })
       .sort({ createdAt: -1 })
       .lean();
 

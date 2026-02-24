@@ -1,7 +1,11 @@
 const FloorPlan = require("../models/FloorPlan");
+const getConnection = require("../config/dbManager");
 
 // MANAGER uploads base PDF
 exports.uploadBaseFloorPlan = async (req, res) => {
+
+  const connection = await getConnection(req.user.building);
+  const FloorPlanDB = connection.model("FloorPlan", FloorPlan.schema);
   try {
     const { floorNumber, officeNumber } = req.body;
 
@@ -9,7 +13,7 @@ exports.uploadBaseFloorPlan = async (req, res) => {
       return res.status(400).json({ message: "Base PDF is required" });
     }
 
-    const plan = await FloorPlan.create({
+    const plan = await FloorPlanDB.create({
       uploadedBy: req.user._id,
       floorNumber,
       officeNumber: officeNumber || null,
@@ -27,18 +31,21 @@ exports.uploadBaseFloorPlan = async (req, res) => {
 
 
 exports.getMyBaseFloorPlan = async (req, res) => {
+
+  const connection = await getConnection(req.user.building);
+  const FloorPlanDB = connection.model("FloorPlan", FloorPlan.schema);
   try {
     const { floorNumber, officeNumber } = req.user;
 
     // Office-specific first
-    let plan = await FloorPlan.findOne({
+    let plan = await FloorPlanDB.findOne({
       floorNumber,
       officeNumber,
     }).sort({ createdAt: -1 });
 
     // Fallback to floor-level
     if (!plan) {
-      plan = await FloorPlan.findOne({
+      plan = await FloorPlanDB.findOne({
         floorNumber,
         officeNumber: null,
       }).sort({ createdAt: -1 });

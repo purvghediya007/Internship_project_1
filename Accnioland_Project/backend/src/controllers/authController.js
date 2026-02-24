@@ -1,6 +1,10 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const GlobalUser = require("../models/GlobalUser");
+const getConnection = require("../config/dbManager");
+
+
 
 // // REGISTER
 // exports.register = async (req, res) => {
@@ -59,7 +63,8 @@ const jwt = require("jsonwebtoken");
 // REGISTER
 exports.register = async (req, res) => {
   try {
-    const { userType, email, floorNumber, officeNumber, password } = req.body;
+    const { buildingName, userType, email, floorNumber, officeNumber, password } = req.body;
+
 
     // 🔒 COMMON VALIDATION
     if (!userType || !password) {
@@ -89,20 +94,44 @@ exports.register = async (req, res) => {
       }
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    // const existingUser = await User.findOne({ email });
+    // if (existingUser) {
+    //   return res.status(400).json({ message: "Email already registered" });
+    // }
+
+    // 🔐 Check globally if email already exists
+    const existingGlobal = await GlobalUser.findOne({ email });
+    if (existingGlobal) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
+
+    if (!buildingName) {
+      return res.status(400).json({ message: "Building name is required" });
+    } 
+
+// 🔥 Connect to building DB
+    const connection = await getConnection(buildingName);
+    const BuildingUser = connection.model("User", User.schema);
+
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    const user = await BuildingUser.create({
       userType,
       email,
       floorNumber: userType === "office_worker" ? floorNumber : null,
       officeNumber: userType === "office_worker" ? officeNumber : null,
       password: hashedPassword,
     });
+
+    // 🔥 Save mapping in central DB
+    await GlobalUser.create({
+      email,
+      buildingName
+    });
+
+    // console.log("Saving mapping for:", email, buildingName);
 
     res.status(201).json({
       message: "User registered successfully",
@@ -121,6 +150,22 @@ exports.login = async (req, res) => {
   try {
     const { userType, floorNumber, email, password } = req.body;
 
+
+    // 🔥 Find building from central mapping
+  const globalUser = await GlobalUser.findOne({ email });
+// console.log("Login email:", email);
+
+  if (!globalUser) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const buildingName = globalUser.buildingName;
+
+  // 🔥 Connect to correct building DB
+  const connection = await getConnection(buildingName);
+  const BuildingUser = connection.model("User", User.schema);
+
+
     let user;
 
     if (userType === "office_worker") {
@@ -128,7 +173,7 @@ exports.login = async (req, res) => {
         return res.status(400).json({ message: "Floor number is required" });
       }
 
-      const users = await User.find({ userType, floorNumber });
+      const users = await BuildingUser.find({ userType, floorNumber });
 
       for (let u of users) {
         const isMatch = await bcrypt.compare(password, u.password);
@@ -144,12 +189,12 @@ exports.login = async (req, res) => {
         return res.status(400).json({ message: "Email is required for manager" });
       }
 
-      const manager = await User.findOne({ email, userType: "manager" });
+      const manager = await BuildingUser.findOne({ email, userType: "manager" });
       if (manager && (await bcrypt.compare(password, manager.password))) {
         user = manager;
       }
     }
-
+    
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -160,6 +205,8 @@ exports.login = async (req, res) => {
     userType: user.userType,
     floorNumber: user.floorNumber,
     officeNumber: user.officeNumber,
+    building: buildingName,
+
   },
   process.env.JWT_SECRET,
   { expiresIn: "1d" }

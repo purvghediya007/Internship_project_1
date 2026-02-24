@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccionLAND – RVS · Structural Risk Visualization</title>
+  <!-- Bootstrap Grid only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (minimal icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #1e293b;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+      padding-top: 80px; /* fixed navbar offset */
+    }
+    /* container max-width 1200px */
+    .container-custom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+    /* section spacing */
+    .section {
+      padding: 80px 0;
+    }
+    .section-sm {
+      padding: 40px 0;
+    }
+    /* blue gradient theme */
+    :root {
+      --blue-start: #2f6dcb;
+      --blue-end: #0b5ed7;
+      --blue-gradient: linear-gradient(135deg, var(--blue-start), var(--blue-end));
+      --blue-soft: #f0f6ff;
+      --navy-dark: #0b1b33;
+      --gray-light: #f8fafc;
+      --shadow-sm: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,40,80,0.05);
+      --shadow-md: 0 20px 30px -10px rgba(0,45,90,0.12);
+      --shadow-hover: 0 30px 40px -15px rgba(0,65,130,0.18);
+      --border-radius-card: 22px;
+    }
+    /* ----- sticky glass navbar ----- */
+    .navbar-glass {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(203, 213, 225, 0.3);
+      padding: 16px 0;
+      z-index: 1000;
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      background: var(--blue-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      align-items: center;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #1e293b;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--blue-start); }
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-nav-outline {
+      background: transparent;
+      border: 1.5px solid #cbd5e1;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #1e293b;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-nav-outline:hover {
+      border-color: var(--blue-start);
+      background: #f8fafc;
+    }
+    .btn-nav-primary {
+      background: var(--blue-gradient);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(15, 75, 200, 0.2);
+    }
+    /* buttons */
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1.5px solid transparent;
+    }
+    .btn-primary {
+      background: var(--blue-gradient);
+      color: white;
+      box-shadow: 0 8px 16px -6px rgba(15,75,200,0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -8px rgba(15,75,200,0.35);
+    }
+    .btn-outline {
+      background: transparent;
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+    .btn-outline:hover {
+      border-color: var(--blue-start);
+      background: #ffffff;
+    }
+    /* hero */
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .hero-grid {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+    .hero-left { flex: 1; }
+    .hero-right { flex: 1; }
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      background: var(--blue-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+    }
+    .hero-sub {
+      font-size: 1.2rem;
+      color: #475569;
+      max-width: 500px;
+      margin-bottom: 32px;
+    }
+    .hero-ctas { display: flex; gap: 16px; }
+    /* SVG illustration */
+    .svg-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin-left: auto;
+    }
+    .bg-radial {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle at 30% 40%, rgba(47,109,203,0.06) 0%, transparent 60%);
+      border-radius: 50%;
+      top: 10%;
+      left: 10%;
+      z-index: 0;
+    }
+    .bg-radial2 {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(11,94,215,0.04) 0%, transparent 70%);
+      bottom: 0;
+      right: 0;
+      border-radius: 50%;
+    }
+    .svg-content {
+      position: relative;
+      z-index: 2;
+    }
+    /* features grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 40px;
+    }
+    .feature-card {
+      background: white;
+      border-radius: var(--border-radius-card);
+      padding: 32px 24px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(203, 213, 225, 0.3);
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+    .icon-circle {
+      width: 60px;
+      height: 60px;
+      background: rgba(47, 109, 203, 0.1);
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .icon-circle i {
+      font-size: 1.8rem;
+      color: var(--blue-start);
+    }
+    .feature-card h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .feature-card p {
+      color: #475569;
+      font-size: 0.95rem;
+    }
+    /* roadmap (horizontal steps) */
+    .steps-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      margin: 40px 0;
+      position: relative;
+    }
+    .step-item {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+    .step-icon {
+      width: 70px;
+      height: 70px;
+      background: var(--blue-gradient);
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 600;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 12px 22px -8px rgba(47,109,203,0.3);
+    }
+    .step-item h4 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .step-item p {
+      color: #475569;
+      font-size: 0.9rem;
+      max-width: 200px;
+      margin: 0 auto;
+    }
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 35px;
+      right: -30px;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue-start), transparent);
+      transform: translateY(-50%);
+    }
+    @media (max-width: 768px) {
+      .steps-row { flex-direction: column; gap: 40px; }
+      .step-item::after { display: none; }
+    }
+    /* pricing */
+    .pricing-card {
+      background: white;
+      border-radius: var(--border-radius-card);
+      padding: 40px 30px;
+      box-shadow: var(--shadow-md);
+      height: 100%;
+      border: 1px solid #e2e8f0;
+    }
+    .pricing-card.pro {
+      border: 2px solid var(--blue-start);
+      box-shadow: 0 20px 30px -10px rgba(47,109,203,0.2), 0 0 0 1px rgba(47,109,203,0.1);
+      transform: scale(1.02);
+      background: white;
+      position: relative;
+    }
+    .pricing-card.pro::after {
+      content: 'MOST POPULAR';
+      position: absolute;
+      top: -12px;
+      left: 30px;
+      background: var(--blue-gradient);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 30px;
+      letter-spacing: 0.5px;
+    }
+    .pricing-name {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .price-tag {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 20px 0;
+    }
+    .price-tag span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #64748b;
+    }
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 30px 0;
+    }
+    .feature-list li {
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .feature-list i {
+      color: var(--blue-start);
+      width: 20px;
+    }
+    /* cta */
+    .cta-block {
+      background: var(--navy-dark);
+      border-radius: 40px;
+      padding: 80px 20px;
+      text-align: center;
+      color: white;
+    }
+    .cta-block h2 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+    .btn-cta {
+      background: white;
+      color: var(--navy-dark);
+      padding: 16px 40px;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      font-weight: 600;
+    }
+    .btn-cta:hover {
+      background: #f0f4ff;
+      transform: translateY(-2px);
+      box-shadow: 0 20px 30px -10px rgba(0,0,0,0.3);
+    }
+    /* footer */
+    .footer-dark {
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 60px 0 30px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+    }
+    .footer-col h5 {
+      color: white;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .footer-col a {
+      display: block;
+      color: #94a3b8;
+      text-decoration: none;
+      margin: 8px 0;
+    }
+    .footer-col a:hover { color: white; }
+    hr { border-color: #334155; opacity: 0.3; }
+    /* fade animation */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.7s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* responsiveness */
+    @media (max-width: 992px) {
+      .hero-grid { flex-direction: column; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-container { flex-wrap: wrap; }
+      .nav-links { order: 3; width: 100%; margin-top: 15px; justify-content: center; flex-wrap: wrap; }
+    }
+    @media (max-width: 576px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sticky glass navbar -->
+  <nav class="navbar-glass">
+    <div class="container-custom nav-container">
+      <div class="logo">AccionLAND – RVS</div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#plans">Plans</a>
+        <a href="#contact">Contact</a>
+        <div class="nav-buttons">
+          <a href="login.html" class="btn-nav-outline">Login</a>
+          <a href="register.html" class="btn-nav-primary">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section (100vh) -->
+  <section class="hero-section">
+    <div class="container-custom">
+      <div class="hero-grid">
+        <div class="hero-left fade-up">
+          <h1 class="hero-title">Visualize structural risk.<br>Floor by floor.</h1>
+          <p class="hero-sub">Monitor, manage, and resolve building issues through floor-level insights and structured workflows.</p>
+          <div class="hero-ctas">
+            <a href="register.html" class="btn btn-primary">Start Free Trial</a>
+            <a href="login.html" class="btn btn-outline">Login</a>
+          </div>
+        </div>
+        <div class="hero-right fade-up" style="animation-delay:0.1s">
+          <div class="svg-container">
+            <div class="bg-radial"></div>
+            <div class="bg-radial2"></div>
+            <div class="svg-content">
+              <!-- Minimal professional SVG: floor grid, heatmap dots, arrows, dashboard panel -->
+              <svg width="100%" height="260" viewBox="0 0 500 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- base floor grid -->
+                <rect x="30" y="40" width="180" height="150" rx="12" fill="#EFF6FF" stroke="#2f6dcb" stroke-width="1.2" stroke-dasharray="5 3" />
+                <rect x="50" y="70" width="40" height="40" rx="4" fill="white" stroke="#2f6dcb" stroke-width="1" />
+                <rect x="110" y="70" width="40" height="40" rx="4" fill="white" stroke="#2f6dcb" stroke-width="1" />
+                <rect x="50" y="125" width="40" height="40" rx="4" fill="white" stroke="#2f6dcb" stroke-width="1" />
+                <rect x="110" y="125" width="40" height="40" rx="4" fill="white" stroke="#2f6dcb" stroke-width="1" />
+                <!-- heatmap dots (risk indicators) -->
+                <circle cx="80" cy="150" r="12" fill="#ef4444" opacity="0.6" />
+                <circle cx="150" cy="90" r="10" fill="#f97316" opacity="0.7" />
+                <circle cx="170" cy="170" r="8" fill="#f59e0b" opacity="0.6" />
+                <circle cx="110" cy="190" r="12" fill="#10b981" opacity="0.5" />
+                <!-- dashboard screen (right side) -->
+                <rect x="280" y="40" width="150" height="100" rx="14" fill="white" stroke="#2f6dcb" stroke-width="1.5" />
+                <line x1="295" y1="62" x2="415" y2="62" stroke="#2f6dcb" stroke-width="2" stroke-dasharray="3 2" />
+                <circle cx="315" cy="85" r="5" fill="#ef4444" />
+                <circle cx="345" cy="85" r="5" fill="#f59e0b" />
+                <circle cx="375" cy="85" r="5" fill="#10b981" />
+                <!-- inspection flow arrows -->
+                <path d="M210 100 L260 80" stroke="#2f6dcb" stroke-width="1.8" stroke-dasharray="5 3" />
+                <path d="M210 140 L260 160" stroke="#2f6dcb" stroke-width="1.8" stroke-dasharray="5 3" />
+                <polygon points="265,78 255,74 255,82" fill="#2f6dcb" />
+                <polygon points="265,162 255,158 255,166" fill="#2f6dcb" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section (#features) -->
+  <section id="features" class="section" style="background: #f9fcff;">
+    <div class="container-custom">
+      <h2 class="display-5 fw-bold text-center mb-5">Comprehensive floor-by-floor oversight</h2>
+      <div class="feature-grid">
+        <!-- card 1 -->
+        <div class="feature-card fade-up">
+          <div class="icon-circle"><i class="fas fa-map"></i></div>
+          <h3>Floor-wise Map Visualization</h3>
+          <p>Interactive floor plans with highlighted structural problem zones.</p>
+        </div>
+        <!-- card 2 -->
+        <div class="feature-card fade-up" style="animation-delay:0.03s">
+          <div class="icon-circle"><i class="fas fa-tags"></i></div>
+          <h3>Risk Classification</h3>
+          <p>Issues categorized as High, Medium, or Low based on severity.</p>
+        </div>
+        <!-- card 3 -->
+        <div class="feature-card fade-up" style="animation-delay:0.06s">
+          <div class="icon-circle"><i class="fas fa-arrow-left"></i><i class="fas fa-arrow-right"></i></div>
+          <h3>Directional Analysis</h3>
+          <p>Structural issues mapped by load direction and orientation.</p>
+        </div>
+        <!-- card 4 -->
+        <div class="feature-card fade-up" style="animation-delay:0.09s">
+          <div class="icon-circle"><i class="fas fa-rotate-left"></i></div>
+          <h3>Issue Lifecycle Management</h3>
+          <p>Track issues from detection to resolution.</p>
+        </div>
+        <!-- card 5 -->
+        <div class="feature-card fade-up" style="animation-delay:0.12s">
+          <div class="icon-circle"><i class="fas fa-camera"></i></div>
+          <h3>Photo Evidence Tracking</h3>
+          <p>Attach images directly to marked floor spots.</p>
+        </div>
+        <!-- card 6 -->
+        <div class="feature-card fade-up" style="animation-delay:0.15s">
+          <div class="icon-circle"><i class="fas fa-users-cog"></i></div>
+          <h3>Role-based Access</h3>
+          <p>Separate views for Managers and Office Workers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap / How it works (#roadmap) -->
+  <section id="roadmap" class="section">
+    <div class="container-custom">
+      <h2 class="display-5 fw-bold text-center mb-5">Clear path from survey to resolution</h2>
+      <div class="steps-row">
+        <div class="step-item fade-up">
+          <div class="step-icon">1</div>
+          <h4>Upload Survey & Mark Floor</h4>
+          <p>Import structural scans and pinpoint exact floor locations.</p>
+        </div>
+        <div class="step-item fade-up" style="animation-delay:0.1s">
+          <div class="step-icon">2</div>
+          <h4>Risk Analysis & Visualization</h4>
+          <p>Automated classification and heatmap overlay.</p>
+        </div>
+        <div class="step-item fade-up" style="animation-delay:0.2s">
+          <div class="step-icon">3</div>
+          <h4>Assign & Monitor Issues</h4>
+          <p>Distribute tasks to teams and track progress.</p>
+        </div>
+        <div class="step-item fade-up" style="animation-delay:0.3s">
+          <div class="step-icon">4</div>
+          <h4>Resolve & Document Completion</h4>
+          <p>Close the loop with photo proof and reports.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section (#plans) -->
+  <section id="plans" class="section" style="background: #f9fcff;">
+    <div class="container-custom">
+      <h2 class="display-5 fw-bold text-center mb-5">Plans tailored to your structure</h2>
+      <div class="row g-4 align-items-center">
+        <div class="col-md-6 fade-up">
+          <div class="pricing-card">
+            <div class="pricing-name">🟢 Basic</div>
+            <div class="price-tag">₹1,490<span>/month</span></div>
+            <ul class="feature-list">
+              <li><i class="fas fa-check-circle"></i> Dashboard Access</li>
+              <li><i class="fas fa-check-circle"></i> Floor Overview</li>
+              <li><i class="fas fa-check-circle"></i> Direction Analysis</li>
+              <li><i class="fas fa-check-circle"></i> 72hr Support</li>
+            </ul>
+            <a href="register.html?plan=basic" class="btn btn-outline w-100 text-center">Choose Basic</a>
+          </div>
+        </div>
+        <div class="col-md-6 fade-up" style="animation-delay:0.1s">
+          <div class="pricing-card pro">
+            <div class="pricing-name">🔵 Pro</div>
+            <div class="price-tag">₹2,990<span>/month</span></div>
+            <ul class="feature-list">
+              <li><i class="fas fa-check-circle"></i> Everything in Basic</li>
+              <li><i class="fas fa-check-circle"></i> Resolve Issues</li>
+              <li><i class="fas fa-check-circle"></i> Office Worker Panel Access</li>
+              <li><i class="fas fa-check-circle"></i> Lifecycle Tracking</li>
+              <li><i class="fas fa-check-circle"></i> Priority Support</li>
+            </ul>
+            <a href="register.html?plan=pro" class="btn btn-primary w-100 text-center">Choose Pro</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section">
+    <div class="container-custom">
+      <div class="cta-block fade-up">
+        <h2>Start monitoring structural integrity with clarity.</h2>
+        <a href="register.html" class="btn btn-cta">Create Free Account</a>
+        <p class="mt-4" style="color:#b0c4de;"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer / Contact (#contact) -->
+  <footer id="contact" class="footer-dark">
+    <div class="container-custom">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="#features">Features</a>
+          <a href="#plans">Pricing</a>
+          <a href="#">Integrations</a>
+          <a href="#">Roadmap</a>
+        </div>
+        <div class="footer-col">
+          <h5>Company</h5>
+          <a href="#">About</a>
+          <a href="#">Careers</a>
+          <a href="#">Press</a>
+        </div>
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <a href="#">Documentation</a>
+          <a href="#">Support</a>
+          <a href="#">Blog</a>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <a href="https://accionland.com/" target="_blank"
+   rel="noopener noreferrer">accionland.com    </a>
+<a href="mailto:info@accionland.com">
+  info@accionland.com
+</a>
+          <a href="#">+1 (800) 555-0199</a>
+          <a href="https://www.linkedin.com/company/accion-land/posts/?feedView=all" target="_blank"
+   rel="noopener noreferrer">LinkedIn</a>
+        </div>
+      </div>
+      <hr class="my-5">
+      <p class="text-center" style="color:#64748b;">© 2025 AccionLAND – RVS. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
