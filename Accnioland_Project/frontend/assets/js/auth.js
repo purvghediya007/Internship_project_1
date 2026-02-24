@@ -6,13 +6,20 @@
 async function handleLogin() {
   const userType = document.getElementById("userType").value;
   const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value;
 
   if (!password) {
     alert("Password is required");
     return;
   }
 
+  
   const body = { userType, password };
+
+    // 🔥 ADD THIS LINE (
+    if (email) {
+      body.email = email;
+    }
 
   if (userType === "manager") {
     const email = document.getElementById("email").value;
@@ -20,7 +27,7 @@ async function handleLogin() {
       alert("Email is required for manager login");
       return;
     }
-    body.email = email;
+    
   } else {
     const floor = document.getElementById("floor").value;
     if (!floor) {
@@ -72,13 +79,14 @@ async function handleRegister() {
   const userType = document.getElementById("userType").value;
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
-
+  const buildingName=document.getElementById("regBuilding").value;
   if (!email || !password) {
     alert("Email and password are required");
     return;
   }
 
   const body = {
+    buildingName,
     userType,
     email,
     password,
