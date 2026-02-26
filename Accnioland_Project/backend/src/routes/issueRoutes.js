@@ -71,7 +71,7 @@ router.patch(
   "/:issueId/spot/:spotIndex/add-photos",
   authMiddleware,
   managerOnly,
-  upload.fields([
+ upload.fields([
     { name: "issueImages_0", maxCount: 10 },
     { name: "issueImages_1", maxCount: 10 },
     { name: "issueImages_2", maxCount: 10 },
@@ -82,6 +82,16 @@ router.patch(
     { name: "issueImages_7", maxCount: 10 },
     { name: "issueImages_8", maxCount: 10 },
     { name: "issueImages_9", maxCount: 10 },
+    { name: "issueImages_10", maxCount: 10 },
+    { name: "issueImages_11", maxCount: 10 },
+    { name: "issueImages_12", maxCount: 10 },
+    { name: "issueImages_13", maxCount: 10 },
+    { name: "issueImages_14", maxCount: 10 },
+    { name: "issueImages_15", maxCount: 10 },
+    { name: "issueImages_16", maxCount: 10 },
+    { name: "issueImages_17", maxCount: 10 },
+    { name: "issueImages_18", maxCount: 10 },
+    { name: "issueImages_19", maxCount: 10 },
   ]),
   addSpotPhotos
 );
