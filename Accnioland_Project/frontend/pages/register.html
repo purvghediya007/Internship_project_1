@@ -86,9 +86,18 @@
     </div>
 
     <!-- Register Button -->
-    <button class="btn btn-primary w-100 mt-2" onclick="handleRegister()">
+    <!-- <button class="btn btn-primary w-100 mt-2" onclick="handleRegister()">
       <i class="bi bi-person-plus-fill me-1"></i> Register
-    </button>
+    </button> -->
+    <button id="registerBtn" class="btn btn-primary w-100 mt-2" onclick="handleRegisterWithLoader()">
+  <span id="registerBtnContent">
+    <i class="bi bi-person-plus-fill me-1"></i> Register
+  </span>
+  <span id="registerSpinner" class="d-none">
+    <span class="spinner-border spinner-border-sm me-2"></span>
+    Creating Account...
+  </span>
+</button>
 
     <!-- Footer -->
     <div class="text-center mt-3">
@@ -109,7 +118,34 @@ function toggleRegisterFields() {
     type === "office_worker" ? "block" : "none";
 }
 </script>
+<script>
+async function handleRegisterWithLoader() {
+  const btn = document.getElementById("registerBtn");
+  const content = document.getElementById("registerBtnContent");
+  const spinner = document.getElementById("registerSpinner");
 
+  // Prevent multiple clicks
+  btn.disabled = true;
+
+  // Show spinner
+  content.classList.add("d-none");
+  spinner.classList.remove("d-none");
+
+  try {
+    // Call your existing register function
+    await handleRegister();
+  } catch (error) {
+    console.error(error);
+  }
+
+  // If register fails and page doesn't redirect
+  setTimeout(() => {
+    btn.disabled = false;
+    spinner.classList.add("d-none");
+    content.classList.remove("d-none");
+  }, 3000);
+}
+</script>
 <script src="../assets/js/api.js"></script>
 <script src="../assets/js/auth.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
