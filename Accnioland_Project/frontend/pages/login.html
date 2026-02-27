@@ -86,10 +86,18 @@
     </div>
 
     <!-- LOGIN BUTTON -->
-    <button class="btn btn-primary w-100 mt-2" onclick="handleLogin()">
+    <!-- <button class="btn btn-primary w-100 mt-2" onclick="handleLogin()">
       <i class="bi bi-box-arrow-in-right me-1"></i> Login
-    </button>
-
+    </button> -->
+    <button id="loginBtn" class="btn btn-primary w-100 mt-2" onclick="handleLoginWithLoader()">
+  <span id="loginBtnContent">
+    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+  </span>
+  <span id="loginSpinner" class="d-none">
+    <span class="spinner-border spinner-border-sm me-2"></span>
+    Logging in...
+  </span>
+</button>
     <!-- Footer -->
     <div class="text-center mt-3">
       <small class="text-muted">
@@ -107,6 +115,35 @@ function toggleFields() {
   const type = document.getElementById("userType").value;
   document.getElementById("floorField").style.display =
     type === "office_worker" ? "block" : "none";
+}
+
+</script>
+<script>
+async function handleLoginWithLoader() {
+  const btn = document.getElementById("loginBtn");
+  const content = document.getElementById("loginBtnContent");
+  const spinner = document.getElementById("loginSpinner");
+
+  // Prevent multiple clicks
+  btn.disabled = true;
+
+  // Show spinner
+  content.classList.add("d-none");
+  spinner.classList.remove("d-none");
+
+  try {
+    // Call your existing login function
+    await handleLogin();
+  } catch (error) {
+    console.error(error);
+  }
+
+  // If login fails and page doesn't redirect, restore button
+  setTimeout(() => {
+    btn.disabled = false;
+    spinner.classList.add("d-none");
+    content.classList.remove("d-none");
+  }, 3000);
 }
 </script>
 
