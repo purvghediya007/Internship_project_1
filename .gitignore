@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.*
+backend/.env
+frontend/.env
+frontend/test.html
+dist/
+build/
+# Ignore Docker files
+Accnioland_Project/backend/Dockerfile
+Accnioland_Project/frontend/Dockerfile
+Accnioland_Project/docker-compose.yml

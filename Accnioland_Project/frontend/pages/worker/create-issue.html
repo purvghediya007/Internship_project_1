@@ -366,6 +366,66 @@
     touch-action: none;
     display:block;
   }
+  /* ================= ICON EXPAND NAV BUTTON ================= */
+
+.icon-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.50s ease;
+  position: relative;
+  padding: 0;              /* remove bootstrap padding */
+}
+
+/* ICON FIX */
+.icon-nav-btn i {
+  font-size: 20px;
+  line-height: 1;          /* remove vertical shift */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TEXT (hidden by default) */
+.icon-nav-btn span {
+  white-space: nowrap;
+  margin-left: 10px;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  font-size: 14px;
+}
+
+/* HOVER EXPAND */
+.icon-nav-btn:hover {
+  width: 140px;
+  border-radius: 50px;
+  background: #ffffff;
+  color: #1e40af;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* SHOW TEXT */
+.icon-nav-btn:hover span {
+  opacity: 1;
+  max-width: 100px;
+}
+
+/* ICON COLOR ON HOVER */
+.icon-nav-btn:hover i {
+  color: #1e40af;
+}
+.icon-nav-btn + .icon-nav-btn {
+  margin-left: 10px;
+}
 </style>
 </head>
 
@@ -399,11 +459,15 @@
 
     <div class="top-right-meta">
 
-  <a href="history.html"
+  <!-- <a href="history.html"
      class="btn btn-light btn-sm fw-bold px-3"
      style="border-radius:999px;">
     <i class="bi bi-clock-history me-1"></i> History
-  </a>
+  </a> -->
+  <a href="history.html" class="icon-nav-btn text-decoration-none">
+  <i class="bi bi-clock-history"></i>
+  <span>History</span>
+</a>
 
   <span class="meta-pill">
     <i class="bi bi-layers-fill"></i>
@@ -415,11 +479,15 @@
     <strong id="officeText"></strong>
   </span>
 
-  <button class="btn btn-light btn-sm fw-bold px-3"
+  <!-- <button class="btn btn-light btn-sm fw-bold px-3"
     style="border-radius:999px;"
     onclick="logoutUser()">
     <i class="bi bi-box-arrow-right me-1"></i> Logout
-  </button>
+  </button> -->
+  <button class="icon-nav-btn" onclick="logoutUser()">
+  <i class="bi bi-box-arrow-right"></i>
+  <span>Logout</span>
+</button>
 </div>
 
   </div>

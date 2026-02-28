@@ -21,13 +21,31 @@ body{
   box-shadow:0 14px 40px rgba(2,6,23,0.25);
 }
 
-.meta-pill{
+/* .meta-pill{
   background:rgba(255,255,255,0.15);
   border-radius:999px;
   padding:6px 12px;
   font-size:13px;
   font-weight:800;
   color:#fff;
+} */
+ /* ===== TOPBAR META PILLS (FIXED SIZE) ===== */
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 42px;                  /* match icon button height */
+  padding: 0 16px;               /* horizontal only */
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  /* background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25); */
+  background: rgba(255,255,255,0.08);
+border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 25px;
+  backdrop-filter: blur(6px);
+  line-height: 1;                /* prevent vertical shift */
 }
 
 .page-wrap{
@@ -182,7 +200,66 @@ body{
   border:1px solid #bbf7d0;
   color:#065f46;
 }
+/* ================= ICON EXPAND NAV BUTTON ================= */
 
+.icon-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.50s ease;
+  position: relative;
+  padding: 0;              /* remove bootstrap padding */
+}
+
+/* ICON FIX */
+.icon-nav-btn i {
+  font-size: 20px;
+  line-height: 1;          /* remove vertical shift */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TEXT (hidden by default) */
+.icon-nav-btn span {
+  white-space: nowrap;
+  margin-left: 10px;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  font-size: 14px;
+}
+
+/* HOVER EXPAND */
+.icon-nav-btn:hover {
+  width: 140px;
+  border-radius: 50px;
+  background: #ffffff;
+  color: #1e40af;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* SHOW TEXT */
+.icon-nav-btn:hover span {
+  opacity: 1;
+  max-width: 100px;
+}
+
+/* ICON COLOR ON HOVER */
+.icon-nav-btn:hover i {
+  color: #1e40af;
+}
+.icon-nav-btn + .icon-nav-btn {
+  margin-left: 10px;
+}
 </style>
 </head>
 
@@ -194,14 +271,22 @@ body{
     <div class="d-flex gap-2">
       <span class="meta-pill">Floor: <span id="floorText"></span></span>
       <span class="meta-pill">Office: <span id="officeText"></span></span>
-      <button class="btn btn-light btn-sm fw-bold px-3 rounded-pill"
+      <!-- <button class="btn btn-light btn-sm fw-bold px-3 rounded-pill"
         onclick="window.history.back()">
         <i class="bi bi-arrow-left"></i> Back
-      </button>
-      <button class="btn btn-light btn-sm fw-bold px-3 rounded-pill"
+      </button> -->
+      <button class="icon-nav-btn" onclick="window.history.back()">
+  <i class="bi bi-arrow-left"></i>
+  <span>Back</span>
+</button>
+      <!-- <button class="btn btn-light btn-sm fw-bold px-3 rounded-pill"
         onclick="logoutUser()">
         Logout
-      </button>
+      </button> -->
+      <button class="icon-nav-btn" onclick="logoutUser()">
+  <i class="bi bi-box-arrow-right"></i>
+  <span>Logout</span>
+</button>
     </div>
   </div>
 </nav>

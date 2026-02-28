@@ -843,7 +843,66 @@ body.modal-open {
   }
 
 }
+/* ================= ICON EXPAND NAV BUTTON ================= */
 
+.icon-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.50s ease;
+  position: relative;
+  padding: 0;              /* remove bootstrap padding */
+}
+
+/* ICON FIX */
+.icon-nav-btn i {
+  font-size: 20px;
+  line-height: 1;          /* remove vertical shift */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TEXT (hidden by default) */
+.icon-nav-btn span {
+  white-space: nowrap;
+  margin-left: 10px;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  font-size: 14px;
+}
+
+/* HOVER EXPAND */
+.icon-nav-btn:hover {
+  width: 140px;
+  border-radius: 50px;
+  background: #ffffff;
+  color: #1e40af;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* SHOW TEXT */
+.icon-nav-btn:hover span {
+  opacity: 1;
+  max-width: 100px;
+}
+
+/* ICON COLOR ON HOVER */
+.icon-nav-btn:hover i {
+  color: #1e40af;
+}
+.icon-nav-btn + .icon-nav-btn {
+  margin-left: 10px;
+}
   </style>
 </head>
 
@@ -857,17 +916,35 @@ body.modal-open {
   </span>
 
   <div class="d-flex gap-2">
-    <button class="btn btn-light btn-sm fw-semibold" onclick="toggleFloorDrawer()">
+    <!-- <button class="btn btn-light btn-sm fw-semibold" onclick="toggleFloorDrawer()">
       <i class="bi bi-grid-fill"></i> Floors Summary
-    </button>
-    <button class="btn btn-light btn-sm fw-semibold" onclick="openVendorModal()">
+    </button> -->
+
+    <button class="icon-nav-btn" onclick="toggleFloorDrawer()">
+  <i class="bi bi-grid-fill"></i>
+  <span>Floors</span>
+</button>
+    <!-- <button class="btn btn-light btn-sm fw-semibold" onclick="openVendorModal()">
       <i class="bi bi-people-fill"></i> Vendors
-    </button>
-    <a href="upload-floor.html" class="btn btn-light btn-sm fw-semibold">
+    </button> -->
+    <button class="icon-nav-btn" onclick="openVendorModal()">
+  <i class="bi bi-people-fill"></i>
+  <span>Vendors</span>
+</button>
+    <!-- <a href="upload-floor.html" class="btn btn-light btn-sm fw-semibold">
       <i class="bi bi-upload"></i> Upload Floor Plan
-    </a>
-    <button onclick="logout()" class="btn btn-outline-light btn-sm fw-semibold">
+    </a> -->
+
+    <a href="upload-floor.html" class="icon-nav-btn text-decoration-none">
+  <i class="bi bi-upload"></i>
+  <span>Upload</span>
+</a>
+    <!-- <button onclick="logout()" class="btn btn-outline-light btn-sm fw-semibold">
       <i class="bi bi-box-arrow-right"></i> Logout
+    </button> -->
+    <button onclick="logout()" class="icon-nav-btn">
+      <i class="bi bi-box-arrow-right"></i>
+    <span>Logout</span>
     </button>
   </div>
 </nav>
