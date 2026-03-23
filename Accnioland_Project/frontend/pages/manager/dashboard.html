@@ -1571,6 +1571,11 @@ function renderSpotDetails(survey, spots) {
           <span>Structure: ${toTitleCase(p.structureType)}</span>
           <span>Direction: ${toTitleCase(p.direction)}</span>
           <span>Issue: ${toTitleCase(p.issueType)}</span>
+          ${
+            p.area
+            ? `<span>Area: ${p.area} sqft</span>`
+            : ""
+          }
         </div>
 
         <div class="desc">
