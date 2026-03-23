@@ -87,7 +87,7 @@ const structureProblemSchema = new mongoose.Schema(
       enum: ["in_progress", "resolved"],
       default: "in_progress",
     },
-
+    area:{ type: Number, required: false, default: null }, // in sqft, optional
     resolution: 
     {
       description: String,
