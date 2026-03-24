@@ -10,3 +10,5 @@ build/
 Accnioland_Project/backend/Dockerfile
 Accnioland_Project/frontend/Dockerfile
 Accnioland_Project/docker-compose.yml
+Accnioland_Project/backend/src/updateAreaFromExcel.js
+Accionland_Project/backend/src/18032026_V2_Observation on  Issue_Defect_Sheet_RUBY TOWER.xlsx
