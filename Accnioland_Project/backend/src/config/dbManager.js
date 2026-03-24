@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-
+require('dotenv').config();
 const connections = {};
 
-const BASE_URI = "mongodb+srv://purvghediya007_db_user:vSBABaIz4cz6sCRC@cluster1.axzk2ty.mongodb.net";
+const BASE_URI = process.env.MONGO_URI;
 
 const getConnection = async (buildingName) => {
 

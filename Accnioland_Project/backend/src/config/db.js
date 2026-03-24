@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const db="mongodb+srv://purvghediya007_db_user:vSBABaIz4cz6sCRC@cluster1.axzk2ty.mongodb.net";
+require('dotenv').config();
+const db=process.env.MONGO_URI;
 const connectDB = async () => {
   try {
     await mongoose.connect(db);
