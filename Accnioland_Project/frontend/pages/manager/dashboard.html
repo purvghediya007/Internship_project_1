@@ -1860,6 +1860,7 @@ let totalArea = 0;
 
 /* ================= UPDATE UI STATS ================= */
 function updateDashboardUIFromFilteredIssues(filteredSurveys) {
+  document.getElementById("activeFilterText").innerText = `Showing: ${filteredSurveys[0].floorNumber}`;
   const stats = calculateStatsFromSurveys(filteredSurveys);
   document.getElementById("statTotalArea").innerText =
   stats.summary.totalArea.toFixed(2);
