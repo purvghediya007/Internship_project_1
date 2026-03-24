@@ -1847,7 +1847,7 @@ function calculateStatsFromSurveys(surveys) {
 /* ================= UPDATE UI STATS ================= */
 function updateDashboardUIFromFilteredIssues(filteredSurveys) {
   const stats = calculateStatsFromSurveys(filteredSurveys);
-  document.getElementById("activeFilterText").innerText = `Showing: ${filteredSurveys[0].floorNumber}`;
+
   document.getElementById("statTotalProblems").innerText = stats.summary.totalSpots;
 
   let overall = "low";
